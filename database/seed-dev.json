@@ -1,0 +1,1329 @@
+{
+  "users": [
+    {
+      "id": "00000000-0000-4000-8000-000000000001",
+      "name": "Dev User",
+      "email": "dev@example.com",
+      "password": "$2b$10$replace_with_dev_password_hash",
+      "isAdmin": true
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000002",
+      "name": "Sample Member",
+      "email": "member@example.com",
+      "password": "$2b$10$replace_with_dev_password_hash",
+      "isAdmin": false
+    }
+  ],
+  "body_regions": [
+    {
+      "id": "10000000-0000-4000-8000-000000000001",
+      "slug": "upper-body",
+      "name": "Upper Body",
+      "description": "Chest, back, shoulders, arms, and upper trunk.",
+      "sort_order": 1
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000002",
+      "slug": "lower-body",
+      "name": "Lower Body",
+      "description": "Hips, glutes, thighs, calves, and ankles.",
+      "sort_order": 2
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000003",
+      "slug": "core",
+      "name": "Core",
+      "description": "Abdominals, obliques, lower back, and trunk control.",
+      "sort_order": 3
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000004",
+      "slug": "full-body",
+      "name": "Full Body",
+      "description": "Integrated movements using multiple body regions.",
+      "sort_order": 4
+    }
+  ],
+  "movement_families": [
+    {
+      "id": "20000000-0000-4000-8000-000000000001",
+      "slug": "squat",
+      "name": "Squat",
+      "description": "Knee and hip bending patterns used to sit, stand, and lower the body.",
+      "sort_order": 1
+    },
+    {
+      "id": "20000000-0000-4000-8000-000000000002",
+      "slug": "hinge",
+      "name": "Hinge",
+      "description": "Hip-dominant movements that train posterior-chain control.",
+      "sort_order": 2
+    },
+    {
+      "id": "20000000-0000-4000-8000-000000000003",
+      "slug": "push",
+      "name": "Push",
+      "description": "Upper-body or full-body movements that press away from the body.",
+      "sort_order": 3
+    },
+    {
+      "id": "20000000-0000-4000-8000-000000000004",
+      "slug": "pull",
+      "name": "Pull",
+      "description": "Upper-body movements that draw resistance toward the body.",
+      "sort_order": 4
+    },
+    {
+      "id": "20000000-0000-4000-8000-000000000005",
+      "slug": "carry-locomotion",
+      "name": "Carry and Locomotion",
+      "description": "Walking, marching, carrying, and rhythmic conditioning patterns.",
+      "sort_order": 5
+    },
+    {
+      "id": "20000000-0000-4000-8000-000000000006",
+      "slug": "mobility-control",
+      "name": "Mobility and Control",
+      "description": "Controlled range-of-motion and balance-focused movements.",
+      "sort_order": 6
+    }
+  ],
+  "exercise_purposes": [
+    {
+      "id": "30000000-0000-4000-8000-000000000001",
+      "slug": "warm-up",
+      "name": "Warm Up",
+      "description": "Prepares joints, muscles, and breathing for the session.",
+      "sort_order": 1
+    },
+    {
+      "id": "30000000-0000-4000-8000-000000000002",
+      "slug": "strength",
+      "name": "Strength",
+      "description": "Builds controlled force through repeatable movement patterns.",
+      "sort_order": 2
+    },
+    {
+      "id": "30000000-0000-4000-8000-000000000003",
+      "slug": "conditioning",
+      "name": "Conditioning",
+      "description": "Raises heart rate and trains sustainable work capacity.",
+      "sort_order": 3
+    },
+    {
+      "id": "30000000-0000-4000-8000-000000000004",
+      "slug": "cool-down",
+      "name": "Cool Down",
+      "description": "Helps the user finish with slower breathing and relaxed movement.",
+      "sort_order": 4
+    }
+  ],
+  "muscles": [
+    {
+      "id": "40000000-0000-4000-8000-000000000001",
+      "slug": "quadriceps",
+      "name": "Quadriceps",
+      "body_region_id": "10000000-0000-4000-8000-000000000002",
+      "description": "Front thigh muscles involved in knee extension and squatting."
+    },
+    {
+      "id": "40000000-0000-4000-8000-000000000002",
+      "slug": "glutes",
+      "name": "Glutes",
+      "body_region_id": "10000000-0000-4000-8000-000000000002",
+      "description": "Hip extensor and stabilizer muscles."
+    },
+    {
+      "id": "40000000-0000-4000-8000-000000000003",
+      "slug": "hamstrings",
+      "name": "Hamstrings",
+      "body_region_id": "10000000-0000-4000-8000-000000000002",
+      "description": "Back thigh muscles used in hinging and hip extension."
+    },
+    {
+      "id": "40000000-0000-4000-8000-000000000004",
+      "slug": "chest",
+      "name": "Chest",
+      "body_region_id": "10000000-0000-4000-8000-000000000001",
+      "description": "Pectoral muscles used in pressing movements."
+    },
+    {
+      "id": "40000000-0000-4000-8000-000000000005",
+      "slug": "upper-back",
+      "name": "Upper Back",
+      "body_region_id": "10000000-0000-4000-8000-000000000001",
+      "description": "Scapular and upper-back muscles used in pulling and posture."
+    },
+    {
+      "id": "40000000-0000-4000-8000-000000000006",
+      "slug": "abdominals",
+      "name": "Abdominals",
+      "body_region_id": "10000000-0000-4000-8000-000000000003",
+      "description": "Front trunk muscles used for bracing and trunk control."
+    },
+    {
+      "id": "40000000-0000-4000-8000-000000000007",
+      "slug": "biceps",
+      "name": "Biceps",
+      "body_region_id": "10000000-0000-4000-8000-000000000001",
+      "description": "Front upper-arm muscles used in elbow flexion and pulling."
+    },
+    {
+      "id": "40000000-0000-4000-8000-000000000008",
+      "slug": "obliques",
+      "name": "Obliques",
+      "body_region_id": "10000000-0000-4000-8000-000000000003",
+      "description": "Side trunk muscles used for rotation, side bending, and bracing."
+    },
+    {
+      "id": "40000000-0000-4000-8000-000000000009",
+      "slug": "upper-abdominals",
+      "name": "Upper Abdominals",
+      "body_region_id": "10000000-0000-4000-8000-000000000003",
+      "description": "Upper portion of the abdominal wall emphasized in crunching patterns."
+    }
+  ],
+  "equipment": [
+    {
+      "id": "50000000-0000-4000-8000-000000000001",
+      "slug": "bodyweight",
+      "name": "Bodyweight",
+      "description": "No external equipment required.",
+      "sort_order": 1
+    },
+    {
+      "id": "50000000-0000-4000-8000-000000000002",
+      "slug": "chair",
+      "name": "Chair",
+      "description": "Stable chair used for support or seated exercises.",
+      "sort_order": 2
+    },
+    {
+      "id": "50000000-0000-4000-8000-000000000003",
+      "slug": "resistance-band",
+      "name": "Resistance Band",
+      "description": "Elastic band used for light resistance.",
+      "sort_order": 3
+    },
+    {
+      "id": "50000000-0000-4000-8000-000000000004",
+      "slug": "mat",
+      "name": "Mat",
+      "description": "Floor mat for comfort during ground-based movements.",
+      "sort_order": 4
+    },
+    {
+      "id": "50000000-0000-4000-8000-000000000005",
+      "slug": "barbell",
+      "name": "Barbell",
+      "description": "Loaded bar used for bilateral strength exercises.",
+      "sort_order": 5
+    },
+    {
+      "id": "50000000-0000-4000-8000-000000000006",
+      "slug": "dumbbells",
+      "name": "Dumbbells",
+      "description": "Handheld free weights used for unilateral or bilateral strength exercises.",
+      "sort_order": 6
+    },
+    {
+      "id": "50000000-0000-4000-8000-000000000007",
+      "slug": "kettlebells",
+      "name": "Kettlebells",
+      "description": "Handled weights used for strength and conditioning movements.",
+      "sort_order": 7
+    },
+    {
+      "id": "50000000-0000-4000-8000-000000000008",
+      "slug": "bosu-ball",
+      "name": "Bosu Ball",
+      "description": "Unstable dome trainer used for balance and conditioning exercises.",
+      "sort_order": 8
+    },
+    {
+      "id": "50000000-0000-4000-8000-000000000009",
+      "slug": "bench",
+      "name": "Bench",
+      "description": "Stable elevated platform used for step-ups and supported exercises.",
+      "sort_order": 9
+    }
+  ],
+  "constraints": [
+    {
+      "id": "60000000-0000-4000-8000-000000000001",
+      "slug": "knee-sensitive",
+      "name": "Knee Sensitive",
+      "description": "May need modification for users avoiding knee stress.",
+      "category": "body_area",
+      "sort_order": 1
+    },
+    {
+      "id": "60000000-0000-4000-8000-000000000002",
+      "slug": "wrist-sensitive",
+      "name": "Wrist Sensitive",
+      "description": "May need modification for users avoiding wrist loading.",
+      "category": "body_area",
+      "sort_order": 2
+    },
+    {
+      "id": "60000000-0000-4000-8000-000000000003",
+      "slug": "floor-required",
+      "name": "Floor Required",
+      "description": "Requires getting down to and up from the floor.",
+      "category": "environment",
+      "sort_order": 3
+    },
+    {
+      "id": "60000000-0000-4000-8000-000000000004",
+      "slug": "balance-demand",
+      "name": "Balance Demand",
+      "description": "Requires extra balance or single-leg control.",
+      "category": "movement_demand",
+      "sort_order": 4
+    }
+  ],
+  "exercises": [
+    {
+      "id": "70000000-0000-4000-8000-000000000001",
+      "slug": "chair-squat",
+      "name": "Chair Squat",
+      "movement_family_id": "20000000-0000-4000-8000-000000000001",
+      "body_region_id": "10000000-0000-4000-8000-000000000002",
+      "exercise_purpose_id": "30000000-0000-4000-8000-000000000002",
+      "category": "strength",
+      "position": "standing",
+      "impact_level": "low",
+      "complexity_level": "moderate",
+      "intensity_level": "moderate",
+      "balance_demand": "low",
+      "space_need": "small",
+      "summary": "A controlled squat to a chair that builds leg strength with a clear depth target.",
+      "instructions": [
+        "Stand in front of a stable chair with feet about hip-width apart.",
+        "Reach hips back and bend knees until the hips lightly touch the chair.",
+        "Press through the feet to stand tall again."
+      ],
+      "coaching_cues": [
+        {
+          "text": "Keep the chest relaxed and tall.",
+          "time_seconds": null
+        },
+        {
+          "text": "Let knees track in line with toes.",
+          "time_seconds": null
+        },
+        {
+          "text": "Use the chair as a target, not a place to fully rest.",
+          "time_seconds": null
+        }
+      ],
+      "safety_info": "Use a higher chair or reduce depth if knees feel uncomfortable.",
+      "review_status": "approved",
+      "review_notes": "Good default lower-body strength option for new users.",
+      "status": "active",
+      "published_at": "2026-07-15T09:00:00.000Z",
+      "retired_at": null,
+      "color": "#2f7a54"
+    },
+    {
+      "id": "70000000-0000-4000-8000-000000000002",
+      "slug": "wall-push-up",
+      "name": "Wall Push-Up",
+      "movement_family_id": "20000000-0000-4000-8000-000000000003",
+      "body_region_id": "10000000-0000-4000-8000-000000000001",
+      "exercise_purpose_id": "30000000-0000-4000-8000-000000000002",
+      "category": "strength",
+      "position": "standing",
+      "impact_level": "none",
+      "complexity_level": "low",
+      "intensity_level": "low",
+      "balance_demand": "low",
+      "space_need": "small",
+      "summary": "A standing push-up variation that trains pressing strength with low joint load.",
+      "instructions": [
+        "Stand facing a wall and place both hands at chest height.",
+        "Step feet back until the body forms a slight angle.",
+        "Bend elbows to bring the chest toward the wall, then press away."
+      ],
+      "coaching_cues": [
+        {
+          "text": "Keep the body long from head to heels.",
+          "time_seconds": null
+        },
+        {
+          "text": "Move slowly in both directions.",
+          "time_seconds": null
+        },
+        {
+          "text": "Keep shoulders away from ears.",
+          "time_seconds": null
+        }
+      ],
+      "safety_info": "Move closer to the wall to reduce effort.",
+      "review_status": "approved",
+      "review_notes": null,
+      "status": "active",
+      "published_at": "2026-07-15T09:00:00.000Z",
+      "retired_at": null,
+      "color": "#2f7a54"
+    },
+    {
+      "id": "70000000-0000-4000-8000-000000000003",
+      "slug": "band-row",
+      "name": "Band Row",
+      "movement_family_id": "20000000-0000-4000-8000-000000000004",
+      "body_region_id": "10000000-0000-4000-8000-000000000001",
+      "exercise_purpose_id": "30000000-0000-4000-8000-000000000002",
+      "category": "strength",
+      "position": "seated_chair",
+      "impact_level": "none",
+      "complexity_level": "moderate",
+      "intensity_level": "moderate",
+      "balance_demand": "none",
+      "space_need": "small",
+      "summary": "A resistance-band pull that trains upper-back strength and posture.",
+      "instructions": [
+        "Sit tall and hold one end of a resistance band in each hand.",
+        "Anchor the band securely in front of the body.",
+        "Pull elbows back, squeeze shoulder blades gently, then return with control."
+      ],
+      "coaching_cues": [
+        {
+          "text": "Keep wrists straight.",
+          "time_seconds": null
+        },
+        {
+          "text": "Start the pull from the shoulder blades.",
+          "time_seconds": null
+        },
+        {
+          "text": "Avoid leaning backward to finish the rep.",
+          "time_seconds": null
+        }
+      ],
+      "safety_info": "Check that the band is secure before pulling.",
+      "review_status": "needs_review",
+      "review_notes": "Confirm anchoring language before production use.",
+      "status": "draft",
+      "published_at": null,
+      "retired_at": null,
+      "color": "#2f7a54"
+    },
+    {
+      "id": "70000000-0000-4000-8000-000000000004",
+      "slug": "standing-march",
+      "name": "Standing March",
+      "movement_family_id": "20000000-0000-4000-8000-000000000005",
+      "body_region_id": "10000000-0000-4000-8000-000000000004",
+      "exercise_purpose_id": "30000000-0000-4000-8000-000000000003",
+      "category": "conditioning",
+      "position": "standing",
+      "impact_level": "low",
+      "complexity_level": "low",
+      "intensity_level": "moderate",
+      "balance_demand": "moderate",
+      "space_need": "small",
+      "summary": "A simple standing march used to raise heart rate without jumping.",
+      "instructions": [
+        "Stand tall with feet under hips.",
+        "Lift one knee at a time in a comfortable marching rhythm.",
+        "Swing arms naturally or keep hands on a chair for support."
+      ],
+      "coaching_cues": [
+        {
+          "text": "Move at a pace you can control.",
+          "time_seconds": null
+        },
+        {
+          "text": "Keep breathing steady.",
+          "time_seconds": null
+        },
+        {
+          "text": "Use light support if balance feels limited.",
+          "time_seconds": null
+        }
+      ],
+      "safety_info": "Hold a stable surface if balance is uncertain.",
+      "review_status": "approved",
+      "review_notes": null,
+      "status": "active",
+      "published_at": "2026-07-15T09:00:00.000Z",
+      "retired_at": null,
+      "color": "#c1663d"
+    },
+    {
+      "id": "70000000-0000-4000-8000-000000000005",
+      "slug": "dead-bug",
+      "name": "Dead Bug",
+      "movement_family_id": "20000000-0000-4000-8000-000000000006",
+      "body_region_id": "10000000-0000-4000-8000-000000000003",
+      "exercise_purpose_id": "30000000-0000-4000-8000-000000000002",
+      "category": "strength",
+      "position": "supine",
+      "impact_level": "none",
+      "complexity_level": "high",
+      "intensity_level": "moderate",
+      "balance_demand": "none",
+      "space_need": "medium",
+      "summary": "A floor-based core drill that trains trunk stability while arms and legs move.",
+      "instructions": [
+        "Lie on your back with knees bent and arms reaching toward the ceiling.",
+        "Brace gently through the trunk.",
+        "Slowly lower one heel and the opposite arm, then return and switch sides."
+      ],
+      "coaching_cues": [
+        {
+          "text": "Keep the low back quiet against the floor.",
+          "time_seconds": null
+        },
+        {
+          "text": "Move only as far as control allows.",
+          "time_seconds": null
+        },
+        {
+          "text": "Exhale as the arm and leg lower.",
+          "time_seconds": null
+        }
+      ],
+      "safety_info": "Keep feet closer to the floor if the low back arches.",
+      "review_status": "reviewed",
+      "review_notes": "Useful core option, but requires floor access.",
+      "status": "active",
+      "published_at": "2026-07-15T09:00:00.000Z",
+      "retired_at": null,
+      "color": "#2f7a54"
+    },
+    {
+      "id": "70000000-0000-4000-8000-000000000006",
+      "slug": "barbell-squat",
+      "name": "Barbell Squat",
+      "movement_family_id": "20000000-0000-4000-8000-000000000001",
+      "body_region_id": "10000000-0000-4000-8000-000000000002",
+      "exercise_purpose_id": "30000000-0000-4000-8000-000000000002",
+      "category": "strength",
+      "position": "standing",
+      "impact_level": "moderate",
+      "complexity_level": "moderate",
+      "intensity_level": "high",
+      "balance_demand": "moderate",
+      "space_need": "medium",
+      "summary": "A compound barbell squat that trains lower-body strength with a loaded bilateral pattern.",
+      "instructions": [
+        "Stand with your feet shoulder-width apart and maintain a natural arch in your back.",
+        "Grip the bar across your shoulders and support it on your upper back.",
+        "Unrack the bar by straightening your legs, then take a controlled step back.",
+        "Bend your knees and lower until your hips are below your knees while keeping your back position steady.",
+        "Drive through your legs to stand and exhale at the top."
+      ],
+      "coaching_cues": [
+        {
+          "text": "Keep your chest lifted.",
+          "time_seconds": null
+        },
+        {
+          "text": "Brace before each rep.",
+          "time_seconds": null
+        },
+        {
+          "text": "Track knees in line with toes.",
+          "time_seconds": null
+        }
+      ],
+      "safety_info": "Use spotter arms or a rack setup appropriate for loaded squats.",
+      "review_status": "needs_review",
+      "review_notes": "Imported from MuscleWiki sample id 8; review loading guidance before production use.",
+      "status": "draft",
+      "published_at": null,
+      "retired_at": null,
+      "color": "#2f7a54"
+    },
+    {
+      "id": "70000000-0000-4000-8000-000000000007",
+      "slug": "dumbbell-standing-single-arm-twisting-curl",
+      "name": "Dumbbell Standing Single Arm Twisting Curl",
+      "movement_family_id": "20000000-0000-4000-8000-000000000004",
+      "body_region_id": "10000000-0000-4000-8000-000000000001",
+      "exercise_purpose_id": "30000000-0000-4000-8000-000000000002",
+      "category": "strength",
+      "position": "standing",
+      "impact_level": "none",
+      "complexity_level": "low",
+      "intensity_level": "low",
+      "balance_demand": "low",
+      "space_need": "small",
+      "summary": "A single-arm dumbbell curl that rotates the palm toward the shoulder at the top.",
+      "instructions": [
+        "Hold a dumbbell with palm facing inward and arm fully extended.",
+        "Curl upward while rotating the palm to face the shoulder at the top.",
+        "Squeeze the biceps, then lower the dumbbell while rotating back to the start."
+      ],
+      "coaching_cues": [
+        {
+          "text": "Keep the upper arm close to the body.",
+          "time_seconds": null
+        },
+        {
+          "text": "Control the rotation.",
+          "time_seconds": null
+        },
+        {
+          "text": "Avoid swinging the torso.",
+          "time_seconds": null
+        }
+      ],
+      "safety_info": "Use a weight that allows controlled elbow and wrist motion.",
+      "review_status": "needs_review",
+      "review_notes": "Imported from MuscleWiki sample id 1897.",
+      "status": "draft",
+      "published_at": null,
+      "retired_at": null,
+      "color": "#2f7a54"
+    },
+    {
+      "id": "70000000-0000-4000-8000-000000000008",
+      "slug": "abdominals-stretch-variation-two",
+      "name": "Abdominals Stretch Variation Two",
+      "movement_family_id": "20000000-0000-4000-8000-000000000006",
+      "body_region_id": "10000000-0000-4000-8000-000000000003",
+      "exercise_purpose_id": "30000000-0000-4000-8000-000000000004",
+      "category": "mobility",
+      "position": "standing",
+      "impact_level": "none",
+      "complexity_level": "low",
+      "intensity_level": "low",
+      "balance_demand": "low",
+      "space_need": "small",
+      "summary": "A standing abdominal stretch performed by reaching overhead and gently leaning back.",
+      "instructions": [
+        "Stand upright.",
+        "Reach both hands upward until you can interlock your fingers.",
+        "With your hands above your head, lean back until a stretch is felt in the abdominals."
+      ],
+      "coaching_cues": [
+        {
+          "text": "Move slowly into the stretch.",
+          "time_seconds": null
+        },
+        {
+          "text": "Keep breathing steady.",
+          "time_seconds": null
+        },
+        {
+          "text": "Stop before pinching or sharp discomfort.",
+          "time_seconds": null
+        }
+      ],
+      "safety_info": "Avoid forcing the back bend if the low back feels compressed.",
+      "review_status": "needs_review",
+      "review_notes": "Imported from MuscleWiki sample id 161.",
+      "status": "draft",
+      "published_at": null,
+      "retired_at": null,
+      "color": "#3a5da8"
+    },
+    {
+      "id": "70000000-0000-4000-8000-000000000009",
+      "slug": "kettlebell-step-up-double",
+      "name": "Kettlebell Step Up Double",
+      "movement_family_id": "20000000-0000-4000-8000-000000000005",
+      "body_region_id": "10000000-0000-4000-8000-000000000002",
+      "exercise_purpose_id": "30000000-0000-4000-8000-000000000002",
+      "category": "strength",
+      "position": "standing",
+      "impact_level": "moderate",
+      "complexity_level": "moderate",
+      "intensity_level": "moderate",
+      "balance_demand": "high",
+      "space_need": "medium",
+      "summary": "A loaded step-up variation that trains glutes, quads, and single-leg control.",
+      "instructions": [
+        "Stand tall in front of a bench or step while holding a kettlebell.",
+        "Place one foot on the bench.",
+        "Drive through the elevated foot and bring both feet onto the bench.",
+        "Slowly lower back to the starting position.",
+        "Repeat for the planned reps or duration."
+      ],
+      "coaching_cues": [
+        {
+          "text": "Keep the whole foot planted on the bench.",
+          "time_seconds": null
+        },
+        {
+          "text": "Control the lowering phase.",
+          "time_seconds": null
+        },
+        {
+          "text": "Choose a bench height you can step onto without pushing off hard from the floor.",
+          "time_seconds": null
+        }
+      ],
+      "safety_info": "Use a stable bench and reduce load if balance is limited.",
+      "review_status": "needs_review",
+      "review_notes": "Imported from MuscleWiki sample id 1153.",
+      "status": "draft",
+      "published_at": null,
+      "retired_at": null,
+      "color": "#2f7a54"
+    },
+    {
+      "id": "70000000-0000-4000-8000-000000000010",
+      "slug": "bosu-ball-burpee",
+      "name": "Bosu Ball Burpee",
+      "movement_family_id": "20000000-0000-4000-8000-000000000005",
+      "body_region_id": "10000000-0000-4000-8000-000000000004",
+      "exercise_purpose_id": "30000000-0000-4000-8000-000000000003",
+      "category": "conditioning",
+      "position": "standing",
+      "impact_level": "high",
+      "complexity_level": "high",
+      "intensity_level": "high",
+      "balance_demand": "high",
+      "space_need": "medium",
+      "summary": "A high-intensity Bosu burpee combining a squat, plank, push-up, and jump-back transition.",
+      "instructions": [
+        "Stand on the Bosu with feet shoulder-width apart.",
+        "Drop into a squat and place both hands on the Bosu.",
+        "Jump feet back into a plank.",
+        "Perform a push-up, then jump back to the squat position."
+      ],
+      "coaching_cues": [
+        {
+          "text": "Keep transitions controlled.",
+          "time_seconds": null
+        },
+        {
+          "text": "Brace before jumping the feet back.",
+          "time_seconds": null
+        },
+        {
+          "text": "Use a slower step-back version when needed.",
+          "time_seconds": null
+        }
+      ],
+      "safety_info": "Not recommended for users avoiding high impact, wrist load, or unstable surfaces.",
+      "review_status": "needs_review",
+      "review_notes": "Imported from MuscleWiki sample id 791.",
+      "status": "draft",
+      "published_at": null,
+      "retired_at": null,
+      "color": "#c1663d"
+    },
+    {
+      "id": "70000000-0000-4000-8000-000000000011",
+      "slug": "dumbbell-crunch",
+      "name": "Dumbbell Crunch",
+      "movement_family_id": "20000000-0000-4000-8000-000000000006",
+      "body_region_id": "10000000-0000-4000-8000-000000000003",
+      "exercise_purpose_id": "30000000-0000-4000-8000-000000000002",
+      "category": "strength",
+      "position": "supine",
+      "impact_level": "none",
+      "complexity_level": "moderate",
+      "intensity_level": "moderate",
+      "balance_demand": "none",
+      "space_need": "medium",
+      "summary": "A loaded crunch variation that emphasizes abdominal flexion from a supine position.",
+      "instructions": [
+        "Lie flat on your back with feet flat on the floor and knees bent.",
+        "Hold a dumbbell over your clavicle.",
+        "Engage your core and lift your torso until your shoulders are a few inches off the ground.",
+        "Lower back toward the starting position without fully resting between reps."
+      ],
+      "coaching_cues": [
+        {
+          "text": "Curl the ribs toward the pelvis.",
+          "time_seconds": null
+        },
+        {
+          "text": "Keep the neck relaxed.",
+          "time_seconds": null
+        },
+        {
+          "text": "Use a light dumbbell until the pattern is controlled.",
+          "time_seconds": null
+        }
+      ],
+      "safety_info": "Avoid pulling on the neck or using momentum to sit up.",
+      "review_status": "needs_review",
+      "review_notes": "Imported from MuscleWiki sample id 563.",
+      "status": "draft",
+      "published_at": null,
+      "retired_at": null,
+      "color": "#2f7a54"
+    }
+  ],
+  "exercise_muscles": [
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000001",
+      "muscle_id": "40000000-0000-4000-8000-000000000001",
+      "role": "primary"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000001",
+      "muscle_id": "40000000-0000-4000-8000-000000000002",
+      "role": "secondary"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000002",
+      "muscle_id": "40000000-0000-4000-8000-000000000004",
+      "role": "primary"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000003",
+      "muscle_id": "40000000-0000-4000-8000-000000000005",
+      "role": "primary"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000004",
+      "muscle_id": "40000000-0000-4000-8000-000000000002",
+      "role": "secondary"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000005",
+      "muscle_id": "40000000-0000-4000-8000-000000000006",
+      "role": "primary"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000006",
+      "muscle_id": "40000000-0000-4000-8000-000000000001",
+      "role": "primary"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000006",
+      "muscle_id": "40000000-0000-4000-8000-000000000002",
+      "role": "secondary"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000007",
+      "muscle_id": "40000000-0000-4000-8000-000000000007",
+      "role": "primary"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000008",
+      "muscle_id": "40000000-0000-4000-8000-000000000006",
+      "role": "primary"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000008",
+      "muscle_id": "40000000-0000-4000-8000-000000000008",
+      "role": "primary"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000009",
+      "muscle_id": "40000000-0000-4000-8000-000000000002",
+      "role": "primary"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000009",
+      "muscle_id": "40000000-0000-4000-8000-000000000001",
+      "role": "primary"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000010",
+      "muscle_id": "40000000-0000-4000-8000-000000000002",
+      "role": "primary"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000010",
+      "muscle_id": "40000000-0000-4000-8000-000000000001",
+      "role": "primary"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000011",
+      "muscle_id": "40000000-0000-4000-8000-000000000006",
+      "role": "primary"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000011",
+      "muscle_id": "40000000-0000-4000-8000-000000000009",
+      "role": "primary"
+    }
+  ],
+  "exercise_equipment": [
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000001",
+      "equipment_id": "50000000-0000-4000-8000-000000000002",
+      "requirement_type": "required"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000002",
+      "equipment_id": "50000000-0000-4000-8000-000000000001",
+      "requirement_type": "required"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000003",
+      "equipment_id": "50000000-0000-4000-8000-000000000003",
+      "requirement_type": "required"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000004",
+      "equipment_id": "50000000-0000-4000-8000-000000000001",
+      "requirement_type": "required"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000005",
+      "equipment_id": "50000000-0000-4000-8000-000000000004",
+      "requirement_type": "comfort_optional"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000006",
+      "equipment_id": "50000000-0000-4000-8000-000000000005",
+      "requirement_type": "required"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000007",
+      "equipment_id": "50000000-0000-4000-8000-000000000006",
+      "requirement_type": "required"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000008",
+      "equipment_id": "50000000-0000-4000-8000-000000000001",
+      "requirement_type": "required"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000009",
+      "equipment_id": "50000000-0000-4000-8000-000000000007",
+      "requirement_type": "required"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000009",
+      "equipment_id": "50000000-0000-4000-8000-000000000009",
+      "requirement_type": "required"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000010",
+      "equipment_id": "50000000-0000-4000-8000-000000000008",
+      "requirement_type": "required"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000011",
+      "equipment_id": "50000000-0000-4000-8000-000000000006",
+      "requirement_type": "required"
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000011",
+      "equipment_id": "50000000-0000-4000-8000-000000000004",
+      "requirement_type": "comfort_optional"
+    }
+  ],
+  "exercise_constraints": [
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000001",
+      "constraint_id": "60000000-0000-4000-8000-000000000001",
+      "level": "moderate",
+      "editor_notes": "Reduce depth or use higher chair when needed."
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000002",
+      "constraint_id": "60000000-0000-4000-8000-000000000002",
+      "level": "low",
+      "editor_notes": "Wall angle keeps wrist load relatively low."
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000004",
+      "constraint_id": "60000000-0000-4000-8000-000000000004",
+      "level": "moderate",
+      "editor_notes": "Offer chair support for balance."
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000005",
+      "constraint_id": "60000000-0000-4000-8000-000000000003",
+      "level": "high",
+      "editor_notes": "Requires floor access."
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000006",
+      "constraint_id": "60000000-0000-4000-8000-000000000001",
+      "level": "moderate",
+      "editor_notes": "Loaded squat depth can be knee-sensitive."
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000009",
+      "constraint_id": "60000000-0000-4000-8000-000000000004",
+      "level": "high",
+      "editor_notes": "Loaded step-up has high balance demand."
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000010",
+      "constraint_id": "60000000-0000-4000-8000-000000000002",
+      "level": "high",
+      "editor_notes": "Burpee position places load through the wrists."
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000010",
+      "constraint_id": "60000000-0000-4000-8000-000000000004",
+      "level": "high",
+      "editor_notes": "Bosu surface and fast transitions require significant balance."
+    },
+    {
+      "exercise_id": "70000000-0000-4000-8000-000000000011",
+      "constraint_id": "60000000-0000-4000-8000-000000000003",
+      "level": "high",
+      "editor_notes": "Requires floor access."
+    }
+  ],
+  "exercise_media": [
+    {
+      "id": "80000000-0000-4000-8000-000000000001",
+      "exercise_id": "70000000-0000-4000-8000-000000000001",
+      "media_type": "reference_link",
+      "url": "https://example.com/media/chair-squat",
+      "version": "standard",
+      "view_angle": "side",
+      "is_primary": true,
+      "source": "internal-placeholder",
+      "rights_status": "unknown",
+      "external_media_id": null,
+      "notes": "Placeholder URL for development."
+    },
+    {
+      "id": "80000000-0000-4000-8000-000000000002",
+      "exercise_id": "70000000-0000-4000-8000-000000000002",
+      "media_type": "reference_link",
+      "url": "https://example.com/media/wall-push-up",
+      "version": "standard",
+      "view_angle": "three_quarter",
+      "is_primary": true,
+      "source": "internal-placeholder",
+      "rights_status": "unknown",
+      "external_media_id": null,
+      "notes": "Placeholder URL for development."
+    },
+    {
+      "id": "80000000-0000-4000-8000-000000000003",
+      "exercise_id": "70000000-0000-4000-8000-000000000006",
+      "media_type": "video",
+      "url": "https://api.musclewiki.com/stream/videos/branded/male-Barbell-barbell-squat-front.mp4",
+      "version": "reference",
+      "view_angle": "front",
+      "is_primary": true,
+      "source": "MuscleWiki",
+      "rights_status": "reference_only",
+      "external_media_id": "musclewiki-8-male-front",
+      "notes": "Reference video from MuscleWiki sample data."
+    },
+    {
+      "id": "80000000-0000-4000-8000-000000000004",
+      "exercise_id": "70000000-0000-4000-8000-000000000006",
+      "media_type": "video",
+      "url": "https://api.musclewiki.com/stream/videos/branded/male-Barbell-barbell-squat-side.mp4",
+      "version": "reference",
+      "view_angle": "side",
+      "is_primary": false,
+      "source": "MuscleWiki",
+      "rights_status": "reference_only",
+      "external_media_id": "musclewiki-8-male-side",
+      "notes": "Reference video from MuscleWiki sample data."
+    },
+    {
+      "id": "80000000-0000-4000-8000-000000000005",
+      "exercise_id": "70000000-0000-4000-8000-000000000007",
+      "media_type": "video",
+      "url": "https://api.musclewiki.com/stream/videos/branded/male-Dumbbells-dumbbell-standing-single-arm-twisting-curl-front.mp4",
+      "version": "reference",
+      "view_angle": "front",
+      "is_primary": true,
+      "source": "MuscleWiki",
+      "rights_status": "reference_only",
+      "external_media_id": "musclewiki-1897-male-front",
+      "notes": "Reference video from MuscleWiki sample data."
+    },
+    {
+      "id": "80000000-0000-4000-8000-000000000006",
+      "exercise_id": "70000000-0000-4000-8000-000000000007",
+      "media_type": "video",
+      "url": "https://api.musclewiki.com/stream/videos/branded/male-Dumbbells-dumbbell-standing-single-arm-twisting-curl-side.mp4",
+      "version": "reference",
+      "view_angle": "side",
+      "is_primary": false,
+      "source": "MuscleWiki",
+      "rights_status": "reference_only",
+      "external_media_id": "musclewiki-1897-male-side",
+      "notes": "Reference video from MuscleWiki sample data."
+    },
+    {
+      "id": "80000000-0000-4000-8000-000000000007",
+      "exercise_id": "70000000-0000-4000-8000-000000000008",
+      "media_type": "video",
+      "url": "https://api.musclewiki.com/stream/videos/branded/male-abdominals-stretch-variation-2-front.mp4",
+      "version": "reference",
+      "view_angle": "front",
+      "is_primary": true,
+      "source": "MuscleWiki",
+      "rights_status": "reference_only",
+      "external_media_id": "musclewiki-161-male-front",
+      "notes": "Reference video from MuscleWiki sample data."
+    },
+    {
+      "id": "80000000-0000-4000-8000-000000000008",
+      "exercise_id": "70000000-0000-4000-8000-000000000008",
+      "media_type": "video",
+      "url": "https://api.musclewiki.com/stream/videos/branded/male-abdominals-stretch-variation-2-side.mp4",
+      "version": "reference",
+      "view_angle": "side",
+      "is_primary": false,
+      "source": "MuscleWiki",
+      "rights_status": "reference_only",
+      "external_media_id": "musclewiki-161-male-side",
+      "notes": "Reference video from MuscleWiki sample data."
+    },
+    {
+      "id": "80000000-0000-4000-8000-000000000009",
+      "exercise_id": "70000000-0000-4000-8000-000000000009",
+      "media_type": "video",
+      "url": "https://api.musclewiki.com/stream/videos/branded/male-Kettlebells-kettlebell-step-up-double-front.mp4",
+      "version": "reference",
+      "view_angle": "front",
+      "is_primary": true,
+      "source": "MuscleWiki",
+      "rights_status": "reference_only",
+      "external_media_id": "musclewiki-1153-male-front",
+      "notes": "Reference video from MuscleWiki sample data."
+    },
+    {
+      "id": "80000000-0000-4000-8000-000000000010",
+      "exercise_id": "70000000-0000-4000-8000-000000000009",
+      "media_type": "video",
+      "url": "https://api.musclewiki.com/stream/videos/branded/male-Kettlebells-kettlebell-step-up-double-side.mp4",
+      "version": "reference",
+      "view_angle": "side",
+      "is_primary": false,
+      "source": "MuscleWiki",
+      "rights_status": "reference_only",
+      "external_media_id": "musclewiki-1153-male-side",
+      "notes": "Reference video from MuscleWiki sample data."
+    },
+    {
+      "id": "80000000-0000-4000-8000-000000000011",
+      "exercise_id": "70000000-0000-4000-8000-000000000010",
+      "media_type": "video",
+      "url": "https://api.musclewiki.com/stream/videos/branded/male-Bosu-Ball-bosu-ball-burpee-front.mp4",
+      "version": "reference",
+      "view_angle": "front",
+      "is_primary": true,
+      "source": "MuscleWiki",
+      "rights_status": "reference_only",
+      "external_media_id": "musclewiki-791-male-front",
+      "notes": "Reference video from MuscleWiki sample data."
+    },
+    {
+      "id": "80000000-0000-4000-8000-000000000012",
+      "exercise_id": "70000000-0000-4000-8000-000000000010",
+      "media_type": "video",
+      "url": "https://api.musclewiki.com/stream/videos/branded/male-Bosu-Ball-bosu-ball-burpee-side.mp4",
+      "version": "reference",
+      "view_angle": "side",
+      "is_primary": false,
+      "source": "MuscleWiki",
+      "rights_status": "reference_only",
+      "external_media_id": "musclewiki-791-male-side",
+      "notes": "Reference video from MuscleWiki sample data."
+    },
+    {
+      "id": "80000000-0000-4000-8000-000000000013",
+      "exercise_id": "70000000-0000-4000-8000-000000000011",
+      "media_type": "video",
+      "url": "https://api.musclewiki.com/stream/videos/branded/male-dumbbell-crunch-front.mp4",
+      "version": "reference",
+      "view_angle": "front",
+      "is_primary": true,
+      "source": "MuscleWiki",
+      "rights_status": "reference_only",
+      "external_media_id": "musclewiki-563-male-front",
+      "notes": "Reference video from MuscleWiki sample data."
+    },
+    {
+      "id": "80000000-0000-4000-8000-000000000014",
+      "exercise_id": "70000000-0000-4000-8000-000000000011",
+      "media_type": "video",
+      "url": "https://api.musclewiki.com/stream/videos/branded/male-dumbbell-crunch-side.mp4",
+      "version": "reference",
+      "view_angle": "side",
+      "is_primary": false,
+      "source": "MuscleWiki",
+      "rights_status": "reference_only",
+      "external_media_id": "musclewiki-563-male-side",
+      "notes": "Reference video from MuscleWiki sample data."
+    }
+  ],
+  "variant_ladders": [
+    {
+      "id": "81000000-0000-4000-8000-000000000001",
+      "slug": "squat-foundation-ladder",
+      "movement_family_id": "20000000-0000-4000-8000-000000000001",
+      "name": "Squat Foundation Ladder",
+      "description": "A simple ladder for moving from supported squatting toward more demanding squat patterns.",
+      "status": "active",
+      "review_notes": "POC ladder for testing exercise variants."
+    },
+    {
+      "id": "81000000-0000-4000-8000-000000000002",
+      "slug": "core-control-ladder",
+      "movement_family_id": "20000000-0000-4000-8000-000000000006",
+      "name": "Core Control Ladder",
+      "description": "A small progression path for floor-based trunk control exercises.",
+      "status": "draft",
+      "review_notes": null
+    }
+  ],
+  "variant_ladder_items": [
+    {
+      "variant_ladder_id": "81000000-0000-4000-8000-000000000001",
+      "exercise_id": "70000000-0000-4000-8000-000000000001",
+      "position": 1,
+      "is_default_anchor": true,
+      "editor_notes": "Default supported squat option."
+    },
+    {
+      "variant_ladder_id": "81000000-0000-4000-8000-000000000001",
+      "exercise_id": "70000000-0000-4000-8000-000000000009",
+      "position": 2,
+      "is_default_anchor": false,
+      "editor_notes": "More demanding step-up option for lower-body progression."
+    },
+    {
+      "variant_ladder_id": "81000000-0000-4000-8000-000000000002",
+      "exercise_id": "70000000-0000-4000-8000-000000000005",
+      "position": 1,
+      "is_default_anchor": true,
+      "editor_notes": "Default core-control anchor."
+    },
+    {
+      "variant_ladder_id": "81000000-0000-4000-8000-000000000002",
+      "exercise_id": "70000000-0000-4000-8000-000000000011",
+      "position": 2,
+      "is_default_anchor": false,
+      "editor_notes": "Loaded option for users who tolerate floor work."
+    }
+  ],
+  "exercise_variants": [
+    {
+      "id": "82000000-0000-4000-8000-000000000001",
+      "from_exercise_id": "70000000-0000-4000-8000-000000000001",
+      "to_exercise_id": "70000000-0000-4000-8000-000000000009",
+      "variant_type": "progression",
+      "sort_order": 1,
+      "notes": "Step-up can be reviewed as a more demanding lower-body alternative."
+    },
+    {
+      "id": "82000000-0000-4000-8000-000000000002",
+      "from_exercise_id": "70000000-0000-4000-8000-000000000005",
+      "to_exercise_id": "70000000-0000-4000-8000-000000000011",
+      "variant_type": "progression",
+      "sort_order": 1,
+      "notes": "Loaded crunch is a higher-demand trunk option."
+    },
+    {
+      "id": "82000000-0000-4000-8000-000000000003",
+      "from_exercise_id": "70000000-0000-4000-8000-000000000004",
+      "to_exercise_id": "70000000-0000-4000-8000-000000000001",
+      "variant_type": "related",
+      "sort_order": 2,
+      "notes": "Both are beginner-friendly standing lower-body patterns."
+    }
+  ],
+  "workouts": [
+    {
+      "id": "90000000-0000-4000-8000-000000000001",
+      "slug": "new-user-foundation",
+      "name": "New User Foundation",
+      "description": "A gentle full-body session using low-impact exercises and simple equipment.",
+      "version_number": 1,
+      "previous_version_id": null,
+      "published_at": "2026-07-15T09:00:00.000Z",
+      "transition_seconds": 15,
+      "is_new_user_friendly": true,
+      "difficulty_band": "gentle",
+      "status": "active",
+      "review_notes": "Seed workout for local development."
+    },
+    {
+      "id": "90000000-0000-4000-8000-000000000002",
+      "slug": "quick-strength-circuit",
+      "name": "Quick Strength Circuit",
+      "description": "A short strength-focused session for users who can handle light resistance.",
+      "version_number": 1,
+      "previous_version_id": null,
+      "published_at": null,
+      "transition_seconds": 10,
+      "is_new_user_friendly": false,
+      "difficulty_band": "standard",
+      "status": "draft",
+      "review_notes": null
+    }
+  ],
+  "workout_groups": [
+    {
+      "id": "91000000-0000-4000-8000-000000000001",
+      "workout_id": "90000000-0000-4000-8000-000000000001",
+      "group_order": 1,
+      "name": "Warm Up",
+      "repeat_count": 1,
+      "notes": "Start easy and build rhythm."
+    },
+    {
+      "id": "91000000-0000-4000-8000-000000000002",
+      "workout_id": "90000000-0000-4000-8000-000000000001",
+      "group_order": 2,
+      "name": "Main Circuit",
+      "repeat_count": 2,
+      "notes": "Rest as needed between movements."
+    },
+    {
+      "id": "91000000-0000-4000-8000-000000000003",
+      "workout_id": "90000000-0000-4000-8000-000000000002",
+      "group_order": 1,
+      "name": "Strength Block",
+      "repeat_count": 3,
+      "notes": null
+    }
+  ],
+  "workout_slots": [
+    {
+      "id": "92000000-0000-4000-8000-000000000001",
+      "workout_group_id": "91000000-0000-4000-8000-000000000001",
+      "slot_order": 1,
+      "exercise_id": "70000000-0000-4000-8000-000000000004",
+      "exercise_purpose_id": "30000000-0000-4000-8000-000000000001",
+      "duration_seconds": 45,
+      "notes": "Keep the pace conversational."
+    },
+    {
+      "id": "92000000-0000-4000-8000-000000000002",
+      "workout_group_id": "91000000-0000-4000-8000-000000000002",
+      "slot_order": 1,
+      "exercise_id": "70000000-0000-4000-8000-000000000001",
+      "exercise_purpose_id": "30000000-0000-4000-8000-000000000002",
+      "duration_seconds": 40,
+      "notes": "Use chair height to control difficulty."
+    },
+    {
+      "id": "92000000-0000-4000-8000-000000000003",
+      "workout_group_id": "91000000-0000-4000-8000-000000000002",
+      "slot_order": 2,
+      "exercise_id": "70000000-0000-4000-8000-000000000002",
+      "exercise_purpose_id": "30000000-0000-4000-8000-000000000002",
+      "duration_seconds": 40,
+      "notes": "Step closer to the wall if needed."
+    },
+    {
+      "id": "92000000-0000-4000-8000-000000000004",
+      "workout_group_id": "91000000-0000-4000-8000-000000000003",
+      "slot_order": 1,
+      "exercise_id": "70000000-0000-4000-8000-000000000003",
+      "exercise_purpose_id": "30000000-0000-4000-8000-000000000002",
+      "duration_seconds": 45,
+      "notes": "Use light band tension."
+    },
+    {
+      "id": "92000000-0000-4000-8000-000000000005",
+      "workout_group_id": "91000000-0000-4000-8000-000000000003",
+      "slot_order": 2,
+      "exercise_id": "70000000-0000-4000-8000-000000000005",
+      "exercise_purpose_id": "30000000-0000-4000-8000-000000000002",
+      "duration_seconds": 45,
+      "notes": "Keep the range small at first."
+    }
+  ]
+}

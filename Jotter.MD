@@ -246,3 +246,200 @@ resources:
 ```
 
 now this will create our application for the database when we push to gihub and argocd takes charge
+Push the code to github and lets argocd take charge and deploy the database to be used by the backend
+
+once the code is pushed to github, lets verify our db is been deployed
+
+- `k get cluster daily8-postgres -n daily8-dev -w` - we check the cluster for the postgres that we are creating and we watch it until the cluster is ready
+
+if everything goes well up to this time, then we should have this results:
+
+```yaml
+kwakurichie@k8s-master:~/Documents/Daily8$ k get cluster daily8-postgres -n daily8-dev -w
+NAME              AGE   INSTANCES   READY   STATUS               PRIMARY
+daily8-postgres   82s   1                   Setting up primary
+daily8-postgres   83s   1                   Setting up primary
+daily8-postgres   86s   1                   Waiting for the instances to become active
+daily8-postgres   89s   1                   Waiting for the instances to become active   daily8-postgres-1
+daily8-postgres   90s   1                   Waiting for the instances to become active   daily8-postgres-1
+daily8-postgres   106s   1           1       Waiting for the instances to become active   daily8-postgres-1
+daily8-postgres   107s   1           1       Waiting for the instances to become active   daily8-postgres-1
+daily8-postgres   112s   1           1       Cluster in healthy state                     daily8-postgres-1
+daily8-postgres   2m11s   1           1       Cluster in healthy state                     daily8-postgres-1
+```
+
+### Redis setup
+
+The next phase is to setup redis for caching in our application
+
+- create folder to host the redis yaml
+  `mkdir -p k8s/base/redis`
+
+- create the secrets for the redis auth
+  `k8s/base/redis/secret.yml`
+
+  ```yaml
+  apiVersion: v1
+  kind: Secret
+  metadata:
+  name: daily8-redis-auth
+  type: Opaque
+  stringData:
+  password: CHANGE_ME_TO_A_STRONG_REDIS_PASSWORD
+  ```
+
+- create the deployment base file for redis
+  `touch k8s/base/redis/deployment.yml`
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: daily8-redis
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: redis
+
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: redis
+
+    spec:
+      containers:
+        - name: redis
+          image: redis:7.4-alpine
+          imagePullPolicy: IfNotPresent
+
+          command:
+            - redis-server
+
+          args:
+            - --appendonly
+            - "yes"
+            - --requirepass
+            - "$(REDIS_PASSWORD)"
+
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: daily8-redis-auth
+                  key: password
+
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - redis-cli -a "$REDIS_PASSWORD" ping
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - redis-cli -a "$REDIS_PASSWORD" ping
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+
+      volumes:
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: daily8-redis-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: daily8-redis-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+
+  storageClassName: local-path
+
+  resources:
+    requests:
+      storage: 1Gi
+```
+
+- create the redis service for the redis deployment
+  `k8s/base/redis/service.yml`
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: daily8-redis
+spec:
+  type: ClusterIP
+
+  selector:
+    app.kubernetes.io/component: redis
+
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: redis
+      protocol: TCP
+```
+
+so now we will have the data for the redis connection for our backend
+
+```yaml
+REDIS_HOST=daily8-redis
+REDIS_PORT=6379
+REDIS_PASSWORD=CHANGE_ME_TO_A_STRONG_REDIS_PASSWORD
+```
+
+- create the kustomization file for the redis
+- `k8s/base/redis/kustomization.yml`
+
+```yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - secret.yml
+  - deployment.yml
+  - service.yml
+```
+
+Now we will update the base with the redis kuztomization
+Update
+`k8s/base/kustomization.yml`
+
+```yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - postgres
+  - redis
+```

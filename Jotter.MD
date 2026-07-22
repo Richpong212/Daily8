@@ -142,3 +142,107 @@ commonLabels:
 this will push the code to the dev and then we can move on to the next phase
 
 - Ensure you have github permission to get the code onto the server
+- now on the server clone the repo onto the server
+
+## Check if everything worked by running the kuztomize command: also ensure you have kuztomize on your web server to manage k8s resources
+
+- `kubectl kustomize k8s/argocd`
+
+We should see nothing if everything works fine..
+
+### Apply the argocd manually for the first time to ensure that we have to watch our applications
+
+- `kubectl apply -k k8s/argocd`
+
+Now we should see the results
+
+```yaml
+aily8$ kubectl apply -k k8s/argocd Warning: metadata.finalizers: "resources-finalizer.argocd.argoproj.io": prefer a domain-qualified finalizer name including a path (/) to avoid accidental conflicts with other finalizer writers application.argoproj.io/daily8-dev created
+```
+
+normal warming nothing to really worry about.
+
+### PS: also ensure you already have argocd working in your cluster and authenticated with github
+
+### now check if the argocd app is ready
+
+`k get application daily8-dev -n argocd`
+
+### Creating the Database for backend application
+
+- Ensure you have CloudNativePG already installed in your cluster and configured. This is going to help us managed our database.
+
+#### we will now create the secrets for the database credentials.
+
+- create the postgres folder
+  `mkdir -p k8s/base/postgres`
+
+- Next we will create the file to define our password
+  `k8s/base/postgres/owner-secret.yml`
+  `yaml`
+
+  ```yaml
+  apiVersion: v1
+  kind: Secret
+  metadata:
+  name: daily8-dev-db-owner
+  labels:
+    cnpg.io/reload: "true"
+  type: kubernetes.io/basic-auth
+  stringData:
+  username: daily8_user
+  password: CHANGE_ME_TO_A_STRONG_PASSWORD
+  ```
+
+  so now you can change the password and the username to a name of your choice.
+  To get a strong password, you can generate password using this command
+  `openssl rand -base64 32`
+  - Create the CloudNativePG cluster for the database
+    `k8s/base/postgres/cluster.yml`
+
+  ```yaml
+  apiVersion: postgresql.cnpg.io/v1
+  kind: Cluster
+  metadata:
+  name: daily8-postgres
+  spec:
+  instances: 1
+
+  imageName: ghcr.io/cloudnative-pg/postgresql:16
+
+  bootstrap:
+    initdb:
+      database: daily8_dev
+      owner: daily8_user
+      secret:
+        name: daily8-dev-db-owner
+
+  storage:
+    size: 5Gi
+    storageClass: local-path
+  ```
+
+- create the kuztomization file for the postgreSQL
+  `k8s/base/postgres/kustomization.yml`
+
+```yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - owner-secret.yml
+  - cluster.yml
+```
+
+- So no in the base folder we are going to first add our first kuztomize resources.
+  so now the kustomization.yml becomes like this
+
+```yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - postgres
+```
+
+now this will create our application for the database when we push to gihub and argocd takes charge

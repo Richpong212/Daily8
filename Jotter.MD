@@ -131,4 +131,14 @@ commonLabels:
   app.kubernetes.io/managed-by: argocd
 ```
 
-##
+## NOW, lets create the github repo and then push our code to the main branch...
+
+- onece down we also create a new branch called `dev`
+- git checkout -b dev
+- git add .
+- git commit -m dev-initiated
+- git push -u origin dev
+
+this will push the code to the dev and then we can move on to the next phase
+
+- Ensure you have github permission to get the code onto the server

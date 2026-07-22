@@ -443,3 +443,104 @@ resources:
   - postgres
   - redis
 ```
+
+- Network Policies
+  Now we are going to creat the network policies for the applications.
+  `mkdir -p k8s/base/network-policies`
+
+- Lets deny all network traffic
+  `k8s/base/network-policies/default-deny-ingress.yml`
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: daily8-default-deny-ingress
+spec:
+  podSelector: {}
+
+  policyTypes:
+    - Ingress
+```
+
+- Allow communication between backend and postgresDB
+- `k8s/base/network-policies/allow-backend-to-postgres.yml`
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-daily8-backend-to-postgres
+spec:
+  podSelector:
+    matchLabels:
+      cnpg.io/cluster: daily8-postgres
+
+  policyTypes:
+    - Ingress
+
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: daily8
+              app.kubernetes.io/component: daily8-backend
+
+      ports:
+        - protocol: TCP
+          port: 5432
+```
+
+- Allow communication between backend and redis
+- `k8s/base/network-policies/allow-daily8-backend-to-redis.yml`
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-daily8-backend-to-redis
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: daily8
+      app.kubernetes.io/component: daily8-redis
+
+  policyTypes:
+    - Ingress
+
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: daily8
+              app.kubernetes.io/component: daily8-backend
+
+      ports:
+        - protocol: TCP
+          port: 6379
+```
+
+- Now we create the kuztomization file for the network policy
+  `k8s/base/network-policies/kustomization.yml`
+
+```yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - default-deny-ingress.yml
+  - allow-daily8-backend-to-postgres.yml
+  - allow-daily8-backend-to-redis.yml
+```
+
+- Now update the `k8s/base/kustomization.yml` file with the new network policy
+
+```yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - postgres
+  - redis
+  - network-policies
+```

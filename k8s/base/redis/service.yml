@@ -6,7 +6,8 @@ spec:
   type: ClusterIP
 
   selector:
-    app.kubernetes.io/component: redis
+    app.kubernetes.io/name: daily8
+    app.kubernetes.io/component: daily8-redis
 
   ports:
     - name: redis

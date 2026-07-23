@@ -6,14 +6,14 @@ on:
       - dev
     paths:
       - "backend/**"
-      - ".github/workflows/backend-ci.yml"
+      - ".github/workflows/backend-ci-dev.yml"
 
   pull_request:
     branches:
       - dev
     paths:
       - "backend/**"
-      - ".github/workflows/backend-ci.yml"
+      - ".github/workflows/backend-ci-dev.yml"
 
 concurrency:
   group: daily8-backend-${{ github.ref }}

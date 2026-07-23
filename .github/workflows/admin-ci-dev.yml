@@ -5,14 +5,14 @@ on:
     branches:
       - dev
     paths:
-      - "client/**"
-      - ".github/workflows/admin-ci.yml"
+      - "admin/**"
+      - ".github/workflows/admin-ci-dev.yml"
 
   pull_request:
     branches:
       - dev
     paths:
-      - "client/**"
+      - "admin/**"
       - ".github/workflows/admin-ci.yml"
 
 concurrency:
@@ -29,8 +29,8 @@ env:
   IMAGE_TAG: ${{ github.sha }}
   YARN_VERSION: 4.9.4
 
-  BUILD_CONTEXT: ./client
-  DOCKERFILE_PATH: ./client/Dockerfile.client
+  BUILD_CONTEXT: ./admin
+  DOCKERFILE_PATH: ./admin/Dockerfile.admin
   KUSTOMIZATION_PATH: k8s/overlays/dev/kustomization.yml
 
 jobs:
@@ -47,7 +47,7 @@ jobs:
         with:
           node-version: 24
           cache: yarn
-          cache-dependency-path: client/yarn.lock
+          cache-dependency-path: admin/yarn.lock
 
       - name: Enable Corepack
         run: |
@@ -55,11 +55,11 @@ jobs:
           corepack prepare yarn@${YARN_VERSION} --activate
 
       - name: Install client dependencies
-        working-directory: client
+        working-directory: admin
         run: yarn install --immutable
 
       - name: Run client checks
-        working-directory: client
+        working-directory: admin
         run: yarn check
 
   dependency-scan:
@@ -76,7 +76,7 @@ jobs:
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: fs
-          scan-ref: client
+          scan-ref: admin
           scanners: vuln,secret
           format: table
           severity: CRITICAL,HIGH

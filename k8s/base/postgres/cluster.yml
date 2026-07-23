@@ -1,0 +1,19 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: daily8-postgres
+spec:
+  instances: 1
+
+  imageName: ghcr.io/cloudnative-pg/postgresql:16
+
+  bootstrap:
+    initdb:
+      database: daily8_dev
+      owner: daily8_user
+      secret:
+        name: daily8-dev-db-owner
+
+  storage:
+    size: 5Gi
+    storageClass: local-path

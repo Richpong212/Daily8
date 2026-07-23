@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: daily8-admin
+  labels:
+    app.kubernetes.io/name: daily8
+    app.kubernetes.io/component: daily8-admin
+
+spec:
+  type: ClusterIP
+
+  selector:
+    app.kubernetes.io/name: daily8
+    app.kubernetes.io/component: daily8-admin
+
+  ports:
+    - name: http
+      port: 3004
+      targetPort: http
+      protocol: TCP

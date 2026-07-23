@@ -6,7 +6,17 @@ namespace: daily8-dev
 resources:
   - ../../base
 
-commonLabels:
-  app.kubernetes.io/name: daily8
-  app.kubernetes.io/environment: dev
-  app.kubernetes.io/managed-by: argocd
+labels:
+  - pairs:
+      app.kubernetes.io/name: daily8
+      app.kubernetes.io/environment: dev
+      app.kubernetes.io/managed-by: argocd
+
+images:
+  - name: daily8-backend-image
+    newName: ghcr.io/richpong212/daily8/backend
+    newTag: REPLACE_WITH_COMMIT_SHA
+
+  - name: daily8-admin-image
+    newName: ghcr.io/richpong212/daily8/admin
+    newTag: ADMIN_COMMIT_SHA

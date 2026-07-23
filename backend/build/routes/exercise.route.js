@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const exercise_controller_1 = require("../controllers/exercise.controller");
+const exercise_validation_1 = require("../validations/exercise.validation");
+const index_validation_1 = require("../validations/index.validation");
+const cache_utils_1 = require("../utils/cache.utils");
+const exerciseRouter = (0, express_1.Router)();
+exerciseRouter.get("/", (0, cache_utils_1.cacheResponse)("exercises", 120), exercise_controller_1.listExercises);
+exerciseRouter.get("/:id", (0, cache_utils_1.cacheResponse)("exercises", 120), exercise_controller_1.getExercise);
+exerciseRouter.post("/", exercise_validation_1.createExerciseValidation, index_validation_1.validate, exercise_controller_1.createExercise);
+exerciseRouter.patch("/:id", exercise_validation_1.updateExerciseValidation, index_validation_1.validate, exercise_controller_1.updateExercise);
+exerciseRouter.delete("/:id", exercise_controller_1.deleteExercise);
+exports.default = exerciseRouter;

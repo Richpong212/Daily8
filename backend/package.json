@@ -2,6 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "index.js",
+  "packageManager": "yarn@4.9.4",
   "scripts": {
     "devinstall": "yarn add $(cat requirement.txt) && yarn add $(cat dev-requirements.txt) --dev",
     "dev-start": "nodemon src/index.ts",

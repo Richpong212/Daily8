@@ -1,18 +1,58 @@
-FROM node:18-alpine
+# syntax=docker/dockerfile:1.7
+
+FROM node:24-alpine AS deps
 
 WORKDIR /backend
 
-COPY package*.json ./
+COPY package.json yarn.lock .yarnrc.yml ./
 
+RUN corepack enable
+RUN yarn install --immutable
+
+
+FROM node:24-alpine AS builder
+
+WORKDIR /backend
+
+COPY --from=deps /backend/node_modules ./node_modules
 COPY . .
 
-#install yarn
-RUN npm install -g yarn --force
-
-RUN yarn install
-
-EXPOSE 5004
-
+RUN corepack enable
 RUN yarn build
 
-CMD ["yarn", "start"]
+
+FROM node:24-alpine AS runner
+
+WORKDIR /backend
+
+ENV NODE_ENV=production
+
+# Create non-root user
+RUN addgroup -S appgroup \
+    && adduser -S appuser -G appgroup
+
+COPY package.json yarn.lock .yarnrc.yml ./
+
+RUN corepack enable
+RUN yarn workspaces focus --production
+
+# Remove package managers from final runtime image
+RUN rm -rf \
+    /usr/local/lib/node_modules/npm \
+    /usr/local/bin/npm \
+    /usr/local/bin/npx \
+    /usr/local/lib/node_modules/corepack \
+    /usr/local/bin/corepack \
+    /usr/local/bin/yarn \
+    /usr/local/bin/yarnpkg
+
+COPY --from=builder \
+    --chown=appuser:appgroup \
+    /backend/build \
+    ./build
+
+USER appuser
+
+EXPOSE 5010
+
+CMD ["node", "build/index.js"]

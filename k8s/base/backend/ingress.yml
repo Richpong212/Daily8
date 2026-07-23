@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: daily8-backend
+  labels:
+    app.kubernetes.io/name: daily8
+    app.kubernetes.io/component: daily8-backend
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-cloudflare
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+
+spec:
+  ingressClassName: nginx
+
+  tls:
+    - hosts:
+        - daily8-api.richpong.com
+      secretName: daily8-api-richpong-com-tls
+
+  rules:
+    - host: daily8-api.richpong.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: daily8-backend
+                port:
+                  number: 5010

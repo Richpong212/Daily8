@@ -5,3 +5,4 @@ resources:
   - default-deny-ingress.yml
   - allow-daily8-backend-to-postgres.yml
   - allow-daily8-backend-to-redis.yml
+  - allow-ingress-nginx-to-daily8-admin.yml

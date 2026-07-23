@@ -72,9 +72,13 @@ export const appConfig = {
     globalRateLimitMax: numberFromEnv(process.env.GLOBAL_RATE_LIMIT_MAX, 100),
   },
   redis: {
-    host: process.env.REDIS_HOST,
+    host: process.env.REDIS_HOST || "localhost",
     port: numberFromEnv(process.env.REDIS_PORT, 6379),
-    password: process.env.REDIS_PASSWORD,
+    password:
+      process.env.REDIS_PASSWORD &&
+      process.env.REDIS_PASSWORD !== "your_redis_password"
+        ? process.env.REDIS_PASSWORD
+        : undefined,
   },
   db: {
     db_name: process.env.POSTGRES_DB,

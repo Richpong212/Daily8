@@ -10,6 +10,7 @@
     "start": "yarn build && NODE_ENV=production node build/index.js",
     "lint": "eslint src/**/*.ts ",
     "lint:watch": "chokidar 'src/**/*.ts' -c 'yarn lint'",
+    "check": "yarn lint && tsc --noEmit",
     "build": "tsc"
   },
   "keywords": [],

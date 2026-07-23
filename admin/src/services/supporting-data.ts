@@ -1,0 +1,315 @@
+import { useEffect, useSyncExternalStore } from "react";
+import axios from "axios";
+import type {
+  BodyRegion,
+  Constraint,
+  Equipment,
+  ExercisePurpose,
+  MovementFamily,
+  Muscle,
+  VariantLadder,
+} from "@/types";
+
+type SupportingData = {
+  movementFamilies: MovementFamily[];
+  bodyRegions: BodyRegion[];
+  exercisePurposes: ExercisePurpose[];
+  muscles: Muscle[];
+  equipment: Equipment[];
+  constraints: Constraint[];
+  variantLadders: VariantLadder[];
+};
+
+type SupportingDataResponse = {
+  message: string;
+  data: SupportingData;
+};
+
+type ItemResponse<T> = {
+  message: string;
+  data: T;
+};
+
+type CreatePayload<T> = Omit<T, "id" | "slug">;
+
+const supportingDataApi = axios.create({
+  baseURL: "/api/v1/supporting-data",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+let supportingData: SupportingData = {
+  movementFamilies: [],
+  bodyRegions: [],
+  exercisePurposes: [],
+  muscles: [],
+  equipment: [],
+  constraints: [],
+  variantLadders: [],
+};
+let loadPromise: Promise<SupportingData> | null = null;
+const listeners = new Set<() => void>();
+
+const notify = () => {
+  listeners.forEach((listener) => listener());
+};
+
+const subscribe = (listener: () => void) => {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+};
+
+const setSupportingData = (next: SupportingData) => {
+  supportingData = next;
+  notify();
+};
+
+const getApiErrorMessage = (error: unknown): string => {
+  if (axios.isAxiosError(error)) {
+    const data = error.response?.data as { message?: string } | undefined;
+    return data?.message ?? error.message;
+  }
+
+  return error instanceof Error ? error.message : "API request failed";
+};
+
+const loadSupportingData = async (): Promise<SupportingData> => {
+  if (!loadPromise) {
+    loadPromise = supportingDataApi
+      .get<SupportingDataResponse>("/")
+      .then((response) => {
+        const next = response.data.data;
+        setSupportingData(next);
+        return next;
+      })
+      .catch((error) => {
+        loadPromise = null;
+        throw new Error(getApiErrorMessage(error));
+      });
+  }
+
+  return loadPromise;
+};
+
+const useSupportingData = <T>(selector: (data: SupportingData) => T): T => {
+  const snapshot = useSyncExternalStore(
+    subscribe,
+    () => selector(supportingData),
+    () => selector(supportingData),
+  );
+
+  useEffect(() => {
+    void loadSupportingData().catch((error) => {
+      console.error(error);
+    });
+  }, []);
+
+  return snapshot;
+};
+
+const upsertItem = <K extends keyof SupportingData>(
+  key: K,
+  item: SupportingData[K][number],
+) => {
+  const rows = supportingData[key] as SupportingData[K][number][];
+  const exists = rows.some((row) => row.id === item.id);
+  setSupportingData({
+    ...supportingData,
+    [key]: exists
+      ? rows.map((row) => (row.id === item.id ? item : row))
+      : [...rows, item],
+  });
+};
+
+const removeItem = <K extends keyof SupportingData>(key: K, id: string) => {
+  const rows = supportingData[key] as SupportingData[K][number][];
+  setSupportingData({
+    ...supportingData,
+    [key]: rows.filter((row) => row.id !== id),
+  });
+};
+
+const createItem = async <T>(
+  resource: string,
+  data: Omit<T, "id">,
+): Promise<T> => {
+  try {
+    const response = await supportingDataApi.post<ItemResponse<T>>(resource, data);
+    return response.data.data;
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error));
+  }
+};
+
+const updateItem = async <T>(
+  resource: string,
+  id: string,
+  patch: Partial<T>,
+): Promise<T> => {
+  try {
+    const response = await supportingDataApi.patch<ItemResponse<T>>(
+      `${resource}/${id}`,
+      patch,
+    );
+    return response.data.data;
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error));
+  }
+};
+
+const deleteItem = async (resource: string, id: string): Promise<void> => {
+  try {
+    await supportingDataApi.delete(`${resource}/${id}`);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error));
+  }
+};
+
+export const useMovementFamilies = () => useSupportingData((data) => data.movementFamilies);
+export const useBodyRegions = () => useSupportingData((data) => data.bodyRegions);
+export const useExercisePurposes = () => useSupportingData((data) => data.exercisePurposes);
+export const useMuscles = () => useSupportingData((data) => data.muscles);
+export const useEquipment = () => useSupportingData((data) => data.equipment);
+export const useConstraints = () => useSupportingData((data) => data.constraints);
+export const useVariantLadders = () => useSupportingData((data) => data.variantLadders);
+
+export const getMovementFamily = (id: string | null | undefined) => {
+  return id ? supportingData.movementFamilies.find((item) => item.id === id) : undefined;
+};
+
+export const getBodyRegion = (id: string | null | undefined) => {
+  return id ? supportingData.bodyRegions.find((item) => item.id === id) : undefined;
+};
+
+export const getPurpose = (id: string | null | undefined) => {
+  return id ? supportingData.exercisePurposes.find((item) => item.id === id) : undefined;
+};
+
+export const getMuscle = (id: string | null | undefined) => {
+  return id ? supportingData.muscles.find((item) => item.id === id) : undefined;
+};
+
+export const getEquipmentItem = (id: string | null | undefined) => {
+  return id ? supportingData.equipment.find((item) => item.id === id) : undefined;
+};
+
+export const getConstraint = (id: string | null | undefined) => {
+  return id ? supportingData.constraints.find((item) => item.id === id) : undefined;
+};
+
+export const getLadder = (id: string | null | undefined) => {
+  return id ? supportingData.variantLadders.find((item) => item.id === id) : undefined;
+};
+
+export const createMovementFamily = async (data: CreatePayload<MovementFamily>) => {
+  const item = await createItem<MovementFamily>("movement-families", data);
+  upsertItem("movementFamilies", item);
+  return item;
+};
+
+export const updateMovementFamily = async (id: string, patch: Partial<MovementFamily>) => {
+  const item = await updateItem<MovementFamily>("movement-families", id, patch);
+  upsertItem("movementFamilies", item);
+};
+
+export const deleteMovementFamily = async (id: string) => {
+  await deleteItem("movement-families", id);
+  removeItem("movementFamilies", id);
+};
+
+export const createBodyRegion = async (data: CreatePayload<BodyRegion>) => {
+  const item = await createItem<BodyRegion>("body-regions", data);
+  upsertItem("bodyRegions", item);
+  return item;
+};
+
+export const updateBodyRegion = async (id: string, patch: Partial<BodyRegion>) => {
+  const item = await updateItem<BodyRegion>("body-regions", id, patch);
+  upsertItem("bodyRegions", item);
+};
+
+export const deleteBodyRegion = async (id: string) => {
+  await deleteItem("body-regions", id);
+  removeItem("bodyRegions", id);
+};
+
+export const createPurpose = async (data: CreatePayload<ExercisePurpose>) => {
+  const item = await createItem<ExercisePurpose>("exercise-purposes", data);
+  upsertItem("exercisePurposes", item);
+  return item;
+};
+
+export const updatePurpose = async (id: string, patch: Partial<ExercisePurpose>) => {
+  const item = await updateItem<ExercisePurpose>("exercise-purposes", id, patch);
+  upsertItem("exercisePurposes", item);
+};
+
+export const deletePurpose = async (id: string) => {
+  await deleteItem("exercise-purposes", id);
+  removeItem("exercisePurposes", id);
+};
+
+export const createMuscle = async (data: CreatePayload<Muscle>) => {
+  const item = await createItem<Muscle>("muscles", data);
+  upsertItem("muscles", item);
+  return item;
+};
+
+export const updateMuscle = async (id: string, patch: Partial<Muscle>) => {
+  const item = await updateItem<Muscle>("muscles", id, patch);
+  upsertItem("muscles", item);
+};
+
+export const deleteMuscle = async (id: string) => {
+  await deleteItem("muscles", id);
+  removeItem("muscles", id);
+};
+
+export const createEquipment = async (data: CreatePayload<Equipment>) => {
+  const item = await createItem<Equipment>("equipment", data);
+  upsertItem("equipment", item);
+  return item;
+};
+
+export const updateEquipment = async (id: string, patch: Partial<Equipment>) => {
+  const item = await updateItem<Equipment>("equipment", id, patch);
+  upsertItem("equipment", item);
+};
+
+export const deleteEquipment = async (id: string) => {
+  await deleteItem("equipment", id);
+  removeItem("equipment", id);
+};
+
+export const createConstraint = async (data: CreatePayload<Constraint>) => {
+  const item = await createItem<Constraint>("constraints", data);
+  upsertItem("constraints", item);
+  return item;
+};
+
+export const updateConstraint = async (id: string, patch: Partial<Constraint>) => {
+  const item = await updateItem<Constraint>("constraints", id, patch);
+  upsertItem("constraints", item);
+};
+
+export const deleteConstraint = async (id: string) => {
+  await deleteItem("constraints", id);
+  removeItem("constraints", id);
+};
+
+export const createVariantLadder = async (data: CreatePayload<VariantLadder>) => {
+  const item = await createItem<VariantLadder>("variant-ladders", data);
+  upsertItem("variantLadders", item);
+  return item;
+};
+
+export const updateVariantLadder = async (id: string, patch: Partial<VariantLadder>) => {
+  const item = await updateItem<VariantLadder>("variant-ladders", id, patch);
+  upsertItem("variantLadders", item);
+};
+
+export const deleteVariantLadder = async (id: string) => {
+  await deleteItem("variant-ladders", id);
+  removeItem("variantLadders", id);
+};

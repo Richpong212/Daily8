@@ -39,13 +39,21 @@ export function Sidebar() {
         </div>
         <div className="leading-tight">
           <div className="text-sm font-semibold">Daily 8</div>
-          <div className="font-mono text-[10px] uppercase tracking-wider text-sidebar-foreground/60">CMS v1</div>
+          <div className="font-mono text-[10px] uppercase tracking-wider text-sidebar-foreground/60">
+            CMS v1
+          </div>
         </div>
       </div>
 
       <nav className="mt-2 flex-1 space-y-1 px-3">
         {primaryNav.map((item) => (
-          <NavItem key={item.to} to={item.to} icon={<item.icon className="h-4 w-4" />} label={item.label} end={item.end} />
+          <NavItem
+            key={item.to}
+            to={item.to}
+            icon={<item.icon className="h-4 w-4" />}
+            label={item.label}
+            end={item.end}
+          />
         ))}
 
         <button

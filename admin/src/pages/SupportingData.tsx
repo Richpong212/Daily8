@@ -59,7 +59,9 @@ export default function SupportingDataLayout() {
     <div>
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <div className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Reference Data</div>
+          <div className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+            Reference Data
+          </div>
           <h1 className="mt-1 text-3xl font-bold">Supporting Data</h1>
         </div>
       </div>
@@ -71,7 +73,9 @@ export default function SupportingDataLayout() {
             to={t.to}
             className={({ isActive }) =>
               `px-3 py-2 text-sm transition ${
-                isActive ? "border-b-2 border-primary font-medium text-primary" : "text-muted-foreground hover:text-foreground"
+                isActive
+                  ? "border-b-2 border-primary font-medium text-primary"
+                  : "text-muted-foreground hover:text-foreground"
               }`
             }
           >
@@ -113,7 +117,10 @@ function EditableTable<T extends Row>({
   return (
     <div>
       <div className="mb-3 flex justify-end">
-        <button onClick={onCreate} className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:opacity-90">
+        <button
+          onClick={onCreate}
+          className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:opacity-90"
+        >
           <Plus className="h-4 w-4" />
           {createLabel}
         </button>
@@ -129,20 +136,31 @@ function EditableTable<T extends Row>({
         {rows.map((r) => {
           const isEditing = editingId === r.id;
           return (
-            <div key={r.id} className="grid grid-cols-[1.2fr_1fr_2fr_100px] items-center gap-4 border-b border-border px-5 py-3 last:border-0 hover:bg-muted/40">
+            <div
+              key={r.id}
+              className="grid grid-cols-[1.2fr_1fr_2fr_100px] items-center gap-4 border-b border-border px-5 py-3 last:border-0 hover:bg-muted/40"
+            >
               <div>
                 {isEditing ? (
-                  <input value={(draft.name as string) ?? r.name} onChange={(e) => setDraft({ ...draft, name: e.target.value as T["name"] })} className="w-full rounded border border-border bg-card px-2 py-1 text-sm" />
+                  <input
+                    value={(draft.name as string) ?? r.name}
+                    onChange={(e) => setDraft({ ...draft, name: e.target.value as T["name"] })}
+                    className="w-full rounded border border-border bg-card px-2 py-1 text-sm"
+                  />
                 ) : (
                   <span className="font-medium">{r.name}</span>
                 )}
               </div>
-              <div className="font-mono text-xs text-muted-foreground">
-                {r.slug}
-              </div>
+              <div className="font-mono text-xs text-muted-foreground">{r.slug}</div>
               <div className="text-sm text-muted-foreground">
                 {isEditing ? (
-                  <input value={(draft.description as string) ?? r.description ?? ""} onChange={(e) => setDraft({ ...draft, description: e.target.value as T["description"] })} className="w-full rounded border border-border bg-card px-2 py-1 text-sm" />
+                  <input
+                    value={(draft.description as string) ?? r.description ?? ""}
+                    onChange={(e) =>
+                      setDraft({ ...draft, description: e.target.value as T["description"] })
+                    }
+                    className="w-full rounded border border-border bg-card px-2 py-1 text-sm"
+                  />
                 ) : (
                   r.description
                 )}
@@ -150,16 +168,35 @@ function EditableTable<T extends Row>({
               <div className="flex items-center justify-end gap-1">
                 {isEditing ? (
                   <>
-                    <button onClick={() => { onUpdate(r.id, draft); setEditingId(null); setDraft({}); }} className="rounded p-1 text-success-foreground hover:bg-success/40">
+                    <button
+                      onClick={() => {
+                        onUpdate(r.id, draft);
+                        setEditingId(null);
+                        setDraft({});
+                      }}
+                      className="rounded p-1 text-success-foreground hover:bg-success/40"
+                    >
                       <Check className="h-4 w-4" />
                     </button>
-                    <button onClick={() => { setEditingId(null); setDraft({}); }} className="rounded p-1 text-muted-foreground hover:bg-muted">
+                    <button
+                      onClick={() => {
+                        setEditingId(null);
+                        setDraft({});
+                      }}
+                      className="rounded p-1 text-muted-foreground hover:bg-muted"
+                    >
                       <X className="h-4 w-4" />
                     </button>
                   </>
                 ) : (
                   <>
-                    <button onClick={() => { setEditingId(r.id); setDraft({}); }} className="rounded p-1 text-muted-foreground hover:text-foreground">
+                    <button
+                      onClick={() => {
+                        setEditingId(r.id);
+                        setDraft({});
+                      }}
+                      className="rounded p-1 text-muted-foreground hover:text-foreground"
+                    >
                       <Pencil className="h-3.5 w-3.5" />
                     </button>
                     <AlertDialog>
@@ -192,7 +229,9 @@ function EditableTable<T extends Row>({
             </div>
           );
         })}
-        {rows.length === 0 && <div className="p-6 text-center text-sm text-muted-foreground">No entries yet.</div>}
+        {rows.length === 0 && (
+          <div className="p-6 text-center text-sm text-muted-foreground">No entries yet.</div>
+        )}
       </div>
     </div>
   );
@@ -209,7 +248,9 @@ export function MovementFamiliesPage() {
         { key: "actions", label: "Actions" },
       ]}
       rows={rows}
-      onCreate={() => createMovementFamily({ name: "New Family", description: "", sort_order: rows.length + 1 })}
+      onCreate={() =>
+        createMovementFamily({ name: "New Family", description: "", sort_order: rows.length + 1 })
+      }
       onUpdate={updateMovementFamily}
       onDelete={deleteMovementFamily}
     />
@@ -227,7 +268,9 @@ export function BodyRegionsPage() {
         { key: "actions", label: "Actions" },
       ]}
       rows={rows}
-      onCreate={() => createBodyRegion({ name: "New Region", description: "", sort_order: rows.length + 1 })}
+      onCreate={() =>
+        createBodyRegion({ name: "New Region", description: "", sort_order: rows.length + 1 })
+      }
       onUpdate={updateBodyRegion}
       onDelete={deleteBodyRegion}
     />
@@ -245,7 +288,9 @@ export function ExercisePurposesPage() {
         { key: "actions", label: "Actions" },
       ]}
       rows={rows}
-      onCreate={() => createPurpose({ name: "New Purpose", description: "", sort_order: rows.length + 1 })}
+      onCreate={() =>
+        createPurpose({ name: "New Purpose", description: "", sort_order: rows.length + 1 })
+      }
       onUpdate={updatePurpose}
       onDelete={deletePurpose}
     />
@@ -263,8 +308,13 @@ export function MusclesPage() {
         { key: "description", label: "Body Region" },
         { key: "actions", label: "Actions" },
       ]}
-      rows={rows.map((m) => ({ ...m, description: bodyRegions.find((region) => region.id === m.body_region_id)?.name ?? "" }))}
-      onCreate={() => createMuscle({ name: "New Muscle", body_region_id: bodyRegions[0]?.id ?? "" })}
+      rows={rows.map((m) => ({
+        ...m,
+        description: bodyRegions.find((region) => region.id === m.body_region_id)?.name ?? "",
+      }))}
+      onCreate={() =>
+        createMuscle({ name: "New Muscle", body_region_id: bodyRegions[0]?.id ?? "" })
+      }
       onUpdate={updateMuscle}
       onDelete={deleteMuscle}
     />
@@ -282,7 +332,9 @@ export function EquipmentPage() {
         { key: "actions", label: "Actions" },
       ]}
       rows={rows}
-      onCreate={() => createEquipment({ name: "New Equipment", description: "", sort_order: rows.length + 1 })}
+      onCreate={() =>
+        createEquipment({ name: "New Equipment", description: "", sort_order: rows.length + 1 })
+      }
       onUpdate={updateEquipment}
       onDelete={deleteEquipment}
     />
@@ -300,7 +352,14 @@ export function ConstraintsPage() {
         { key: "actions", label: "Actions" },
       ]}
       rows={rows}
-      onCreate={() => createConstraint({ name: "New Constraint", description: "", category: "body_area", sort_order: rows.length + 1 })}
+      onCreate={() =>
+        createConstraint({
+          name: "New Constraint",
+          description: "",
+          category: "body_area",
+          sort_order: rows.length + 1,
+        })
+      }
       onUpdate={updateConstraint}
       onDelete={deleteConstraint}
     />
@@ -315,7 +374,15 @@ export function VariantLaddersPage() {
     <div>
       <div className="mb-3 flex justify-end">
         <button
-          onClick={() => createVariantLadder({ movement_family_id: movementFamilies[0]?.id ?? null, name: "New Ladder", description: "", status: "draft", items: [] })}
+          onClick={() =>
+            createVariantLadder({
+              movement_family_id: movementFamilies[0]?.id ?? null,
+              name: "New Ladder",
+              description: "",
+              status: "draft",
+              items: [],
+            })
+          }
           className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:opacity-90"
         >
           <Plus className="h-4 w-4" />
@@ -342,7 +409,9 @@ export function VariantLaddersPage() {
               <div className="flex items-center gap-2">
                 <select
                   value={l.status}
-                  onChange={(e) => updateVariantLadder(l.id, { status: e.target.value as typeof l.status })}
+                  onChange={(e) =>
+                    updateVariantLadder(l.id, { status: e.target.value as typeof l.status })
+                  }
                   className="rounded border border-border bg-card px-2 py-1 text-xs"
                 >
                   <option value="draft">Draft</option>
@@ -383,7 +452,10 @@ export function VariantLaddersPage() {
                 .map((item, idx) => {
                   const ex = exercises.find((e) => e.id === item.exercise_id);
                   return (
-                    <div key={item.exercise_id} className="flex items-center gap-3 rounded-md border border-border bg-background px-3 py-2">
+                    <div
+                      key={item.exercise_id}
+                      className="flex items-center gap-3 rounded-md border border-border bg-background px-3 py-2"
+                    >
                       <span className="font-mono text-xs text-muted-foreground">{idx + 1}</span>
                       <span className="flex-1 text-sm">{ex?.name ?? "Unknown"}</span>
                       <label className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -392,7 +464,11 @@ export function VariantLaddersPage() {
                           checked={item.is_default_anchor}
                           onChange={(e) => {
                             updateVariantLadder(l.id, {
-                              items: l.items.map((x) => ({ ...x, is_default_anchor: x.exercise_id === item.exercise_id ? e.target.checked : false })),
+                              items: l.items.map((x) => ({
+                                ...x,
+                                is_default_anchor:
+                                  x.exercise_id === item.exercise_id ? e.target.checked : false,
+                              })),
                             });
                           }}
                         />
@@ -401,7 +477,9 @@ export function VariantLaddersPage() {
                       <button
                         onClick={() =>
                           updateVariantLadder(l.id, {
-                            items: l.items.filter((x) => x.exercise_id !== item.exercise_id).map((x, i) => ({ ...x, position: i + 1 })),
+                            items: l.items
+                              .filter((x) => x.exercise_id !== item.exercise_id)
+                              .map((x, i) => ({ ...x, position: i + 1 })),
                           })
                         }
                         className="text-muted-foreground hover:text-destructive"
@@ -416,7 +494,14 @@ export function VariantLaddersPage() {
                 onChange={(e) => {
                   if (e.target.value) {
                     updateVariantLadder(l.id, {
-                      items: [...l.items, { exercise_id: e.target.value, position: l.items.length + 1, is_default_anchor: false }],
+                      items: [
+                        ...l.items,
+                        {
+                          exercise_id: e.target.value,
+                          position: l.items.length + 1,
+                          is_default_anchor: false,
+                        },
+                      ],
                     });
                   }
                 }}
@@ -426,7 +511,9 @@ export function VariantLaddersPage() {
                 {exercises
                   .filter((e) => !l.items.some((i) => i.exercise_id === e.id))
                   .map((e) => (
-                    <option key={e.id} value={e.id}>{e.name}</option>
+                    <option key={e.id} value={e.id}>
+                      {e.name}
+                    </option>
                   ))}
               </select>
             </div>

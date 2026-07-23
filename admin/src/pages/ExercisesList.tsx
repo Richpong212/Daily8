@@ -2,7 +2,12 @@ import { useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Plus, Search } from "lucide-react";
 import { createExerciseDraft, useExercises } from "@/services/exercises";
-import { useMovementFamilies, useBodyRegions, getBodyRegion, getMovementFamily } from "@/services/supporting-data";
+import {
+  useMovementFamilies,
+  useBodyRegions,
+  getBodyRegion,
+  getMovementFamily,
+} from "@/services/supporting-data";
 import { StatusBadge, ReviewBadge } from "@/components/StatusBadge";
 import { ExerciseTile } from "@/components/ExerciseTile";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +20,9 @@ export default function ExercisesList() {
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<string>("all");
   const [family, setFamily] = useState<string>("all");
-  const [review, setReview] = useState<string>(params.get("filter") === "needs_review" ? "needs_review" : "all");
+  const [review, setReview] = useState<string>(
+    params.get("filter") === "needs_review" ? "needs_review" : "all",
+  );
   const navigate = useNavigate();
 
   const filtered = useMemo(() => {
@@ -32,7 +39,9 @@ export default function ExercisesList() {
     <div>
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <div className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Content Library</div>
+          <div className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+            Content Library
+          </div>
           <h1 className="mt-1 text-3xl font-bold">Exercises</h1>
           <div className="mt-1 text-sm text-muted-foreground">
             {exercises.length} exercises in library
@@ -69,7 +78,9 @@ export default function ExercisesList() {
         <Select value={family} onChange={setFamily}>
           <option value="all">All Families</option>
           {families.map((f) => (
-            <option key={f.id} value={f.id}>{f.name}</option>
+            <option key={f.id} value={f.id}>
+              {f.name}
+            </option>
           ))}
         </Select>
         <Select value={review} onChange={setReview}>
@@ -83,7 +94,9 @@ export default function ExercisesList() {
 
       <div className="divide-y divide-border rounded-lg border border-border bg-card">
         {filtered.length === 0 && (
-          <div className="p-6 text-center text-sm text-muted-foreground">No exercises match your filters.</div>
+          <div className="p-6 text-center text-sm text-muted-foreground">
+            No exercises match your filters.
+          </div>
         )}
         {filtered.map((e) => {
           const family = getMovementFamily(e.movement_family_id);
@@ -110,7 +123,9 @@ export default function ExercisesList() {
           );
         })}
       </div>
-      <div className="mt-3 text-xs text-muted-foreground">{bodyRegions.length} body regions available</div>
+      <div className="mt-3 text-xs text-muted-foreground">
+        {bodyRegions.length} body regions available
+      </div>
     </div>
   );
 }

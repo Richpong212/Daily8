@@ -108,17 +108,12 @@ const useSupportingData = <T>(selector: (data: SupportingData) => T): T => {
   return snapshot;
 };
 
-const upsertItem = <K extends keyof SupportingData>(
-  key: K,
-  item: SupportingData[K][number],
-) => {
+const upsertItem = <K extends keyof SupportingData>(key: K, item: SupportingData[K][number]) => {
   const rows = supportingData[key] as SupportingData[K][number][];
   const exists = rows.some((row) => row.id === item.id);
   setSupportingData({
     ...supportingData,
-    [key]: exists
-      ? rows.map((row) => (row.id === item.id ? item : row))
-      : [...rows, item],
+    [key]: exists ? rows.map((row) => (row.id === item.id ? item : row)) : [...rows, item],
   });
 };
 
@@ -130,10 +125,7 @@ const removeItem = <K extends keyof SupportingData>(key: K, id: string) => {
   });
 };
 
-const createItem = async <T>(
-  resource: string,
-  data: Omit<T, "id">,
-): Promise<T> => {
+const createItem = async <T>(resource: string, data: CreatePayload<T>): Promise<T> => {
   try {
     const response = await supportingDataApi.post<ItemResponse<T>>(resource, data);
     return response.data.data;
@@ -142,16 +134,9 @@ const createItem = async <T>(
   }
 };
 
-const updateItem = async <T>(
-  resource: string,
-  id: string,
-  patch: Partial<T>,
-): Promise<T> => {
+const updateItem = async <T>(resource: string, id: string, patch: Partial<T>): Promise<T> => {
   try {
-    const response = await supportingDataApi.patch<ItemResponse<T>>(
-      `${resource}/${id}`,
-      patch,
-    );
+    const response = await supportingDataApi.patch<ItemResponse<T>>(`${resource}/${id}`, patch);
     return response.data.data;
   } catch (error) {
     throw new Error(getApiErrorMessage(error));

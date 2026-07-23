@@ -63,7 +63,9 @@ export default function ExerciseEditor() {
   if (!ex) {
     return (
       <div>
-        <Link to="/exercises" className="text-sm text-muted-foreground hover:underline">← Back to Exercises</Link>
+        <Link to="/exercises" className="text-sm text-muted-foreground hover:underline">
+          ← Back to Exercises
+        </Link>
         <div className="mt-6 text-lg">Exercise not found.</div>
       </div>
     );
@@ -77,7 +79,10 @@ export default function ExerciseEditor() {
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Link to="/exercises" className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+          <Link
+            to="/exercises"
+            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+          >
             <ChevronLeft className="h-4 w-4" />
             Exercises
           </Link>
@@ -176,7 +181,11 @@ export default function ExerciseEditor() {
 
             <div className="mt-4 grid grid-cols-2 gap-4">
               <Field label="Category">
-                <select className={selectCls} value={ex.category} onChange={(e) => patch({ category: e.target.value as typeof ex.category })}>
+                <select
+                  className={selectCls}
+                  value={ex.category}
+                  onChange={(e) => patch({ category: e.target.value as typeof ex.category })}
+                >
                   <option value="strength">Strength</option>
                   <option value="mobility">Mobility</option>
                   <option value="conditioning">Conditioning</option>
@@ -184,9 +193,24 @@ export default function ExerciseEditor() {
                 </select>
               </Field>
               <Field label="Position">
-                <select className={selectCls} value={ex.position} onChange={(e) => patch({ position: e.target.value as typeof ex.position })}>
-                  {["standing", "seated_chair", "seated_floor", "supine", "prone", "quadruped", "kneeling", "side_lying"].map((p) => (
-                    <option key={p} value={p}>{p.replace(/_/g, " ")}</option>
+                <select
+                  className={selectCls}
+                  value={ex.position}
+                  onChange={(e) => patch({ position: e.target.value as typeof ex.position })}
+                >
+                  {[
+                    "standing",
+                    "seated_chair",
+                    "seated_floor",
+                    "supine",
+                    "prone",
+                    "quadruped",
+                    "kneeling",
+                    "side_lying",
+                  ].map((p) => (
+                    <option key={p} value={p}>
+                      {p.replace(/_/g, " ")}
+                    </option>
                   ))}
                 </select>
               </Field>
@@ -194,20 +218,35 @@ export default function ExerciseEditor() {
                 <LevelSelect value={ex.impact_level} onChange={(v) => patch({ impact_level: v })} />
               </Field>
               <Field label="Space Need">
-                <select className={selectCls} value={ex.space_need} onChange={(e) => patch({ space_need: e.target.value as "small" | "medium" | "large" })}>
+                <select
+                  className={selectCls}
+                  value={ex.space_need}
+                  onChange={(e) =>
+                    patch({ space_need: e.target.value as "small" | "medium" | "large" })
+                  }
+                >
                   <option value="small">Small</option>
                   <option value="medium">Medium</option>
                   <option value="large">Large</option>
                 </select>
               </Field>
               <Field label="Complexity">
-                <LevelSelect value={ex.complexity_level} onChange={(v) => patch({ complexity_level: v })} />
+                <LevelSelect
+                  value={ex.complexity_level}
+                  onChange={(v) => patch({ complexity_level: v })}
+                />
               </Field>
               <Field label="Intensity">
-                <LevelSelect value={ex.intensity_level} onChange={(v) => patch({ intensity_level: v })} />
+                <LevelSelect
+                  value={ex.intensity_level}
+                  onChange={(v) => patch({ intensity_level: v })}
+                />
               </Field>
               <Field label="Balance Demand">
-                <LevelSelect value={ex.balance_demand} onChange={(v) => patch({ balance_demand: v })} />
+                <LevelSelect
+                  value={ex.balance_demand}
+                  onChange={(v) => patch({ balance_demand: v })}
+                />
               </Field>
             </div>
           </Card>
@@ -227,7 +266,9 @@ export default function ExerciseEditor() {
             <div className="space-y-2">
               {ex.instructions.map((step, i) => (
                 <div key={i} className="flex items-center gap-2">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium">{i + 1}</span>
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium">
+                    {i + 1}
+                  </span>
                   <input
                     className={inputCls}
                     value={step}
@@ -238,7 +279,9 @@ export default function ExerciseEditor() {
                     }}
                   />
                   <button
-                    onClick={() => patch({ instructions: ex.instructions.filter((_, x) => x !== i) })}
+                    onClick={() =>
+                      patch({ instructions: ex.instructions.filter((_, x) => x !== i) })
+                    }
                     className="p-1.5 text-muted-foreground hover:text-destructive"
                   >
                     <X className="h-4 w-4" />
@@ -276,7 +319,8 @@ export default function ExerciseEditor() {
               </span>
             </div>
             <div className="mt-1 mb-3 text-xs text-muted-foreground">
-              Set a playback time to trigger each cue during the exercise. Voice playback will be added later.
+              Set a playback time to trigger each cue during the exercise. Voice playback will be
+              added later.
             </div>
             <div className="space-y-2">
               {ex.coaching_cues.map((cue, i) => (
@@ -299,14 +343,19 @@ export default function ExerciseEditor() {
                       placeholder="—"
                       onChange={(e) => {
                         const next = [...ex.coaching_cues];
-                        next[i] = { ...next[i], time_seconds: e.target.value === "" ? null : Number(e.target.value) };
+                        next[i] = {
+                          ...next[i],
+                          time_seconds: e.target.value === "" ? null : Number(e.target.value),
+                        };
                         patch({ coaching_cues: next });
                       }}
                       className="w-full bg-transparent outline-none"
                     />
                   </div>
                   <button
-                    onClick={() => patch({ coaching_cues: ex.coaching_cues.filter((_, x) => x !== i) })}
+                    onClick={() =>
+                      patch({ coaching_cues: ex.coaching_cues.filter((_, x) => x !== i) })
+                    }
                     className="p-1.5 text-muted-foreground hover:text-destructive"
                   >
                     <X className="h-4 w-4" />
@@ -314,7 +363,9 @@ export default function ExerciseEditor() {
                 </div>
               ))}
               <button
-                onClick={() => patch({ coaching_cues: [...ex.coaching_cues, { text: "", time_seconds: null }] })}
+                onClick={() =>
+                  patch({ coaching_cues: [...ex.coaching_cues, { text: "", time_seconds: null }] })
+                }
                 className="flex items-center gap-1 text-sm text-primary hover:underline"
               >
                 <Plus className="h-3.5 w-3.5" /> Add Cue
@@ -344,12 +395,19 @@ export default function ExerciseEditor() {
                 <Play className="h-6 w-6 text-muted-foreground" />
               </div>
             </div>
-            <div className="mt-2 text-center text-xs text-muted-foreground">Side view · Primary</div>
+            <div className="mt-2 text-center text-xs text-muted-foreground">
+              Side view · Primary
+            </div>
             <div className="mt-3 grid grid-cols-3 gap-2">
               {["Front Video", "Side Video", "Thumbnail"].map((label, i) => (
-                <div key={label} className="relative flex h-16 items-center justify-center rounded-md bg-muted text-[10px] text-muted-foreground">
+                <div
+                  key={label}
+                  className="relative flex h-16 items-center justify-center rounded-md bg-muted text-[10px] text-muted-foreground"
+                >
                   {i === 1 || i === 2 ? (
-                    <span className="absolute right-1 top-1 rounded-sm bg-primary px-1 py-0.5 text-[9px] font-semibold text-primary-foreground">Primary</span>
+                    <span className="absolute right-1 top-1 rounded-sm bg-primary px-1 py-0.5 text-[9px] font-semibold text-primary-foreground">
+                      Primary
+                    </span>
                   ) : null}
                   {label}
                 </div>
@@ -363,26 +421,44 @@ export default function ExerciseEditor() {
           <Card>
             <SectionLabel>Classification</SectionLabel>
             <RelField label="Movement Family">
-              <select className={selectCls} value={ex.movement_family_id ?? ""} onChange={(e) => patch({ movement_family_id: e.target.value || null })}>
+              <select
+                className={selectCls}
+                value={ex.movement_family_id ?? ""}
+                onChange={(e) => patch({ movement_family_id: e.target.value || null })}
+              >
                 <option value="">- Select movement family -</option>
                 {families.map((f) => (
-                  <option key={f.id} value={f.id}>{f.name}</option>
+                  <option key={f.id} value={f.id}>
+                    {f.name}
+                  </option>
                 ))}
               </select>
             </RelField>
             <RelField label="Body Region">
-              <select className={selectCls} value={ex.body_region_id ?? ""} onChange={(e) => patch({ body_region_id: e.target.value || null })}>
+              <select
+                className={selectCls}
+                value={ex.body_region_id ?? ""}
+                onChange={(e) => patch({ body_region_id: e.target.value || null })}
+              >
                 <option value="">- Select body region -</option>
                 {regions.map((r) => (
-                  <option key={r.id} value={r.id}>{r.name}</option>
+                  <option key={r.id} value={r.id}>
+                    {r.name}
+                  </option>
                 ))}
               </select>
             </RelField>
             <RelField label="Primary Purpose">
-              <select className={selectCls} value={ex.exercise_purpose_id ?? ""} onChange={(e) => patch({ exercise_purpose_id: e.target.value || null })}>
+              <select
+                className={selectCls}
+                value={ex.exercise_purpose_id ?? ""}
+                onChange={(e) => patch({ exercise_purpose_id: e.target.value || null })}
+              >
                 <option value="">— None —</option>
                 {purposes.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name}</option>
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
                 ))}
               </select>
             </RelField>
@@ -391,7 +467,10 @@ export default function ExerciseEditor() {
           {/* Constraints */}
           <Card>
             <div className="flex items-center justify-between">
-              <SectionLabel>Constraints <span className="ml-1 text-xs text-muted-foreground">{ex.constraints.length}</span></SectionLabel>
+              <SectionLabel>
+                Constraints{" "}
+                <span className="ml-1 text-xs text-muted-foreground">{ex.constraints.length}</span>
+              </SectionLabel>
             </div>
             <div className="mt-2 space-y-2">
               {ex.constraints.map((c) => {
@@ -413,7 +492,11 @@ export default function ExerciseEditor() {
                       />
                       <button
                         onClick={() =>
-                          patch({ constraints: ex.constraints.filter((x) => x.constraint_id !== c.constraint_id) })
+                          patch({
+                            constraints: ex.constraints.filter(
+                              (x) => x.constraint_id !== c.constraint_id,
+                            ),
+                          })
                         }
                         className="text-muted-foreground hover:text-destructive"
                       >
@@ -431,7 +514,10 @@ export default function ExerciseEditor() {
                   onChange={(e) => {
                     if (e.target.value) {
                       patch({
-                        constraints: [...ex.constraints, { constraint_id: e.target.value, level: "low" }],
+                        constraints: [
+                          ...ex.constraints,
+                          { constraint_id: e.target.value, level: "low" },
+                        ],
                       });
                     }
                     setOpenConstraint(false);
@@ -442,11 +528,16 @@ export default function ExerciseEditor() {
                   {constraintsList
                     .filter((c) => !ex.constraints.some((x) => x.constraint_id === c.id))
                     .map((c) => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
                     ))}
                 </select>
               ) : (
-                <button onClick={() => setOpenConstraint(true)} className="flex items-center gap-1 text-xs text-primary hover:underline">
+                <button
+                  onClick={() => setOpenConstraint(true)}
+                  className="flex items-center gap-1 text-xs text-primary hover:underline"
+                >
                   <Plus className="h-3 w-3" /> Add Constraint
                 </button>
               )}
@@ -455,20 +546,33 @@ export default function ExerciseEditor() {
 
           {/* Muscles */}
           <Card>
-            <SectionLabel>Muscles <span className="ml-1 text-xs text-muted-foreground">{ex.muscles.length}</span></SectionLabel>
+            <SectionLabel>
+              Muscles{" "}
+              <span className="ml-1 text-xs text-muted-foreground">{ex.muscles.length}</span>
+            </SectionLabel>
             <div className="mt-2 flex flex-wrap gap-2">
               {ex.muscles.map((m) => {
                 const meta = getMuscle(m.muscle_id);
-                const roleClass = m.role === "primary" ? "bg-primary text-primary-foreground" : m.role === "secondary" ? "bg-success text-success-foreground" : "bg-muted text-muted-foreground";
+                const roleClass =
+                  m.role === "primary"
+                    ? "bg-primary text-primary-foreground"
+                    : m.role === "secondary"
+                      ? "bg-success text-success-foreground"
+                      : "bg-muted text-muted-foreground";
                 return (
-                  <span key={m.muscle_id} className={`inline-flex items-center gap-1.5 rounded px-2 py-1 text-xs font-medium ${roleClass}`}>
+                  <span
+                    key={m.muscle_id}
+                    className={`inline-flex items-center gap-1.5 rounded px-2 py-1 text-xs font-medium ${roleClass}`}
+                  >
                     {meta?.name}
                     <select
                       value={m.role}
                       onChange={(e) =>
                         patch({
                           muscles: ex.muscles.map((x) =>
-                            x.muscle_id === m.muscle_id ? { ...x, role: e.target.value as MuscleRole } : x,
+                            x.muscle_id === m.muscle_id
+                              ? { ...x, role: e.target.value as MuscleRole }
+                              : x,
                           ),
                         })
                       }
@@ -479,7 +583,9 @@ export default function ExerciseEditor() {
                       <option value="stabilizer">stabilizer</option>
                     </select>
                     <button
-                      onClick={() => patch({ muscles: ex.muscles.filter((x) => x.muscle_id !== m.muscle_id) })}
+                      onClick={() =>
+                        patch({ muscles: ex.muscles.filter((x) => x.muscle_id !== m.muscle_id) })
+                      }
                       className="opacity-70 hover:opacity-100"
                     >
                       <X className="h-3 w-3" />
@@ -506,11 +612,16 @@ export default function ExerciseEditor() {
                   {musclesList
                     .filter((m) => !ex.muscles.some((x) => x.muscle_id === m.id))
                     .map((m) => (
-                      <option key={m.id} value={m.id}>{m.name}</option>
+                      <option key={m.id} value={m.id}>
+                        {m.name}
+                      </option>
                     ))}
                 </select>
               ) : (
-                <button onClick={() => setOpenMuscle(true)} className="rounded-md border border-dashed border-border px-2 py-1 text-xs text-muted-foreground hover:text-foreground">
+                <button
+                  onClick={() => setOpenMuscle(true)}
+                  className="rounded-md border border-dashed border-border px-2 py-1 text-xs text-muted-foreground hover:text-foreground"
+                >
                   + Add
                 </button>
               )}
@@ -519,7 +630,10 @@ export default function ExerciseEditor() {
 
           {/* Equipment */}
           <Card>
-            <SectionLabel>Equipment <span className="ml-1 text-xs text-muted-foreground">{ex.equipment.length}</span></SectionLabel>
+            <SectionLabel>
+              Equipment{" "}
+              <span className="ml-1 text-xs text-muted-foreground">{ex.equipment.length}</span>
+            </SectionLabel>
             <div className="mt-2 space-y-2">
               {ex.equipment.map((eq) => {
                 const meta = getEquipmentItem(eq.equipment_id);
@@ -532,7 +646,12 @@ export default function ExerciseEditor() {
                         onChange={(e) =>
                           patch({
                             equipment: ex.equipment.map((x) =>
-                              x.equipment_id === eq.equipment_id ? { ...x, requirement_type: e.target.value as typeof eq.requirement_type } : x,
+                              x.equipment_id === eq.equipment_id
+                                ? {
+                                    ...x,
+                                    requirement_type: e.target.value as typeof eq.requirement_type,
+                                  }
+                                : x,
                             ),
                           })
                         }
@@ -543,7 +662,13 @@ export default function ExerciseEditor() {
                         <option value="comfort_optional">Comfort Optional</option>
                       </select>
                       <button
-                        onClick={() => patch({ equipment: ex.equipment.filter((x) => x.equipment_id !== eq.equipment_id) })}
+                        onClick={() =>
+                          patch({
+                            equipment: ex.equipment.filter(
+                              (x) => x.equipment_id !== eq.equipment_id,
+                            ),
+                          })
+                        }
                         className="text-muted-foreground hover:text-destructive"
                       >
                         <X className="h-3.5 w-3.5" />
@@ -558,7 +683,10 @@ export default function ExerciseEditor() {
                 onChange={(e) => {
                   if (e.target.value) {
                     patch({
-                      equipment: [...ex.equipment, { equipment_id: e.target.value, requirement_type: "required" }],
+                      equipment: [
+                        ...ex.equipment,
+                        { equipment_id: e.target.value, requirement_type: "required" },
+                      ],
                     });
                   }
                 }}
@@ -567,7 +695,9 @@ export default function ExerciseEditor() {
                 {equipList
                   .filter((eq) => !ex.equipment.some((x) => x.equipment_id === eq.id))
                   .map((eq) => (
-                    <option key={eq.id} value={eq.id}>{eq.name}</option>
+                    <option key={eq.id} value={eq.id}>
+                      {eq.name}
+                    </option>
                   ))}
               </select>
             </div>
@@ -575,19 +705,33 @@ export default function ExerciseEditor() {
 
           {/* Variant Ladders */}
           <Card>
-            <SectionLabel>Variant Ladders <span className="ml-1 text-xs text-muted-foreground">{ex.variant_ladder_ids.length}</span></SectionLabel>
+            <SectionLabel>
+              Variant Ladders{" "}
+              <span className="ml-1 text-xs text-muted-foreground">
+                {ex.variant_ladder_ids.length}
+              </span>
+            </SectionLabel>
             <div className="mt-2 space-y-2">
               {ex.variant_ladder_ids.map((lid) => {
                 const l = getLadder(lid);
                 if (!l) return null;
                 return (
-                  <div key={lid} className="flex items-center justify-between rounded-md border border-border p-2 text-sm">
+                  <div
+                    key={lid}
+                    className="flex items-center justify-between rounded-md border border-border p-2 text-sm"
+                  >
                     <div>
                       <div className="font-medium">{l.name}</div>
-                      <div className="text-xs text-muted-foreground">{l.items.length} exercises</div>
+                      <div className="text-xs text-muted-foreground">
+                        {l.items.length} exercises
+                      </div>
                     </div>
                     <button
-                      onClick={() => patch({ variant_ladder_ids: ex.variant_ladder_ids.filter((x) => x !== lid) })}
+                      onClick={() =>
+                        patch({
+                          variant_ladder_ids: ex.variant_ladder_ids.filter((x) => x !== lid),
+                        })
+                      }
                       className="text-muted-foreground hover:text-destructive"
                     >
                       <X className="h-3.5 w-3.5" />
@@ -612,11 +756,16 @@ export default function ExerciseEditor() {
                   {ladders
                     .filter((l) => !ex.variant_ladder_ids.includes(l.id))
                     .map((l) => (
-                      <option key={l.id} value={l.id}>{l.name}</option>
+                      <option key={l.id} value={l.id}>
+                        {l.name}
+                      </option>
                     ))}
                 </select>
               ) : (
-                <button onClick={() => setOpenLadder(true)} className="flex items-center gap-1 text-xs text-primary hover:underline">
+                <button
+                  onClick={() => setOpenLadder(true)}
+                  className="flex items-center gap-1 text-xs text-primary hover:underline"
+                >
                   <Plus className="h-3 w-3" /> Add to Ladder
                 </button>
               )}
@@ -625,7 +774,10 @@ export default function ExerciseEditor() {
 
           {/* Exercise Variants */}
           <Card>
-            <SectionLabel>Exercise Variants <span className="ml-1 text-xs text-muted-foreground">{ex.variants.length}</span></SectionLabel>
+            <SectionLabel>
+              Exercise Variants{" "}
+              <span className="ml-1 text-xs text-muted-foreground">{ex.variants.length}</span>
+            </SectionLabel>
             <div className="mt-2 space-y-2">
               {ex.variants
                 .slice()
@@ -634,7 +786,10 @@ export default function ExerciseEditor() {
                   const target = exercises.find((item) => item.id === variant.to_exercise_id);
 
                   return (
-                    <div key={`${variant.to_exercise_id}-${index}`} className="rounded-md border border-border p-2 text-sm">
+                    <div
+                      key={`${variant.to_exercise_id}-${index}`}
+                      className="rounded-md border border-border p-2 text-sm"
+                    >
                       <div className="flex items-center justify-between gap-2">
                         <div>
                           <div className="font-medium">{target?.name ?? "Unknown exercise"}</div>
@@ -685,9 +840,7 @@ export default function ExerciseEditor() {
                           onChange={(event) =>
                             patch({
                               variants: ex.variants.map((item, itemIndex) =>
-                                itemIndex === index
-                                  ? { ...item, notes: event.target.value }
-                                  : item,
+                                itemIndex === index ? { ...item, notes: event.target.value } : item,
                               ),
                             })
                           }
@@ -702,7 +855,9 @@ export default function ExerciseEditor() {
                 <div className="space-y-2 rounded-md border border-dashed border-border p-2">
                   <select
                     value={newVariantType}
-                    onChange={(event) => setNewVariantType(event.target.value as ExerciseVariantType)}
+                    onChange={(event) =>
+                      setNewVariantType(event.target.value as ExerciseVariantType)
+                    }
                     className={selectCls}
                   >
                     <option value="progression">Progression</option>
@@ -735,14 +890,22 @@ export default function ExerciseEditor() {
                     <option value="">Select exercise…</option>
                     {exercises
                       .filter((item) => item.id !== ex.id)
-                      .filter((item) => !ex.variants.some((variant) => variant.to_exercise_id === item.id))
+                      .filter(
+                        (item) =>
+                          !ex.variants.some((variant) => variant.to_exercise_id === item.id),
+                      )
                       .map((item) => (
-                        <option key={item.id} value={item.id}>{item.name}</option>
+                        <option key={item.id} value={item.id}>
+                          {item.name}
+                        </option>
                       ))}
                   </select>
                 </div>
               ) : (
-                <button onClick={() => setOpenVariant(true)} className="flex items-center gap-1 text-xs text-primary hover:underline">
+                <button
+                  onClick={() => setOpenVariant(true)}
+                  className="flex items-center gap-1 text-xs text-primary hover:underline"
+                >
                   <Plus className="h-3 w-3" /> Add Variant
                 </button>
               )}
@@ -752,21 +915,28 @@ export default function ExerciseEditor() {
       </div>
 
       <div className="mt-6 text-right text-xs text-muted-foreground">
-        Updated {new Date(ex.updated_at).toLocaleString()} · Purpose: {getPurpose(ex.exercise_purpose_id ?? "")?.name ?? "—"}
+        Updated {new Date(ex.updated_at).toLocaleString()} · Purpose:{" "}
+        {getPurpose(ex.exercise_purpose_id ?? "")?.name ?? "—"}
       </div>
     </div>
   );
 }
 
-const inputCls = "w-full rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:border-ring";
-const selectCls = "w-full rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:border-ring";
+const inputCls =
+  "w-full rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:border-ring";
+const selectCls =
+  "w-full rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:border-ring";
 
 function Card({ children }: { children: React.ReactNode }) {
   return <div className="rounded-lg border border-border bg-card p-5">{children}</div>;
 }
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
-  return <div className="mb-3 font-mono text-xs uppercase tracking-wider text-muted-foreground">{children}</div>;
+  return (
+    <div className="mb-3 font-mono text-xs uppercase tracking-wider text-muted-foreground">
+      {children}
+    </div>
+  );
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -800,11 +970,7 @@ function LevelSelect({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value as Level)}
-      className={
-        compact
-          ? "rounded-md border border-border bg-card px-2 py-1 text-xs"
-          : selectCls
-      }
+      className={compact ? "rounded-md border border-border bg-card px-2 py-1 text-xs" : selectCls}
     >
       <option value="none">None</option>
       <option value="low">Low</option>

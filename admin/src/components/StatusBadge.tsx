@@ -1,7 +1,10 @@
 import { cn } from "@/lib/utils";
 import type { ReviewStatus, Status } from "@/types";
 
-const STATUS_STYLES: Record<Status | "reviewed" | "needs_review" | "approved" | "not_recommended" | "draft", string> = {
+const STATUS_STYLES: Record<
+  Status | "reviewed" | "needs_review" | "approved" | "not_recommended" | "draft",
+  string
+> = {
   active: "bg-success text-success-foreground",
   draft: "bg-warning text-warning-foreground",
   retired: "bg-muted text-muted-foreground",
@@ -23,7 +26,11 @@ export function StatusBadge({ status }: { status: Status }) {
       <span
         className={cn(
           "h-1.5 w-1.5 rounded-full",
-          status === "active" ? "bg-success-foreground" : status === "draft" ? "bg-warning-foreground" : "bg-muted-foreground",
+          status === "active"
+            ? "bg-success-foreground"
+            : status === "draft"
+              ? "bg-warning-foreground"
+              : "bg-muted-foreground",
         )}
       />
       {label}

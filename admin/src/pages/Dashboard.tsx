@@ -41,7 +41,9 @@ export default function Dashboard() {
                 {needsReview} exercise{needsReview === 1 ? "" : "s"} need review
               </div>
               <div className="mt-0.5 text-warning-foreground/80">
-                {needsReviewList.map((e) => e.name).join(", ")} {needsReviewList.length < needsReview ? "and others" : ""} are awaiting editorial review.
+                {needsReviewList.map((e) => e.name).join(", ")}{" "}
+                {needsReviewList.length < needsReview ? "and others" : ""} are awaiting editorial
+                review.
               </div>
               <Link
                 to="/exercises?filter=needs_review"

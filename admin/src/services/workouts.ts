@@ -181,10 +181,7 @@ export const saveWorkoutDraft = async (id: string): Promise<Workout> => {
   return persistWorkout({ ...workout, status: "draft" });
 };
 
-export const updateWorkout = async (
-  id: string,
-  patch: Partial<Workout>,
-): Promise<void> => {
+export const updateWorkout = async (id: string, patch: Partial<Workout>): Promise<void> => {
   const current = getWorkout(id);
 
   if (!current) return;
@@ -256,9 +253,7 @@ export const updateGroup = (
 ): void => {
   mutateWorkout(workoutId, (workout) => ({
     ...workout,
-    groups: workout.groups.map((group) =>
-      group.id === groupId ? { ...group, ...patch } : group,
-    ),
+    groups: workout.groups.map((group) => (group.id === groupId ? { ...group, ...patch } : group)),
   }));
 };
 
@@ -271,11 +266,7 @@ export const deleteGroup = (workoutId: string, groupId: string): void => {
   }));
 };
 
-export const moveGroup = (
-  workoutId: string,
-  groupId: string,
-  direction: -1 | 1,
-): void => {
+export const moveGroup = (workoutId: string, groupId: string, direction: -1 | 1): void => {
   mutateWorkout(workoutId, (workout) => {
     const index = workout.groups.findIndex((group) => group.id === groupId);
     const target = index + direction;
@@ -337,20 +328,14 @@ export const updateSlot = (
       group.id === groupId
         ? {
             ...group,
-            slots: group.slots.map((slot) =>
-              slot.id === slotId ? { ...slot, ...patch } : slot,
-            ),
+            slots: group.slots.map((slot) => (slot.id === slotId ? { ...slot, ...patch } : slot)),
           }
         : group,
     ),
   }));
 };
 
-export const deleteSlot = (
-  workoutId: string,
-  groupId: string,
-  slotId: string,
-): void => {
+export const deleteSlot = (workoutId: string, groupId: string, slotId: string): void => {
   mutateWorkout(workoutId, (workout) => ({
     ...workout,
     groups: workout.groups.map((group) =>
@@ -381,10 +366,7 @@ export const estimateWorkoutSeconds = (workout: Workout): number => {
 };
 
 export const totalSlots = (workout: Workout): number => {
-  return workout.groups.reduce(
-    (sum, group) => sum + group.slots.length * group.repeat_count,
-    0,
-  );
+  return workout.groups.reduce((sum, group) => sum + group.slots.length * group.repeat_count, 0);
 };
 
 export const publishWorkout = async (id: string): Promise<Workout | undefined> => {

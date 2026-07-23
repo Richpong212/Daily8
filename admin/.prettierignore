@@ -1,5 +1,8 @@
 node_modules
 dist
+.pnp.cjs
+.pnp.loader.mjs
+.yarn
 .output
 .vinxi
 pnpm-lock.yaml

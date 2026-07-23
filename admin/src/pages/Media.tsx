@@ -8,7 +8,9 @@ export default function Media() {
   return (
     <div>
       <div className="mb-6">
-        <div className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Library</div>
+        <div className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+          Library
+        </div>
         <h1 className="mt-1 text-3xl font-bold">Media</h1>
         <div className="mt-1 text-sm text-muted-foreground">
           Images, videos and external references associated with exercises.

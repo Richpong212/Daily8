@@ -8,7 +8,7 @@
     "dev-start": "nodemon src/index.ts",
     "dev": "yarn dev-start & yarn lint:watch",
     "start": "yarn build && NODE_ENV=production node build/index.js",
-    "lint": "eslint src/**/*.ts ",
+    "lint": "eslint src/**/*.ts --max-warnings=0",
     "lint:watch": "chokidar 'src/**/*.ts' -c 'yarn lint'",
     "check": "yarn lint && tsc --noEmit",
     "build": "tsc"

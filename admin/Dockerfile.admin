@@ -1,19 +1,32 @@
 # syntax=docker/dockerfile:1.7
 
-FROM node:24-alpine AS dependencies
+# ---------------------------------------------------------
+# Base
+# ---------------------------------------------------------
+FROM node:24-bookworm-slim AS base
 
 WORKDIR /app
+
+RUN corepack enable \
+    && corepack prepare yarn@4.9.4 --activate
+
+
+# ---------------------------------------------------------
+# Install all dependencies
+# ---------------------------------------------------------
+FROM base AS dependencies
 
 COPY package.json yarn.lock .yarnrc.yml ./
 
-RUN corepack enable \
-    && corepack prepare yarn@4.9.4 --activate \
-    && yarn install --immutable
+RUN yarn install --immutable
 
 
-FROM node:24-alpine AS builder
+# ---------------------------------------------------------
+# Build application inside Docker / CI
+# ---------------------------------------------------------
+FROM dependencies AS builder
 
-WORKDIR /app
+COPY . .
 
 ARG VITE_API_URL
 ARG VITE_PUBLIC_BASE_URL
@@ -29,13 +42,16 @@ ENV VITE_GA_MEASUREMENT_ID=${VITE_GA_MEASUREMENT_ID}
 ENV VITE_REDDIT_PIXEL_ID=${VITE_REDDIT_PIXEL_ID}
 ENV VITE_META_PIXEL_ID=${VITE_META_PIXEL_ID}
 
-COPY --from=dependencies /app/node_modules ./node_modules
-COPY . .
-
 RUN yarn build
 
+# Verify Vite output exists.
+RUN test -f dist/index.html
 
-FROM node:24-alpine AS runner
+
+# ---------------------------------------------------------
+# Production runtime
+# ---------------------------------------------------------
+FROM node:24-bookworm-slim AS runner
 
 WORKDIR /app
 
@@ -43,13 +59,24 @@ ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=3004
 
-RUN addgroup -S appgroup \
-    && adduser -S appuser -G appgroup
+# Remove package-management tooling from runtime.
+RUN rm -rf \
+      /usr/local/lib/node_modules/npm \
+      /usr/local/bin/npm \
+      /usr/local/bin/npx \
+      /usr/local/bin/corepack \
+      /usr/local/bin/yarn \
+      /usr/local/bin/yarnpkg
 
-COPY --from=builder --chown=appuser:appgroup /app/dist ./dist
-COPY --chown=appuser:appgroup server.mjs ./server.mjs
+# Copy only the compiled frontend and Node server.
+COPY --from=builder \
+     --chown=1000:1000 \
+     /app/dist \
+     ./dist
 
-USER appuser
+COPY --chown=1000:1000 server.mjs ./server.mjs
+
+USER 1000:1000
 
 EXPOSE 3004
 

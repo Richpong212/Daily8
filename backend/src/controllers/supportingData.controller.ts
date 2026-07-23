@@ -11,6 +11,9 @@ import VariantLadderItems from "../models/variantLadderItems.model";
 import { logger } from "../utils/logger.utils";
 import { deleteCacheByPattern } from "../utils/cache.utils";
 
+type ResourceParamRequest = Request<{ resource: string }>;
+type ResourceItemParamRequest = Request<{ resource: string; id: string }>;
+
 const resources: Record<string, any> = {
   "movement-families": MovementFamilies,
   "body-regions": BodyRegions,
@@ -175,7 +178,10 @@ export const listSupportingData: any = async (_req: Request, res: Response) => {
   }
 };
 
-export const createSupportingDataItem: any = async (req: Request, res: Response) => {
+export const createSupportingDataItem: any = async (
+  req: ResourceParamRequest,
+  res: Response,
+) => {
   try {
     const model = getResourceModel(req.params.resource);
 
@@ -212,7 +218,10 @@ export const createSupportingDataItem: any = async (req: Request, res: Response)
   }
 };
 
-export const updateSupportingDataItem: any = async (req: Request, res: Response) => {
+export const updateSupportingDataItem: any = async (
+  req: ResourceItemParamRequest,
+  res: Response,
+) => {
   try {
     const model = getResourceModel(req.params.resource);
 
@@ -255,7 +264,10 @@ export const updateSupportingDataItem: any = async (req: Request, res: Response)
   }
 };
 
-export const deleteSupportingDataItem: any = async (req: Request, res: Response) => {
+export const deleteSupportingDataItem: any = async (
+  req: ResourceItemParamRequest,
+  res: Response,
+) => {
   try {
     const model = getResourceModel(req.params.resource);
 

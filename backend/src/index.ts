@@ -74,7 +74,7 @@ app.listen(port, async () => {
 });
 
 // Handle invalid routes
-app.use((req: Request, res: Response) => {
+app.use((_req: Request, res: Response) => {
   res.status(404).json({ message: "Route not found" });
 });
 

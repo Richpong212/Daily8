@@ -11,6 +11,8 @@ import {
   getMuscleWikiExercises,
 } from "../utils/connectExternalAPI";
 
+type IdParamRequest = Request<{ id: string }>;
+
 const groupColors = ["#d5a34d", "#2f7a54", "#3a5da8", "#7a4ea8", "#c1663d"];
 
 const databaseNow = () => db.literal("CURRENT_TIMESTAMP");
@@ -196,7 +198,7 @@ export const listWorkouts: any = async (_req: Request, res: Response) => {
   }
 };
 
-export const getWorkoutById: any = async (req: Request, res: Response) => {
+export const getWorkoutById: any = async (req: IdParamRequest, res: Response) => {
   try {
     const workout = await Workouts.findByPk(req.params.id);
 
@@ -245,7 +247,7 @@ export const createWorkout: any = async (req: Request, res: Response) => {
   }
 };
 
-export const updateWorkout: any = async (req: Request, res: Response) => {
+export const updateWorkout: any = async (req: IdParamRequest, res: Response) => {
   const transaction = await db.transaction();
 
   try {
@@ -290,7 +292,7 @@ export const updateWorkout: any = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteWorkout: any = async (req: Request, res: Response) => {
+export const deleteWorkout: any = async (req: IdParamRequest, res: Response) => {
   const transaction = await db.transaction();
 
   try {

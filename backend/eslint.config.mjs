@@ -2,16 +2,22 @@ import globals from "globals";
 import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
 
-/** @type {import('eslint').Linter.Config[]} */
-export default [
-  { files: ["**/*.{js,mjs,cjs,ts}"] },
-  { languageOptions: { globals: globals.node } },
+export default tseslint.config(
+  { ignores: ["build", "dist", "node_modules"] },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   {
+    files: ["src/**/*.ts"],
+    languageOptions: {
+      globals: globals.node,
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
     rules: {
-      "no-console": "warn",
-      "no-unused-vars": "error",
+      "no-console": "error",
+      "no-unused-vars": "off",
       "no-undef": "error",
       "no-debugger": "error",
       eqeqeq: ["error", "always"],
@@ -20,13 +26,21 @@ export default [
       "no-useless-return": "error",
       "object-shorthand": ["error", "always"],
 
-      "no-sync": "warn",
+      "no-sync": "error",
       "no-process-exit": "error",
       "callback-return": ["error", ["callback", "cb", "next"]],
       "handle-callback-err": ["error", "^err"],
       "no-path-concat": "error",
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
       "@typescript-eslint/no-require-imports": "off",
       "@typescript-eslint/no-explicit-any": "off",
     },
   },
-];
+);

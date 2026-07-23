@@ -11,6 +11,8 @@ import ExerciseVariants from "../models/exerciseVariants.model";
 import { logger } from "../utils/logger.utils";
 import { deleteCacheByPattern } from "../utils/cache.utils";
 
+type IdParamRequest = Request<{ id: string }>;
+
 type ExerciseRelations = {
   muscles?: unknown[];
   equipment?: unknown[];
@@ -322,7 +324,7 @@ export const listExercises: any = async (_req: Request, res: Response) => {
   }
 };
 
-export const getExercise: any = async (req: Request, res: Response) => {
+export const getExercise: any = async (req: IdParamRequest, res: Response) => {
   try {
     const exercise = await Exercises.findByPk(req.params.id);
 
@@ -373,7 +375,7 @@ export const createExercise: any = async (req: Request, res: Response) => {
   }
 };
 
-export const updateExercise: any = async (req: Request, res: Response) => {
+export const updateExercise: any = async (req: IdParamRequest, res: Response) => {
   const transaction = await db.transaction();
 
   try {
@@ -482,7 +484,7 @@ export const updateExercise: any = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteExercise: any = async (req: Request, res: Response) => {
+export const deleteExercise: any = async (req: IdParamRequest, res: Response) => {
   const transaction = await db.transaction();
 
   try {

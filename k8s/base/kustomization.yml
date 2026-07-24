@@ -6,3 +6,4 @@ resources:
   - redis
   - network-policies
   - admin
+  - backend

@@ -1,23 +1,22 @@
-name: Daily8 Admin CI/CD
-#
+name: Daily8 Backend CI/CD
 
 on:
   push:
     branches:
       - dev
     paths:
-      - "admin/**"
-      - ".github/workflows/admin-ci-dev.yml"
+      - "backend/**"
+      - ".github/workflows/backend-ci.yml"
 
   pull_request:
     branches:
       - dev
     paths:
-      - "admin/**"
-      - ".github/workflows/admin-ci.yml"
+      - "backend/**"
+      - ".github/workflows/backend-ci.yml"
 
 concurrency:
-  group: daily8-admin-${{ github.ref }}
+  group: daily8-backend-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -26,17 +25,15 @@ permissions:
   id-token: write
 
 env:
-  IMAGE_NAME: ghcr.io/richpong212/daily8/admin
+  IMAGE_NAME: ghcr.io/richpong212/daily8/backend
   IMAGE_TAG: ${{ github.sha }}
-  YARN_VERSION: 4.9.4
-
-  BUILD_CONTEXT: ./admin
-  DOCKERFILE_PATH: ./admin/Dockerfile.admin
+  DOCKERFILE_PATH: ./backend/Dockerfile.backend
+  BUILD_CONTEXT: ./backend
   KUSTOMIZATION_PATH: k8s/overlays/dev/kustomization.yml
 
 jobs:
   check:
-    name: Check admin client
+    name: Check backend
     runs-on: ubuntu-latest
 
     steps:
@@ -49,20 +46,18 @@ jobs:
           node-version: 24
 
       - name: Enable Corepack
-        run: |
-          corepack enable
-          corepack prepare yarn@${YARN_VERSION} --activate
+        run: corepack enable
 
-      - name: Install client dependencies
-        working-directory: admin
+      - name: Install backend dependencies
+        working-directory: backend
         run: yarn install --immutable
 
-      - name: Run client checks
-        working-directory: admin
+      - name: Run backend checks
+        working-directory: backend
         run: yarn check
 
   dependency-scan:
-    name: Scan admin dependencies
+    name: Scan backend dependencies
     runs-on: ubuntu-latest
     needs:
       - check
@@ -71,11 +66,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Scan client filesystem
+      - name: Scan backend filesystem
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: fs
-          scan-ref: admin
+          scan-ref: backend
           scanners: vuln,secret
           format: table
           severity: CRITICAL,HIGH
@@ -83,7 +78,7 @@ jobs:
           ignore-unfixed: true
 
   image-scan:
-    name: Build and scan admin image
+    name: Build and scan backend image
     runs-on: ubuntu-latest
     needs:
       - dependency-scan
@@ -92,11 +87,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Build a local AMD64 image for testing on the GitHub-hosted runner.
-      - name: Build admin image for scanning
+      - name: Build backend image for scanning
         uses: docker/build-push-action@v6
         with:
           context: ${{ env.BUILD_CONTEXT }}
@@ -108,59 +105,8 @@ jobs:
           provenance: false
           sbom: false
           tags: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-          build-args: |
-            VITE_API_URL=${{ vars.DAILY8_DEV_API_URL }}
-            VITE_PUBLIC_BASE_URL=${{ vars.DAILY8_DEV_ADMIN_URL }}
-            VITE_STRIPE_PUBLISHABLE_KEY=${{ vars.VITE_STRIPE_PUBLISHABLE_KEY }}
-            VITE_GA_MEASUREMENT_ID=${{ vars.VITE_GA_MEASUREMENT_ID }}
-            VITE_REDDIT_PIXEL_ID=${{ vars.VITE_REDDIT_PIXEL_ID }}
-            VITE_META_PIXEL_ID=${{ vars.VITE_META_PIXEL_ID }}
 
-      - name: Verify admin runtime starts
-        run: |
-          container_id=$(docker run -d \
-            -p 3004:3004 \
-            "${IMAGE_NAME}:${IMAGE_TAG}")
-
-          cleanup() {
-            docker logs "${container_id}" || true
-            docker rm -f "${container_id}" || true
-          }
-
-          trap cleanup EXIT
-
-          for attempt in $(seq 1 20); do
-            if curl --fail --silent http://127.0.0.1:3004 >/dev/null; then
-              echo "Admin runtime is reachable on port 3004"
-              exit 0
-            fi
-
-            sleep 2
-          done
-
-          echo "Admin runtime failed to become ready"
-          exit 1
-
-      - name: Verify runtime contains no esbuild binaries
-        run: |
-          docker run --rm \
-            --entrypoint sh \
-            "${IMAGE_NAME}:${IMAGE_TAG}" \
-            -c '
-              set -eu
-
-              if find /app/node_modules \
-                \( -path "*/@esbuild/*/bin/esbuild" -o \
-                   -path "*/esbuild/bin/esbuild" -o \
-                   -path "*/.bin/esbuild" \) \
-                -print \
-                | grep -q .; then
-                echo "esbuild binaries must not exist in the runtime image"
-                exit 1
-              fi
-            '
-
-      - name: Scan admin image
+      - name: Scan backend image
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
@@ -169,23 +115,23 @@ jobs:
           exit-code: "1"
           ignore-unfixed: true
 
-      - name: Generate admin SBOM
+      - name: Generate backend SBOM
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
           format: cyclonedx
-          output: admin-sbom.cdx.json
+          output: backend-sbom.cdx.json
 
-      - name: Upload admin SBOM
+      - name: Upload backend SBOM
         uses: actions/upload-artifact@v6
         with:
-          name: daily8-admin-sbom-${{ env.IMAGE_TAG }}
-          path: admin-sbom.cdx.json
+          name: daily8-backend-sbom-${{ env.IMAGE_TAG }}
+          path: backend-sbom.cdx.json
           if-no-files-found: error
           retention-days: 30
 
   publish:
-    name: Publish admin image
+    name: Publish backend image
     runs-on: ubuntu-latest
     needs:
       - image-scan
@@ -212,35 +158,23 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push multi-architecture admin image
+      - name: Build and push backend image
         id: publish-image
         uses: docker/build-push-action@v6
         with:
           context: ${{ env.BUILD_CONTEXT }}
           file: ${{ env.DOCKERFILE_PATH }}
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64
           no-cache: true
           provenance: false
           sbom: false
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
             ${{ env.IMAGE_NAME }}:dev
-          build-args: |
-            VITE_API_URL=${{ vars.DAILY8_DEV_API_URL }}
-            VITE_PUBLIC_BASE_URL=${{ vars.DAILY8_DEV_ADMIN_URL }}
-            VITE_STRIPE_PUBLISHABLE_KEY=${{ vars.VITE_STRIPE_PUBLISHABLE_KEY }}
-            VITE_GA_MEASUREMENT_ID=${{ vars.VITE_GA_MEASUREMENT_ID }}
-            VITE_REDDIT_PIXEL_ID=${{ vars.VITE_REDDIT_PIXEL_ID }}
-            VITE_META_PIXEL_ID=${{ vars.VITE_META_PIXEL_ID }}
-
-      - name: Verify published admin image
-        run: |
-          docker buildx imagetools inspect \
-            "${IMAGE_NAME}:${IMAGE_TAG}"
 
   sign:
-    name: Sign admin image
+    name: Sign backend image
     runs-on: ubuntu-latest
     needs:
       - publish
@@ -258,7 +192,7 @@ jobs:
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3
 
-      - name: Sign admin image
+      - name: Sign backend image
         env:
           IMAGE_DIGEST: ${{ needs.publish.outputs.image-digest }}
         run: |
@@ -266,7 +200,7 @@ jobs:
             "${IMAGE_NAME}@${IMAGE_DIGEST}"
 
   update-dev:
-    name: Update admin dev manifest
+    name: Update backend dev manifest
     runs-on: ubuntu-latest
     needs:
       - sign
@@ -280,7 +214,7 @@ jobs:
           ref: dev
           fetch-depth: 0
 
-      - name: Update admin Kustomize image tag
+      - name: Update backend Kustomize image tag
         env:
           NEW_IMAGE_TAG: ${{ env.IMAGE_TAG }}
         run: |
@@ -289,12 +223,12 @@ jobs:
           from pathlib import Path
 
           path = Path("k8s/overlays/dev/kustomization.yml")
-          image_name = "daily8-admin-image"
+          image_name = "daily8-backend-image"
           new_tag = os.environ["NEW_IMAGE_TAG"]
 
           lines = path.read_text().splitlines()
-          inside_target_image = False
           updated = False
+          inside_target_image = False
 
           for index, line in enumerate(lines):
               stripped = line.strip()
@@ -318,10 +252,10 @@ jobs:
           path.write_text("\n".join(lines) + "\n")
           PY
 
-      - name: Validate updated admin image tag
+      - name: Validate updated tag
         run: |
           grep -A3 \
-            "name: daily8-admin-image" \
+            "name: daily8-backend-image" \
             "${KUSTOMIZATION_PATH}"
 
       - name: Commit and push manifest update
@@ -332,12 +266,12 @@ jobs:
           git add "${KUSTOMIZATION_PATH}"
 
           if git diff --cached --quiet; then
-            echo "No admin image tag change to commit"
+            echo "No backend image tag change to commit"
             exit 0
           fi
 
           git commit \
-            -m "chore: update Daily8 admin dev image to ${IMAGE_TAG}"
+            -m "chore: update Daily8 backend dev image to ${IMAGE_TAG}"
 
           git pull --rebase origin dev
           git push origin HEAD:dev

@@ -19,4 +19,4 @@ images:
 
   - name: daily8-admin-image
     newName: ghcr.io/richpong212/daily8/admin
-    newTag: ADMIN_COMMIT_SHA
+    newTag: "b7fd52ccb1e7f2d2dc3999d01adee353407a3be1"

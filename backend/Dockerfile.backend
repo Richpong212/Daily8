@@ -27,14 +27,19 @@ WORKDIR /backend
 
 ENV NODE_ENV=production
 
-# Create non-root user
-RUN groupadd --system appgroup \
-    && useradd --system --gid appgroup --create-home appuser
+# Create a predictable non-root user
+RUN groupadd --system --gid 10001 appgroup \
+    && useradd \
+        --system \
+        --uid 10001 \
+        --gid 10001 \
+        --create-home \
+        appuser
 
 COPY package.json yarn.lock .yarnrc.yml ./
 
-RUN corepack enable
-RUN yarn workspaces focus --production
+RUN corepack enable \
+    && yarn workspaces focus --production
 
 # Remove package managers from final runtime image
 RUN rm -rf \
@@ -47,11 +52,11 @@ RUN rm -rf \
     /usr/local/bin/yarnpkg
 
 COPY --from=builder \
-    --chown=appuser:appgroup \
+    --chown=10001:10001 \
     /backend/build \
     ./build
 
-USER appuser
+USER 10001:10001
 
 EXPOSE 5010
 

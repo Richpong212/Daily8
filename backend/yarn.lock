@@ -367,7 +367,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/morgan@npm:^1.9.10":
+"@types/morgan@npm:^1":
   version: 1.9.10
   resolution: "@types/morgan@npm:1.9.10"
   dependencies:
@@ -483,15 +483,6 @@ __metadata:
   version: 13.15.10
   resolution: "@types/validator@npm:13.15.10"
   checksum: 10c0/3e2e65fcd37dd6961ca3fd0535293d0c42f5911dc3ca44b96f458835e6db2392b678ccbb0c9815d8c0a14e653439e6c62c7b8758a6cd1d6e390551c9e56618ac
-  languageName: node
-  linkType: hard
-
-"@types/winston@npm:^2.4.4":
-  version: 2.4.4
-  resolution: "@types/winston@npm:2.4.4"
-  dependencies:
-    winston: "npm:*"
-  checksum: 10c0/8b967c089ba71773cca671b76aba931b2849afb3a6c03cbc5ef04d19e44092e0957573c730cdfbdda71eeb44984d3554e7edb88391c2a3c1aa36cafadc8f2b87
   languageName: node
   linkType: hard
 
@@ -782,13 +773,12 @@ __metadata:
     "@types/helmet": "npm:^4.0.0"
     "@types/jsonwebtoken": "npm:^9"
     "@types/memcached": "npm:^2.2.10"
-    "@types/morgan": "npm:^1.9.10"
+    "@types/morgan": "npm:^1"
     "@types/node": "npm:^22.13.0"
     "@types/nodemailer": "npm:^8.0.1"
     "@types/nodemon": "npm:^1.19.6"
     "@types/pg": "npm:^8.20.0"
     "@types/sequelize": "npm:^6.12.0"
-    "@types/winston": "npm:^2.4.4"
     bcryptjs: "npm:^3.0.3"
     chalk: "npm:^5.6.2"
     chokidar-cli: "npm:^3.0.0"
@@ -807,7 +797,7 @@ __metadata:
     jsonwebtoken: "npm:^9.0.3"
     memcached: "npm:^2.2.2"
     morgan: "npm:^1.11.0"
-    nodemailer: "npm:^9.0.1"
+    nodemailer: "npm:^9.0.3"
     nodemon: "npm:^3.1.14"
     pg: "npm:^8.22.0"
     pg-hstore: "npm:^2.3.4"
@@ -2468,7 +2458,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:^9.0.1":
+"nodemailer@npm:^9.0.3":
   version: 9.0.3
   resolution: "nodemailer@npm:9.0.3"
   checksum: 10c0/9e93516fb9fcc8835b683cdf3b90135648dabf0133ac9b04890303c2e23eef1d7bae58fe98afb0e251ae10428b96f05df483deb78f0b49f47793debbb0383216
@@ -3599,7 +3589,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"winston@npm:*, winston@npm:^3.19.0":
+"winston@npm:^3.19.0":
   version: 3.19.0
   resolution: "winston@npm:3.19.0"
   dependencies:

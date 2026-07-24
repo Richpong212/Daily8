@@ -10,7 +10,11 @@ interface IEmail {
   name?: string;
 }
 
-export const connectSMTPAccount = async () => {
+const getErrorMessage = (error: unknown) => {
+  return error instanceof Error ? error.message : String(error);
+};
+
+export const connectSMTPAccount = () => {
   try {
     const transporter = nodemailer.createTransport({
       host: appConfig.smtp.host,
@@ -24,13 +28,13 @@ export const connectSMTPAccount = async () => {
 
     return transporter;
   } catch (error) {
-    throw new Error(`Failed to connect to SMTP server: ${error}`);
+    throw new Error(`Failed to connect to SMTP server: ${getErrorMessage(error)}`);
   }
 };
 
 export const sendEmail = async (emailData: IEmail) => {
   try {
-    const transporter = await connectSMTPAccount();
+    const transporter = connectSMTPAccount();
     const mailOptions = {
       from: appConfig.smtp.user,
       to: emailData.email,
@@ -38,12 +42,13 @@ export const sendEmail = async (emailData: IEmail) => {
       html: emailData.html,
       text: emailData.text,
     };
-    const info = transporter.sendMail(mailOptions);
+    const info = await transporter.sendMail(mailOptions);
     logger.info(`Email sent to ${emailData.email}`);
 
     return { message: "Email sent", info };
   } catch (error) {
-    logger.error(`Error sending email: ${error}`);
-    throw new Error(`Failed to send email: ${error}`);
+    const message = getErrorMessage(error);
+    logger.error(`Error sending email: ${message}`);
+    throw new Error(`Failed to send email: ${message}`);
   }
 };

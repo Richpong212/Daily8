@@ -1,5 +1,6 @@
 import { useEffect, useSyncExternalStore } from "react";
 import axios from "axios";
+import { apiBaseUrl, isRecord } from "@/services/api";
 import type { Exercise } from "@/types";
 
 type ExerciseResponse = {
@@ -13,7 +14,7 @@ type ExercisesResponse = {
 };
 
 const exerciseApi = axios.create({
-  baseURL: "/api/v1",
+  baseURL: apiBaseUrl,
   headers: {
     "Content-Type": "application/json",
   },
@@ -67,8 +68,9 @@ const loadExercises = async (): Promise<Exercise[]> => {
     loadPromise = exerciseApi
       .get<ExercisesResponse>("/exercises")
       .then((response) => {
-        setExercises(response.data.data);
-        return response.data.data;
+        const data = Array.isArray(response.data.data) ? response.data.data : [];
+        setExercises(data);
+        return data;
       })
       .catch((error) => {
         loadPromise = null;
@@ -110,9 +112,11 @@ export const useExercise = (id: string | undefined): Exercise | undefined => {
   useEffect(() => {
     if (!id || exercise || isDraftExerciseId(id)) return;
 
-    void exerciseApi
-      .get<ExerciseResponse>(`/exercises/${id}`)
-      .then((response) => upsertExercise(response.data.data));
+    void exerciseApi.get<ExerciseResponse>(`/exercises/${id}`).then((response) => {
+      if (isRecord(response.data.data)) {
+        upsertExercise(response.data.data as Exercise);
+      }
+    });
   }, [id, exercise]);
 
   return exercise;
@@ -165,9 +169,14 @@ const postExercise = async (exercise: Partial<Exercise> = {}): Promise<Exercise>
       name: exercise.name?.trim() || "New Exercise",
       slug: exercise.slug?.trim() || undefined,
     });
+    if (!isRecord(response.data.data)) {
+      throw new Error("API returned an invalid exercise payload");
+    }
+
+    const saved = response.data.data as Exercise;
     removeExercise(draftExerciseId);
-    upsertExercise(response.data.data);
-    return response.data.data;
+    upsertExercise(saved);
+    return saved;
   } catch (error) {
     throw new Error(getApiErrorMessage(error));
   }
@@ -188,7 +197,9 @@ export const updateExercise = async (id: string, patch: Partial<Exercise>): Prom
 
   try {
     const response = await exerciseApi.patch<ExerciseResponse>(`/exercises/${id}`, patch);
-    upsertExercise(response.data.data);
+    if (isRecord(response.data.data)) {
+      upsertExercise(response.data.data as Exercise);
+    }
   } catch (error) {
     throw new Error(getApiErrorMessage(error));
   }
@@ -200,8 +211,13 @@ export const saveExerciseDraft = async (exercise: Exercise): Promise<Exercise> =
     : exerciseApi
         .patch<ExerciseResponse>(`/exercises/${exercise.id}`, exercise)
         .then((response) => {
-          upsertExercise(response.data.data);
-          return response.data.data;
+          if (!isRecord(response.data.data)) {
+            throw new Error("API returned an invalid exercise payload");
+          }
+
+          const saved = response.data.data as Exercise;
+          upsertExercise(saved);
+          return saved;
         })
         .catch((error) => {
           throw new Error(getApiErrorMessage(error));

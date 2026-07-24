@@ -1,5 +1,6 @@
 import { useEffect, useSyncExternalStore } from "react";
 import axios from "axios";
+import { apiBaseUrl, isRecord } from "@/services/api";
 import type {
   BodyRegion,
   Constraint,
@@ -33,7 +34,7 @@ type ItemResponse<T> = {
 type CreatePayload<T> = Omit<T, "id" | "slug">;
 
 const supportingDataApi = axios.create({
-  baseURL: "/api/v1/supporting-data",
+  baseURL: `${apiBaseUrl}/supporting-data`,
   headers: {
     "Content-Type": "application/json",
   },
@@ -61,7 +62,15 @@ const subscribe = (listener: () => void) => {
 };
 
 const setSupportingData = (next: SupportingData) => {
-  supportingData = next;
+  supportingData = {
+    movementFamilies: Array.isArray(next.movementFamilies) ? next.movementFamilies : [],
+    bodyRegions: Array.isArray(next.bodyRegions) ? next.bodyRegions : [],
+    exercisePurposes: Array.isArray(next.exercisePurposes) ? next.exercisePurposes : [],
+    muscles: Array.isArray(next.muscles) ? next.muscles : [],
+    equipment: Array.isArray(next.equipment) ? next.equipment : [],
+    constraints: Array.isArray(next.constraints) ? next.constraints : [],
+    variantLadders: Array.isArray(next.variantLadders) ? next.variantLadders : [],
+  };
   notify();
 };
 
@@ -79,7 +88,9 @@ const loadSupportingData = async (): Promise<SupportingData> => {
     loadPromise = supportingDataApi
       .get<SupportingDataResponse>("/")
       .then((response) => {
-        const next = response.data.data;
+        const next = isRecord(response.data.data)
+          ? (response.data.data as SupportingData)
+          : supportingData;
         setSupportingData(next);
         return next;
       })
@@ -128,6 +139,10 @@ const removeItem = <K extends keyof SupportingData>(key: K, id: string) => {
 const createItem = async <T>(resource: string, data: CreatePayload<T>): Promise<T> => {
   try {
     const response = await supportingDataApi.post<ItemResponse<T>>(resource, data);
+    if (!isRecord(response.data.data)) {
+      throw new Error("API returned an invalid supporting data payload");
+    }
+
     return response.data.data;
   } catch (error) {
     throw new Error(getApiErrorMessage(error));
@@ -137,6 +152,10 @@ const createItem = async <T>(resource: string, data: CreatePayload<T>): Promise<
 const updateItem = async <T>(resource: string, id: string, patch: Partial<T>): Promise<T> => {
   try {
     const response = await supportingDataApi.patch<ItemResponse<T>>(`${resource}/${id}`, patch);
+    if (!isRecord(response.data.data)) {
+      throw new Error("API returned an invalid supporting data payload");
+    }
+
     return response.data.data;
   } catch (error) {
     throw new Error(getApiErrorMessage(error));

@@ -1,5 +1,6 @@
 import { useEffect, useSyncExternalStore } from "react";
 import axios from "axios";
+import { apiBaseUrl, isRecord } from "@/services/api";
 import type { Workout, WorkoutGroup, WorkoutSlot } from "@/types";
 
 type WorkoutResponse = {
@@ -16,7 +17,7 @@ const GROUP_COLORS = ["#d5a34d", "#2f7a54", "#3a5da8", "#7a4ea8", "#c1663d"];
 const draftWorkoutId = "new";
 
 const workoutApi = axios.create({
-  baseURL: "/api/v1",
+  baseURL: apiBaseUrl,
   headers: {
     "Content-Type": "application/json",
   },
@@ -69,8 +70,9 @@ const loadWorkouts = async (): Promise<Workout[]> => {
     loadPromise = workoutApi
       .get<WorkoutsResponse>("/workouts")
       .then((response) => {
-        setWorkouts(response.data.data);
-        return response.data.data;
+        const data = Array.isArray(response.data.data) ? response.data.data : [];
+        setWorkouts(data);
+        return data;
       })
       .catch((error) => {
         loadPromise = null;
@@ -110,7 +112,11 @@ export const useWorkout = (id: string | undefined): Workout | undefined => {
 
     void workoutApi
       .get<WorkoutResponse>(`/workouts/${id}`)
-      .then((response) => upsertWorkout(response.data.data))
+      .then((response) => {
+        if (isRecord(response.data.data)) {
+          upsertWorkout(response.data.data as Workout);
+        }
+      })
       .catch((error) => console.error(getApiErrorMessage(error)));
   }, [id, workout]);
 
@@ -164,8 +170,13 @@ const persistWorkout = async (workout: Workout): Promise<Workout> => {
       removeWorkout(draftWorkoutId);
     }
 
-    upsertWorkout(response.data.data);
-    return response.data.data;
+    if (!isRecord(response.data.data)) {
+      throw new Error("API returned an invalid workout payload");
+    }
+
+    const saved = response.data.data as Workout;
+    upsertWorkout(saved);
+    return saved;
   } catch (error) {
     throw new Error(getApiErrorMessage(error));
   }
@@ -196,7 +207,9 @@ export const updateWorkout = async (id: string, patch: Partial<Workout>): Promis
 
   try {
     const response = await workoutApi.patch<WorkoutResponse>(`/workouts/${id}`, patch);
-    upsertWorkout(response.data.data);
+    if (isRecord(response.data.data)) {
+      upsertWorkout(response.data.data as Workout);
+    }
   } catch (error) {
     throw new Error(getApiErrorMessage(error));
   }

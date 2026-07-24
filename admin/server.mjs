@@ -58,6 +58,17 @@ const server = createServer((req, res) => {
     return;
   }
 
+  if (new URL(req.url, `http://${host}`).pathname.startsWith("/api/")) {
+    res.writeHead(502, { "Content-Type": "application/json; charset=utf-8" });
+    res.end(
+      JSON.stringify({
+        message:
+          "Admin runtime cannot serve API requests. Configure VITE_API_URL to the backend origin.",
+      }),
+    );
+    return;
+  }
+
   const filePath = getStaticPath(req.url);
 
   if (!filePath) {

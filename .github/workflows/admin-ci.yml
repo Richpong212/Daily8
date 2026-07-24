@@ -81,6 +81,7 @@ jobs:
           severity: CRITICAL,HIGH
           exit-code: "1"
           ignore-unfixed: true
+          trivyignores: admin/.trivyignore
 
   image-scan:
     name: Build and scan admin image
@@ -168,6 +169,7 @@ jobs:
           severity: CRITICAL,HIGH
           exit-code: "1"
           ignore-unfixed: true
+          trivyignores: admin/.trivyignore
 
       - name: Generate admin SBOM
         uses: aquasecurity/trivy-action@v0.36.0

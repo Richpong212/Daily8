@@ -1,0 +1,9 @@
+# react-router-dom currently publishes 7.18.1 as latest; the advisory lists
+
+# react-router 8.3.0 as fixed, but that version is not available on this
+
+# package line. Daily8 Admin uses BrowserRouter only, not React Router RSC mode.
+
+# Remove this once a stable fixed react-router-dom release is available.
+
+GHSA-qwww-vcr4-c8h2

@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 
-FROM node:24-alpine AS deps
+FROM node:24-bookworm-slim AS deps
 
 WORKDIR /backend
 
@@ -10,7 +10,7 @@ RUN corepack enable
 RUN yarn install --immutable
 
 
-FROM node:24-alpine AS builder
+FROM node:24-bookworm-slim AS builder
 
 WORKDIR /backend
 
@@ -21,15 +21,15 @@ RUN corepack enable
 RUN yarn build
 
 
-FROM node:24-alpine AS runner
+FROM node:24-bookworm-slim AS runner
 
 WORKDIR /backend
 
 ENV NODE_ENV=production
 
 # Create non-root user
-RUN addgroup -S appgroup \
-    && adduser -S appuser -G appgroup
+RUN groupadd --system appgroup \
+    && useradd --system --gid appgroup --create-home appuser
 
 COPY package.json yarn.lock .yarnrc.yml ./
 

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: daily8-backend-logs
+  labels:
+    app.kubernetes.io/name: daily8
+    app.kubernetes.io/component: daily8-backend
+
+spec:
+  accessModes:
+    - ReadWriteOnce
+
+  storageClassName: local-path
+
+  resources:
+    requests:
+      storage: 2Gi

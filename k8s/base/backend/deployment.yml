@@ -5,6 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: daily8
     app.kubernetes.io/component: daily8-backend
+
 spec:
   replicas: 1
 
@@ -21,10 +22,13 @@ spec:
 
     spec:
       serviceAccountName: daily8-backend-service-account
-      imagePullSecrets:
-        - name: daily8-ghcr-secret
+
       securityContext:
         runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        fsGroupChangePolicy: OnRootMismatch
         seccompProfile:
           type: RuntimeDefault
 
@@ -58,6 +62,13 @@ spec:
                   name: daily8-redis-auth
                   key: password
 
+            - name: LOG_DIRECTORY
+              value: /backend/logs
+
+          volumeMounts:
+            - name: backend-logs
+              mountPath: /backend/logs
+
           readinessProbe:
             httpGet:
               path: /health
@@ -90,3 +101,8 @@ spec:
             capabilities:
               drop:
                 - ALL
+
+      volumes:
+        - name: backend-logs
+          persistentVolumeClaim:
+            claimName: daily8-backend-logs

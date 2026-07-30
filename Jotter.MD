@@ -595,7 +595,11 @@ metadata:
   labels:
     app.kubernetes.io/name: daily8
     app.kubernetes.io/component: daily8-backend
+
 automountServiceAccountToken: false
+
+imagePullSecrets:
+  - name: daily8-image-pull-secret
 ```
 
 - Create the config map to hold environment variables the application depends on
@@ -674,6 +678,7 @@ metadata:
   labels:
     app.kubernetes.io/name: daily8
     app.kubernetes.io/component: daily8-backend
+
 spec:
   replicas: 1
 
@@ -690,10 +695,13 @@ spec:
 
     spec:
       serviceAccountName: daily8-backend-service-account
-      imagePullSecrets:
-        - name: daily8-ghcr-secret
+
       securityContext:
         runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        fsGroupChangePolicy: OnRootMismatch
         seccompProfile:
           type: RuntimeDefault
 
@@ -727,6 +735,13 @@ spec:
                   name: daily8-redis-auth
                   key: password
 
+            - name: LOG_DIRECTORY
+              value: /backend/logs
+
+          volumeMounts:
+            - name: backend-logs
+              mountPath: /backend/logs
+
           readinessProbe:
             httpGet:
               path: /health
@@ -759,6 +774,11 @@ spec:
             capabilities:
               drop:
                 - ALL
+
+      volumes:
+        - name: backend-logs
+          persistentVolumeClaim:
+            claimName: daily8-backend-logs
 ```
 
 - We will make the service file for the banked so we can expose it internallly for the client side to connect to it.

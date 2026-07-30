@@ -5,7 +5,7 @@ import type {
   BodyRegion,
   Constraint,
   Equipment,
-  ExercisePurpose,
+  ExerciseBenefit,
   MovementFamily,
   Muscle,
   VariantLadder,
@@ -14,7 +14,7 @@ import type {
 type SupportingData = {
   movementFamilies: MovementFamily[];
   bodyRegions: BodyRegion[];
-  exercisePurposes: ExercisePurpose[];
+  exerciseBenefits: ExerciseBenefit[];
   muscles: Muscle[];
   equipment: Equipment[];
   constraints: Constraint[];
@@ -43,7 +43,7 @@ const supportingDataApi = axios.create({
 let supportingData: SupportingData = {
   movementFamilies: [],
   bodyRegions: [],
-  exercisePurposes: [],
+  exerciseBenefits: [],
   muscles: [],
   equipment: [],
   constraints: [],
@@ -65,7 +65,7 @@ const setSupportingData = (next: SupportingData) => {
   supportingData = {
     movementFamilies: Array.isArray(next.movementFamilies) ? next.movementFamilies : [],
     bodyRegions: Array.isArray(next.bodyRegions) ? next.bodyRegions : [],
-    exercisePurposes: Array.isArray(next.exercisePurposes) ? next.exercisePurposes : [],
+    exerciseBenefits: Array.isArray(next.exerciseBenefits) ? next.exerciseBenefits : [],
     muscles: Array.isArray(next.muscles) ? next.muscles : [],
     equipment: Array.isArray(next.equipment) ? next.equipment : [],
     constraints: Array.isArray(next.constraints) ? next.constraints : [],
@@ -172,7 +172,7 @@ const deleteItem = async (resource: string, id: string): Promise<void> => {
 
 export const useMovementFamilies = () => useSupportingData((data) => data.movementFamilies);
 export const useBodyRegions = () => useSupportingData((data) => data.bodyRegions);
-export const useExercisePurposes = () => useSupportingData((data) => data.exercisePurposes);
+export const useExerciseBenefits = () => useSupportingData((data) => data.exerciseBenefits);
 export const useMuscles = () => useSupportingData((data) => data.muscles);
 export const useEquipment = () => useSupportingData((data) => data.equipment);
 export const useConstraints = () => useSupportingData((data) => data.constraints);
@@ -186,8 +186,8 @@ export const getBodyRegion = (id: string | null | undefined) => {
   return id ? supportingData.bodyRegions.find((item) => item.id === id) : undefined;
 };
 
-export const getPurpose = (id: string | null | undefined) => {
-  return id ? supportingData.exercisePurposes.find((item) => item.id === id) : undefined;
+export const getBenefit = (id: string | null | undefined) => {
+  return id ? supportingData.exerciseBenefits.find((item) => item.id === id) : undefined;
 };
 
 export const getMuscle = (id: string | null | undefined) => {
@@ -238,20 +238,20 @@ export const deleteBodyRegion = async (id: string) => {
   removeItem("bodyRegions", id);
 };
 
-export const createPurpose = async (data: CreatePayload<ExercisePurpose>) => {
-  const item = await createItem<ExercisePurpose>("exercise-purposes", data);
-  upsertItem("exercisePurposes", item);
+export const createBenefit = async (data: CreatePayload<ExerciseBenefit>) => {
+  const item = await createItem<ExerciseBenefit>("exercise-benefits", data);
+  upsertItem("exerciseBenefits", item);
   return item;
 };
 
-export const updatePurpose = async (id: string, patch: Partial<ExercisePurpose>) => {
-  const item = await updateItem<ExercisePurpose>("exercise-purposes", id, patch);
-  upsertItem("exercisePurposes", item);
+export const updateBenefit = async (id: string, patch: Partial<ExerciseBenefit>) => {
+  const item = await updateItem<ExerciseBenefit>("exercise-benefits", id, patch);
+  upsertItem("exerciseBenefits", item);
 };
 
-export const deletePurpose = async (id: string) => {
-  await deleteItem("exercise-purposes", id);
-  removeItem("exercisePurposes", id);
+export const deleteBenefit = async (id: string) => {
+  await deleteItem("exercise-benefits", id);
+  removeItem("exerciseBenefits", id);
 };
 
 export const createMuscle = async (data: CreatePayload<Muscle>) => {

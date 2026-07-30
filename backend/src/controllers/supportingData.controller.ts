@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { Op, UniqueConstraintError } from "sequelize";
 import MovementFamilies from "../models/movementFamilies.model";
 import BodyRegions from "../models/bodyRegions.model";
-import ExercisePurposes from "../models/exercisePurposes.model";
+import ExerciseBenefits from "../models/exerciseBenefits.model";
 import Muscles from "../models/muscles.model";
 import Equipment from "../models/equipment.model";
 import Constraints from "../models/constraints.model";
@@ -17,7 +17,7 @@ type ResourceItemParamRequest = Request<{ resource: string; id: string }>;
 const resources: Record<string, any> = {
   "movement-families": MovementFamilies,
   "body-regions": BodyRegions,
-  "exercise-purposes": ExercisePurposes,
+  "exercise-benefits": ExerciseBenefits,
   muscles: Muscles,
   equipment: Equipment,
   constraints: Constraints,
@@ -143,7 +143,7 @@ export const listSupportingData: any = async (_req: Request, res: Response) => {
     const [
       movementFamilies,
       bodyRegions,
-      exercisePurposes,
+      exerciseBenefits,
       muscles,
       equipment,
       constraints,
@@ -151,7 +151,7 @@ export const listSupportingData: any = async (_req: Request, res: Response) => {
     ] = await Promise.all([
       MovementFamilies.findAll({ order: [["sort_order", "ASC"]] }),
       BodyRegions.findAll({ order: [["sort_order", "ASC"]] }),
-      ExercisePurposes.findAll({ order: [["sort_order", "ASC"]] }),
+      ExerciseBenefits.findAll({ order: [["sort_order", "ASC"]] }),
       Muscles.findAll({ order: [["name", "ASC"]] }),
       Equipment.findAll({ order: [["sort_order", "ASC"]] }),
       Constraints.findAll({ order: [["sort_order", "ASC"]] }),
@@ -163,7 +163,7 @@ export const listSupportingData: any = async (_req: Request, res: Response) => {
       data: {
         movementFamilies: toPlain(movementFamilies),
         bodyRegions: toPlain(bodyRegions),
-        exercisePurposes: toPlain(exercisePurposes),
+        exerciseBenefits: toPlain(exerciseBenefits),
         muscles: toPlain(muscles),
         equipment: toPlain(equipment),
         constraints: toPlain(constraints),

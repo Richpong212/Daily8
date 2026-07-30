@@ -22,10 +22,10 @@ export const createExerciseValidation = [
     .optional({ nullable: true })
     .isUUID()
     .withMessage("Body region must be a valid UUID"),
-  body("exercise_purpose_id")
+  body("required_benefit_id")
     .optional({ nullable: true })
     .isUUID()
-    .withMessage("Exercise purpose must be a valid UUID"),
+    .withMessage("Exercise benefit must be a valid UUID"),
   body("category")
     .optional()
     .isIn(["strength", "mobility", "conditioning", "balance"])
@@ -53,6 +53,26 @@ export const createExerciseValidation = [
     .withMessage("Invalid space need"),
   body("summary").optional().isString().withMessage("Summary must be a string"),
   body("instructions").optional().isArray().withMessage("Instructions must be an array"),
+  body("instructions.*")
+    .optional()
+    .isString()
+    .withMessage("Instruction steps must be strings"),
+  body("instruction_groups")
+    .optional()
+    .isArray()
+    .withMessage("Instruction groups must be an array"),
+  body("instruction_groups.*.heading")
+    .optional()
+    .isString()
+    .withMessage("Instruction group heading must be a string"),
+  body("instruction_groups.*.steps")
+    .optional()
+    .isArray({ min: 1 })
+    .withMessage("Instruction group steps must be an array"),
+  body("instruction_groups.*.steps.*")
+    .optional()
+    .isString()
+    .withMessage("Instruction group steps must be strings"),
   body("coaching_cues")
     .optional()
     .isArray()

@@ -20,7 +20,7 @@ const primaryNav = [
 const supportingSub = [
   { to: "/supporting-data/movement-families", label: "Movement Families" },
   { to: "/supporting-data/body-regions", label: "Body Regions" },
-  { to: "/supporting-data/exercise-purposes", label: "Exercise Purposes" },
+  { to: "/supporting-data/exercise-benefits", label: "Exercise Benefits" },
   { to: "/supporting-data/muscles", label: "Muscles" },
   { to: "/supporting-data/equipment", label: "Equipment" },
   { to: "/supporting-data/constraints", label: "Constraints" },

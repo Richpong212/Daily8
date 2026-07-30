@@ -9,7 +9,7 @@ import Media from "@/pages/Media";
 import SupportingDataLayout, {
   MovementFamiliesPage,
   BodyRegionsPage,
-  ExercisePurposesPage,
+  ExerciseBenefitsPage,
   MusclesPage,
   EquipmentPage,
   ConstraintsPage,
@@ -31,7 +31,7 @@ export function AppRoutes() {
           <Route index element={<Navigate to="movement-families" replace />} />
           <Route path="movement-families" element={<MovementFamiliesPage />} />
           <Route path="body-regions" element={<BodyRegionsPage />} />
-          <Route path="exercise-purposes" element={<ExercisePurposesPage />} />
+          <Route path="exercise-benefits" element={<ExerciseBenefitsPage />} />
           <Route path="muscles" element={<MusclesPage />} />
           <Route path="equipment" element={<EquipmentPage />} />
           <Route path="constraints" element={<ConstraintsPage />} />

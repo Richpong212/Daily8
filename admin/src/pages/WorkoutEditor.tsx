@@ -17,7 +17,7 @@ import {
   useWorkout,
 } from "@/services/workouts";
 import { useExercises } from "@/services/exercises";
-import { useExercisePurposes, getBodyRegion, getMovementFamily } from "@/services/supporting-data";
+import { useExerciseBenefits, getBodyRegion, getMovementFamily } from "@/services/supporting-data";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ExerciseTile } from "@/components/ExerciseTile";
 import { getExercise } from "@/services/exercises";
@@ -36,7 +36,7 @@ import {
 export default function WorkoutEditor() {
   const { id } = useParams();
   const w = useWorkout(id);
-  const purposes = useExercisePurposes();
+  const benefits = useExerciseBenefits();
   const exercises = useExercises();
   const nav = useNavigate();
 
@@ -295,16 +295,16 @@ export default function WorkoutEditor() {
                         </div>
                       </div>
                       <select
-                        value={s.exercise_purpose_id ?? ""}
+                        value={s.required_benefit_id ?? ""}
                         onChange={(e) =>
                           updateSlot(w.id, g.id, s.id, {
-                            exercise_purpose_id: e.target.value || null,
+                            required_benefit_id: e.target.value || null,
                           })
                         }
                         className="rounded-md border border-border bg-card px-2 py-1 text-xs"
                       >
-                        <option value="">— Purpose —</option>
-                        {purposes.map((p) => (
+                        <option value="">— Benefit —</option>
+                        {benefits.map((p) => (
                           <option key={p.id} value={p.id}>
                             {p.name}
                           </option>
@@ -340,7 +340,7 @@ export default function WorkoutEditor() {
                     onChange={(e) => {
                       if (e.target.value) {
                         const ex = getExercise(e.target.value);
-                        addSlot(w.id, g.id, e.target.value, ex?.exercise_purpose_id ?? null);
+                        addSlot(w.id, g.id, e.target.value, ex?.required_benefit_id ?? null);
                       }
                     }}
                     className="w-full rounded border border-dashed border-border bg-card px-3 py-1.5 text-xs text-muted-foreground"

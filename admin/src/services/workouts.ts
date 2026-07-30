@@ -305,7 +305,7 @@ export const addSlot = (
   workoutId: string,
   groupId: string,
   exerciseId: string,
-  exercisePurposeId: string | null = null,
+  requiredBenefitId: string | null = null,
 ): void => {
   mutateWorkout(workoutId, (workout) => ({
     ...workout,
@@ -319,7 +319,7 @@ export const addSlot = (
                 id: `new-slot-${Date.now()}`,
                 slot_order: group.slots.length + 1,
                 exercise_id: exerciseId,
-                exercise_purpose_id: exercisePurposeId,
+                required_benefit_id: requiredBenefitId,
                 duration_seconds: 30,
               },
             ],

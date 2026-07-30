@@ -8,7 +8,7 @@ import {
   bodyRegions as seedBodyRegions,
   constraints as seedConstraints,
   equipment as seedEquipment,
-  exercisePurposes as seedPurposes,
+  exerciseBenefits as seedBenefits,
   exercises as seedExercises,
   movementFamilies as seedFamilies,
   muscles as seedMuscles,
@@ -20,7 +20,7 @@ import type {
   Constraint,
   Equipment,
   Exercise,
-  ExercisePurpose,
+  ExerciseBenefit,
   MovementFamily,
   Muscle,
   VariantLadder,
@@ -32,7 +32,7 @@ export interface Store {
   workouts: Workout[];
   movementFamilies: MovementFamily[];
   bodyRegions: BodyRegion[];
-  exercisePurposes: ExercisePurpose[];
+  exerciseBenefits: ExerciseBenefit[];
   muscles: Muscle[];
   equipment: Equipment[];
   constraints: Constraint[];
@@ -44,7 +44,7 @@ let store: Store = {
   workouts: seedWorkouts,
   movementFamilies: seedFamilies,
   bodyRegions: seedBodyRegions,
-  exercisePurposes: seedPurposes,
+  exerciseBenefits: seedBenefits,
   muscles: seedMuscles,
   equipment: seedEquipment,
   constraints: seedConstraints,

@@ -2,7 +2,7 @@ import User from "./user.model";
 import Exercises from "./exercises.model";
 import MovementFamilies from "./movementFamilies.model";
 import BodyRegions from "./bodyRegions.model";
-import ExercisePurposes from "./exercisePurposes.model";
+import ExerciseBenefits from "./exerciseBenefits.model";
 import Muscles from "./muscles.model";
 import ExerciseMuscles from "./exerciseMuscles.model";
 import Equipment from "./equipment.model";
@@ -38,14 +38,14 @@ export const applyModelAssociations = () => {
     as: "bodyRegion",
   });
 
-  ExercisePurposes.hasMany(Exercises, {
-    foreignKey: "exercise_purpose_id",
+  ExerciseBenefits.hasMany(Exercises, {
+    foreignKey: "required_benefit_id",
     as: "exercises",
   });
 
-  Exercises.belongsTo(ExercisePurposes, {
-    foreignKey: "exercise_purpose_id",
-    as: "exercisePurpose",
+  Exercises.belongsTo(ExerciseBenefits, {
+    foreignKey: "required_benefit_id",
+    as: "exerciseBenefit",
   });
 
   BodyRegions.hasMany(Muscles, {
@@ -214,14 +214,14 @@ export const applyModelAssociations = () => {
     as: "exercise",
   });
 
-  ExercisePurposes.hasMany(WorkoutSlots, {
-    foreignKey: "exercise_purpose_id",
+  ExerciseBenefits.hasMany(WorkoutSlots, {
+    foreignKey: "required_benefit_id",
     as: "workoutSlots",
   });
 
-  WorkoutSlots.belongsTo(ExercisePurposes, {
-    foreignKey: "exercise_purpose_id",
-    as: "exercisePurpose",
+  WorkoutSlots.belongsTo(ExerciseBenefits, {
+    foreignKey: "required_benefit_id",
+    as: "requiredBenefit",
   });
 
   void User;

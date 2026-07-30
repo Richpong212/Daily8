@@ -41,13 +41,18 @@ export type ExerciseCoachingCue = {
   time_seconds?: number | null;
 };
 
+export type ExerciseInstructionGroup = {
+  heading: string;
+  steps: string[];
+};
+
 class Exercises extends Model {
   public id!: string;
   public slug!: string;
   public name!: string;
   public movement_family_id!: string | null;
   public body_region_id!: string | null;
-  public exercise_purpose_id!: string | null;
+  public required_benefit_id!: string | null;
   public muscles?: unknown[];
   public constraints?: unknown[];
   public category!: ExerciseCategory;
@@ -59,6 +64,7 @@ class Exercises extends Model {
   public space_need!: ExerciseSpaceNeed;
   public summary!: string;
   public instructions!: string[];
+  public instruction_groups!: ExerciseInstructionGroup[];
   public coaching_cues!: ExerciseCoachingCue[];
   public safety_info!: string | null;
   public review_status!: ExerciseReviewStatus;
@@ -95,7 +101,7 @@ Exercises.init(
       type: DataTypes.UUID,
       allowNull: true,
     },
-    exercise_purpose_id: {
+    required_benefit_id: {
       type: DataTypes.UUID,
       allowNull: true,
     },
@@ -147,6 +153,11 @@ Exercises.init(
     },
     instructions: {
       type: DataTypes.ARRAY(DataTypes.TEXT),
+      allowNull: false,
+      defaultValue: [],
+    },
+    instruction_groups: {
+      type: DataTypes.JSONB,
       allowNull: false,
       defaultValue: [],
     },

@@ -58,7 +58,7 @@ Every service module is a thin wrapper over the in-memory `store`:
 ```
 services/exercises.ts   → useExercises / createExercise / updateExercise / deleteExercise …
 services/workouts.ts    → useWorkouts / addGroup / addSlot / updateSlot / publishWorkout …
-services/supporting-data.ts → CRUD for movement families, body regions, purposes, muscles, equipment, constraints and variant ladders
+services/supporting-data.ts → CRUD for movement families, body regions, benefits, muscles, equipment, constraints and variant ladders
 ```
 
 React components call these functions directly. When the store changes, subscribed components re-render. Replace the service modules with real HTTP calls (fetch/axios/…) when integrating with a real API — the surface area intentionally mirrors what a REST/GraphQL client would expose.
@@ -74,4 +74,4 @@ bun run lint      # ESLint
 
 ## Content model
 
-Editorial data is modelled around Exercises, Workouts (with Groups → Slots), and supporting reference tables (Movement Families, Body Regions, Purposes, Muscles, Equipment, Constraints, Variant Ladders). See `src/types/index.ts` for the full schema and `src/data/seed.ts` for representative seed data.
+Editorial data is modelled around Exercises, Workouts (with Groups → Slots), and supporting reference tables (Movement Families, Body Regions, Benefits, Muscles, Equipment, Constraints, Variant Ladders). See `src/types/index.ts` for the full schema and `src/data/seed.ts` for representative seed data.

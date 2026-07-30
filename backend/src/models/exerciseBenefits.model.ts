@@ -1,7 +1,7 @@
 import { Model, DataTypes } from "sequelize";
 import { db } from "../config/connectDb";
 
-class ExercisePurposes extends Model {
+class ExerciseBenefits extends Model {
   public id!: string;
   public slug!: string;
   public name!: string;
@@ -11,7 +11,7 @@ class ExercisePurposes extends Model {
   public updatedAt!: Date;
 }
 
-ExercisePurposes.init(
+ExerciseBenefits.init(
   {
     id: {
       type: DataTypes.UUID,
@@ -39,10 +39,10 @@ ExercisePurposes.init(
   },
   {
     sequelize: db,
-    modelName: "ExercisePurposes",
-    tableName: "exercise_purposes",
+    modelName: "ExerciseBenefits",
+    tableName: "exercise_benefits",
     timestamps: true,
   },
 );
 
-export default ExercisePurposes;
+export default ExerciseBenefits;

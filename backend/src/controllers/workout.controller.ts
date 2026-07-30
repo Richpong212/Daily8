@@ -163,7 +163,7 @@ const replaceWorkoutStructure = async (
       workout_group_id: createdGroup.id,
       slot_order: slot.slot_order ?? slotIndex + 1,
       exercise_id: slot.exercise_id,
-      exercise_purpose_id: slot.exercise_purpose_id ?? null,
+      required_benefit_id: slot.required_benefit_id ?? null,
       duration_seconds: slot.duration_seconds ?? 30,
       notes: slot.notes ?? null,
     }));

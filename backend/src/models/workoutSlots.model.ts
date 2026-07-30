@@ -8,8 +8,8 @@ class WorkoutSlots extends Model {
   public slot_order!: number;
   public exercise_id!: string;
   public exercise?: unknown;
-  public exercise_purpose_id!: string | null;
-  public exercisePurpose?: unknown;
+  public required_benefit_id!: string | null;
+  public requiredBenefit?: unknown;
   public duration_seconds!: number;
   public notes!: string | null;
   public createdAt!: Date;
@@ -35,7 +35,7 @@ WorkoutSlots.init(
       type: DataTypes.UUID,
       allowNull: false,
     },
-    exercise_purpose_id: {
+    required_benefit_id: {
       type: DataTypes.UUID,
       allowNull: true,
     },

@@ -13,13 +13,13 @@ import {
   useBodyRegions,
   useConstraints,
   useEquipment,
-  useExercisePurposes,
+  useExerciseBenefits,
   useMovementFamilies,
   useMuscles,
   useVariantLadders,
   getMuscle,
   getConstraint,
-  getPurpose,
+  getBenefit,
   getEquipmentItem,
   getLadder,
 } from "@/services/supporting-data";
@@ -37,7 +37,18 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
-import type { ExerciseVariantType, Level, MuscleRole } from "@/types";
+import type { ExerciseInstructionGroup, ExerciseVariantType, Level, MuscleRole } from "@/types";
+
+const INSTRUCTION_GROUP_HEADINGS = [
+  "Start Position",
+  "Setup",
+  "Lower",
+  "Move",
+  "Hold",
+  "Return",
+  "Breathing",
+  "Finish",
+];
 
 export default function ExerciseEditor() {
   const { id } = useParams();
@@ -45,12 +56,20 @@ export default function ExerciseEditor() {
   const ex = useExercise(id);
   const families = useMovementFamilies();
   const regions = useBodyRegions();
-  const purposes = useExercisePurposes();
+  const benefits = useExerciseBenefits();
   const musclesList = useMuscles();
   const equipList = useEquipment();
   const constraintsList = useConstraints();
   const ladders = useVariantLadders();
   const exercises = useExercises();
+  const instructionHeadingOptions = [
+    ...new Set([
+      ...INSTRUCTION_GROUP_HEADINGS,
+      ...exercises.flatMap((exercise) =>
+        (exercise.instruction_groups ?? []).map((group) => group.heading).filter(Boolean),
+      ),
+    ]),
+  ];
 
   const [openMuscle, setOpenMuscle] = useState(false);
   const [openConstraint, setOpenConstraint] = useState(false);
@@ -73,6 +92,38 @@ export default function ExerciseEditor() {
 
   const patch = (p: Parameters<typeof updateExercise>[1]) => updateExercise(ex.id, p);
   const isNewExercise = ex.id === "new";
+  const savedInstructionGroups = ex.instruction_groups ?? [];
+  const instructionGroups =
+    savedInstructionGroups.length > 0
+      ? savedInstructionGroups
+      : ex.instructions.length > 0
+        ? [{ heading: "Instructions", steps: ex.instructions }]
+        : [];
+  const syncInstructionGroups = (groups: ExerciseInstructionGroup[]) => {
+    const normalized = groups
+      .map((group) => ({
+        heading: group.heading,
+        steps: group.steps.length > 0 ? group.steps : [""],
+      }))
+      .filter((group) => group.heading.trim() || group.steps.some((step) => step.trim()));
+
+    patch({
+      instruction_groups: normalized,
+      instructions: normalized.flatMap((group) => group.steps),
+    });
+  };
+  const updateInstructionGroup = (groupIndex: number, nextGroup: ExerciseInstructionGroup) => {
+    syncInstructionGroups(
+      instructionGroups.map((group, index) => (index === groupIndex ? nextGroup : group)),
+    );
+  };
+  const getNextInstructionHeading = () => {
+    return (
+      INSTRUCTION_GROUP_HEADINGS.find(
+        (heading) => !instructionGroups.some((group) => group.heading === heading),
+      ) ?? "Move"
+    );
+  };
 
   return (
     <div>
@@ -263,36 +314,96 @@ export default function ExerciseEditor() {
 
           <Card>
             <SectionLabel>Instructions</SectionLabel>
-            <div className="space-y-2">
-              {ex.instructions.map((step, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium">
-                    {i + 1}
-                  </span>
-                  <input
-                    className={inputCls}
-                    value={step}
-                    onChange={(e) => {
-                      const next = [...ex.instructions];
-                      next[i] = e.target.value;
-                      patch({ instructions: next });
-                    }}
-                  />
-                  <button
-                    onClick={() =>
-                      patch({ instructions: ex.instructions.filter((_, x) => x !== i) })
-                    }
-                    className="p-1.5 text-muted-foreground hover:text-destructive"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
+            <datalist id="instruction-group-headings">
+              {instructionHeadingOptions.map((heading) => (
+                <option key={heading} value={heading} />
+              ))}
+            </datalist>
+            <div className="space-y-4">
+              {instructionGroups.map((group, groupIndex) => (
+                <div
+                  key={`${group.heading}-${groupIndex}`}
+                  className="rounded-md border border-border p-3"
+                >
+                  <div className="mb-3 flex items-center gap-2">
+                    <input
+                      list="instruction-group-headings"
+                      value={group.heading}
+                      onChange={(event) =>
+                        updateInstructionGroup(groupIndex, {
+                          ...group,
+                          heading: event.target.value,
+                        })
+                      }
+                      className="w-full rounded border border-border bg-card px-2 py-1.5 text-sm font-medium"
+                    />
+                    <button
+                      onClick={() =>
+                        syncInstructionGroups(
+                          instructionGroups.filter((_, index) => index !== groupIndex),
+                        )
+                      }
+                      className="p-1.5 text-muted-foreground hover:text-destructive"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <div className="space-y-2">
+                    {group.steps.map((step, stepIndex) => (
+                      <div key={stepIndex} className="flex items-center gap-2">
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium">
+                          {stepIndex + 1}
+                        </span>
+                        <input
+                          className={inputCls}
+                          value={step}
+                          onChange={(event) => {
+                            const steps = [...group.steps];
+                            steps[stepIndex] = event.target.value;
+                            updateInstructionGroup(groupIndex, { ...group, steps });
+                          }}
+                        />
+                        <button
+                          onClick={() => {
+                            const steps = group.steps.filter((_, index) => index !== stepIndex);
+                            if (steps.length === 0) {
+                              syncInstructionGroups(
+                                instructionGroups.filter((_, index) => index !== groupIndex),
+                              );
+                              return;
+                            }
+                            updateInstructionGroup(groupIndex, { ...group, steps });
+                          }}
+                          className="p-1.5 text-muted-foreground hover:text-destructive"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      onClick={() =>
+                        updateInstructionGroup(groupIndex, {
+                          ...group,
+                          steps: [...group.steps, ""],
+                        })
+                      }
+                      className="flex items-center gap-1 text-sm text-primary hover:underline"
+                    >
+                      <Plus className="h-3.5 w-3.5" /> Add Step
+                    </button>
+                  </div>
                 </div>
               ))}
               <button
-                onClick={() => patch({ instructions: [...ex.instructions, ""] })}
+                onClick={() =>
+                  syncInstructionGroups([
+                    ...instructionGroups,
+                    { heading: getNextInstructionHeading(), steps: [""] },
+                  ])
+                }
                 className="flex items-center gap-1 text-sm text-primary hover:underline"
               >
-                <Plus className="h-3.5 w-3.5" /> Add Step
+                <Plus className="h-3.5 w-3.5" /> Add Group
               </button>
             </div>
           </Card>
@@ -448,14 +559,14 @@ export default function ExerciseEditor() {
                 ))}
               </select>
             </RelField>
-            <RelField label="Primary Purpose">
+            <RelField label="Primary Benefit">
               <select
                 className={selectCls}
-                value={ex.exercise_purpose_id ?? ""}
-                onChange={(e) => patch({ exercise_purpose_id: e.target.value || null })}
+                value={ex.required_benefit_id ?? ""}
+                onChange={(e) => patch({ required_benefit_id: e.target.value || null })}
               >
                 <option value="">— None —</option>
-                {purposes.map((p) => (
+                {benefits.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.name}
                   </option>
@@ -915,8 +1026,8 @@ export default function ExerciseEditor() {
       </div>
 
       <div className="mt-6 text-right text-xs text-muted-foreground">
-        Updated {new Date(ex.updated_at).toLocaleString()} · Purpose:{" "}
-        {getPurpose(ex.exercise_purpose_id ?? "")?.name ?? "—"}
+        Updated {new Date(ex.updated_at).toLocaleString()} · Benefit:{" "}
+        {getBenefit(ex.required_benefit_id ?? "")?.name ?? "—"}
       </div>
     </div>
   );

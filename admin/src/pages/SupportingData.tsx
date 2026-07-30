@@ -1,10 +1,11 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { Plus, Pencil, Trash2, X, Check } from "lucide-react";
 import { useState } from "react";
+import type { ReactNode } from "react";
 import {
   useMovementFamilies,
   useBodyRegions,
-  useExercisePurposes,
+  useExerciseBenefits,
   useMuscles,
   useEquipment,
   useConstraints,
@@ -15,9 +16,9 @@ import {
   createBodyRegion,
   updateBodyRegion,
   deleteBodyRegion,
-  createPurpose,
-  updatePurpose,
-  deletePurpose,
+  createBenefit,
+  updateBenefit,
+  deleteBenefit,
   createMuscle,
   updateMuscle,
   deleteMuscle,
@@ -47,7 +48,7 @@ import {
 const TABS = [
   { to: "/supporting-data/movement-families", label: "Movement Families" },
   { to: "/supporting-data/body-regions", label: "Body Regions" },
-  { to: "/supporting-data/exercise-purposes", label: "Exercise Purposes" },
+  { to: "/supporting-data/exercise-benefits", label: "Exercise Benefits" },
   { to: "/supporting-data/muscles", label: "Muscles" },
   { to: "/supporting-data/equipment", label: "Equipment" },
   { to: "/supporting-data/constraints", label: "Constraints" },
@@ -96,6 +97,14 @@ interface Row {
   description?: string;
 }
 
+type Column<T extends Row> = {
+  key: keyof T | "actions";
+  label: string;
+  className?: string;
+  render?: (row: T) => ReactNode;
+  edit?: (row: T, draft: Partial<T>, setDraft: (patch: Partial<T>) => void) => ReactNode;
+};
+
 function EditableTable<T extends Row>({
   columns,
   rows,
@@ -103,30 +112,87 @@ function EditableTable<T extends Row>({
   onUpdate,
   onDelete,
   createLabel = "Create New",
+  gridTemplateColumns = "1.2fr 1fr 2fr 100px",
 }: {
-  columns: { key: keyof T | "actions"; label: string; width?: string; mono?: boolean }[];
+  columns: Column<T>[];
   rows: T[];
-  onCreate: () => void;
-  onUpdate: (id: string, patch: Partial<T>) => void;
-  onDelete: (id: string) => void;
+  onCreate: () => unknown | Promise<unknown>;
+  onUpdate: (id: string, patch: Partial<T>) => void | Promise<void>;
+  onDelete: (id: string) => void | Promise<void>;
   createLabel?: string;
+  gridTemplateColumns?: string;
 }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<Partial<T>>({});
+  const [pendingAction, setPendingAction] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const getErrorMessage = (caught: unknown) => {
+    return caught instanceof Error ? caught.message : "Could not save supporting data";
+  };
+
+  const updateDraft = (patch: Partial<T>) => setDraft((current) => ({ ...current, ...patch }));
+
+  const handleCreate = async () => {
+    setError(null);
+    setPendingAction("create");
+    try {
+      await onCreate();
+    } catch (caught) {
+      setError(getErrorMessage(caught));
+    } finally {
+      setPendingAction(null);
+    }
+  };
+
+  const handleUpdate = async (id: string) => {
+    setError(null);
+    setPendingAction(`update:${id}`);
+    try {
+      await onUpdate(id, draft);
+      setEditingId(null);
+      setDraft({});
+    } catch (caught) {
+      setError(getErrorMessage(caught));
+    } finally {
+      setPendingAction(null);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    setError(null);
+    setPendingAction(`delete:${id}`);
+    try {
+      await onDelete(id);
+    } catch (caught) {
+      setError(getErrorMessage(caught));
+    } finally {
+      setPendingAction(null);
+    }
+  };
 
   return (
     <div>
       <div className="mb-3 flex justify-end">
         <button
-          onClick={onCreate}
-          className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:opacity-90"
+          onClick={() => void handleCreate()}
+          disabled={pendingAction === "create"}
+          className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Plus className="h-4 w-4" />
-          {createLabel}
+          {pendingAction === "create" ? "Creating..." : createLabel}
         </button>
       </div>
+      {error && (
+        <div className="mb-3 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {error}
+        </div>
+      )}
       <div className="overflow-hidden rounded-lg border border-border bg-card">
-        <div className="grid grid-cols-[1.2fr_1fr_2fr_100px] gap-4 border-b border-border px-5 py-2.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+        <div
+          className="grid gap-4 border-b border-border px-5 py-2.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground"
+          style={{ gridTemplateColumns }}
+        >
           {columns.map((c) => (
             <div key={String(c.key)} className={c.key === "actions" ? "text-right" : ""}>
               {c.label}
@@ -138,94 +204,108 @@ function EditableTable<T extends Row>({
           return (
             <div
               key={r.id}
-              className="grid grid-cols-[1.2fr_1fr_2fr_100px] items-center gap-4 border-b border-border px-5 py-3 last:border-0 hover:bg-muted/40"
+              className="grid items-center gap-4 border-b border-border px-5 py-3 last:border-0 hover:bg-muted/40"
+              style={{ gridTemplateColumns }}
             >
-              <div>
-                {isEditing ? (
-                  <input
-                    value={(draft.name as string) ?? r.name}
-                    onChange={(e) => setDraft({ ...draft, name: e.target.value as T["name"] })}
-                    className="w-full rounded border border-border bg-card px-2 py-1 text-sm"
-                  />
-                ) : (
-                  <span className="font-medium">{r.name}</span>
-                )}
-              </div>
-              <div className="font-mono text-xs text-muted-foreground">{r.slug}</div>
-              <div className="text-sm text-muted-foreground">
-                {isEditing ? (
-                  <input
-                    value={(draft.description as string) ?? r.description ?? ""}
-                    onChange={(e) =>
-                      setDraft({ ...draft, description: e.target.value as T["description"] })
-                    }
-                    className="w-full rounded border border-border bg-card px-2 py-1 text-sm"
-                  />
-                ) : (
-                  r.description
-                )}
-              </div>
-              <div className="flex items-center justify-end gap-1">
-                {isEditing ? (
-                  <>
-                    <button
-                      onClick={() => {
-                        onUpdate(r.id, draft);
-                        setEditingId(null);
-                        setDraft({});
-                      }}
-                      className="rounded p-1 text-success-foreground hover:bg-success/40"
-                    >
-                      <Check className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => {
-                        setEditingId(null);
-                        setDraft({});
-                      }}
-                      className="rounded p-1 text-muted-foreground hover:bg-muted"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      onClick={() => {
-                        setEditingId(r.id);
-                        setDraft({});
-                      }}
-                      className="rounded p-1 text-muted-foreground hover:text-foreground"
-                    >
-                      <Pencil className="h-3.5 w-3.5" />
-                    </button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <button className="rounded p-1 text-muted-foreground hover:text-destructive">
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete item?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This will remove {r.name || "this item"} from supporting data.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                            onClick={() => void onDelete(r.id)}
+              {columns.map((column) => {
+                if (column.key === "actions") {
+                  return (
+                    <div key="actions" className="flex items-center justify-end gap-1">
+                      {isEditing ? (
+                        <>
+                          <button
+                            disabled={pendingAction === `update:${r.id}`}
+                            onClick={() => void handleUpdate(r.id)}
+                            className="rounded p-1 text-success-foreground hover:bg-success/40 disabled:cursor-not-allowed disabled:opacity-50"
                           >
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </>
-                )}
-              </div>
+                            <Check className="h-4 w-4" />
+                          </button>
+                          <button
+                            disabled={pendingAction === `update:${r.id}`}
+                            onClick={() => {
+                              setEditingId(null);
+                              setDraft({});
+                              setError(null);
+                            }}
+                            className="rounded p-1 text-muted-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => {
+                              setEditingId(r.id);
+                              setDraft({});
+                              setError(null);
+                            }}
+                            className="rounded p-1 text-muted-foreground hover:text-foreground"
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <button className="rounded p-1 text-muted-foreground hover:text-destructive">
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete item?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This will remove {r.name || "this item"} from supporting data.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  disabled={pendingAction === `delete:${r.id}`}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:cursor-not-allowed disabled:opacity-50"
+                                  onClick={() => void handleDelete(r.id)}
+                                >
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </>
+                      )}
+                    </div>
+                  );
+                }
+
+                const value = r[column.key];
+                const fallback =
+                  column.key === "slug" ? (
+                    <span className="font-mono text-xs text-muted-foreground">
+                      {String(value ?? "")}
+                    </span>
+                  ) : column.key === "name" ? (
+                    <span className="font-medium">{String(value ?? "")}</span>
+                  ) : (
+                    <span className="text-sm text-muted-foreground">{String(value ?? "")}</span>
+                  );
+
+                return (
+                  <div key={String(column.key)} className={column.className}>
+                    {isEditing
+                      ? (column.edit?.(r, draft, updateDraft) ??
+                        (column.key === "name" || column.key === "description" ? (
+                          <input
+                            value={String(draft[column.key] ?? value ?? "")}
+                            onChange={(e) =>
+                              updateDraft({ [column.key]: e.target.value } as Partial<T>)
+                            }
+                            className="w-full rounded border border-border bg-card px-2 py-1 text-sm"
+                          />
+                        ) : (
+                          fallback
+                        )))
+                      : (column.render?.(r) ?? fallback)}
+                  </div>
+                );
+              })}
             </div>
           );
         })}
@@ -277,8 +357,8 @@ export function BodyRegionsPage() {
   );
 }
 
-export function ExercisePurposesPage() {
-  const rows = useExercisePurposes();
+export function ExerciseBenefitsPage() {
+  const rows = useExerciseBenefits();
   return (
     <EditableTable
       columns={[
@@ -289,10 +369,10 @@ export function ExercisePurposesPage() {
       ]}
       rows={rows}
       onCreate={() =>
-        createPurpose({ name: "New Purpose", description: "", sort_order: rows.length + 1 })
+        createBenefit({ name: "New Benefit", description: "", sort_order: rows.length + 1 })
       }
-      onUpdate={updatePurpose}
-      onDelete={deletePurpose}
+      onUpdate={updateBenefit}
+      onDelete={deleteBenefit}
     />
   );
 }
@@ -305,18 +385,45 @@ export function MusclesPage() {
       columns={[
         { key: "name", label: "Name" },
         { key: "slug", label: "Slug" },
-        { key: "description", label: "Body Region" },
+        { key: "description", label: "Description" },
+        {
+          key: "body_region_id",
+          label: "Body Region",
+          render: (muscle) => (
+            <span className="text-sm text-muted-foreground">
+              {bodyRegions.find((region) => region.id === muscle.body_region_id)?.name ?? "—"}
+            </span>
+          ),
+          edit: (muscle, draft, setDraft) => (
+            <select
+              value={String(draft.body_region_id ?? muscle.body_region_id ?? "")}
+              onChange={(event) =>
+                setDraft({ body_region_id: event.target.value } as Partial<typeof muscle>)
+              }
+              className="w-full rounded border border-border bg-card px-2 py-1 text-sm"
+            >
+              <option value="">Select body region</option>
+              {bodyRegions.map((region) => (
+                <option key={region.id} value={region.id}>
+                  {region.name}
+                </option>
+              ))}
+            </select>
+          ),
+        },
         { key: "actions", label: "Actions" },
       ]}
-      rows={rows.map((m) => ({
-        ...m,
-        description: bodyRegions.find((region) => region.id === m.body_region_id)?.name ?? "",
-      }))}
+      rows={rows}
       onCreate={() =>
-        createMuscle({ name: "New Muscle", body_region_id: bodyRegions[0]?.id ?? "" })
+        createMuscle({
+          name: "New Muscle",
+          body_region_id: bodyRegions[0]?.id ?? "",
+          description: "",
+        })
       }
       onUpdate={updateMuscle}
       onDelete={deleteMuscle}
+      gridTemplateColumns="1.1fr 1fr 1.8fr 1.2fr 100px"
     />
   );
 }

@@ -24,7 +24,7 @@ export interface BodyRegion {
   sort_order: number;
 }
 
-export interface ExercisePurpose {
+export interface ExerciseBenefit {
   id: string;
   slug: string;
   name: string;
@@ -96,13 +96,18 @@ export interface ExerciseVariant {
   notes?: string | null;
 }
 
+export interface ExerciseInstructionGroup {
+  heading: string;
+  steps: string[];
+}
+
 export interface Exercise {
   id: string;
   slug: string;
   name: string;
   movement_family_id: string | null;
   body_region_id: string | null;
-  exercise_purpose_id: string | null;
+  required_benefit_id: string | null;
   category: "strength" | "mobility" | "conditioning" | "balance";
   position:
     | "standing"
@@ -120,6 +125,7 @@ export interface Exercise {
   balance_demand: Level;
   summary: string;
   instructions: string[];
+  instruction_groups?: ExerciseInstructionGroup[];
   coaching_cues: { text: string; time_seconds?: number | null }[];
   safety_info: string | null;
   review_status: ReviewStatus;
@@ -161,7 +167,7 @@ export interface WorkoutSlot {
   id: string;
   slot_order: number;
   exercise_id: string;
-  exercise_purpose_id: string | null;
+  required_benefit_id: string | null;
   duration_seconds: number;
   notes?: string;
 }

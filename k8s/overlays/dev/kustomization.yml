@@ -15,7 +15,7 @@ labels:
 images:
   - name: daily8-backend-image
     newName: ghcr.io/richpong212/daily8/backend
-    newTag: "1d4c167d7a1b7f686c4ac1fde7900930c7ded377"
+    newTag: "2be8af6331b9c83beb39ed2dd598a591d497deb5"
 
   - name: daily8-admin-image
     newName: ghcr.io/richpong212/daily8/admin

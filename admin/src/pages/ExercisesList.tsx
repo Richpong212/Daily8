@@ -1,21 +1,23 @@
 import { useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { Plus, Search } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Archive, Copy, MoreHorizontal, Plus, Search, Trash2 } from "lucide-react";
 import { createExerciseDraft, useExercises } from "@/services/exercises";
-import {
-  useMovementFamilies,
-  useBodyRegions,
-  getBodyRegion,
-  getMovementFamily,
-} from "@/services/supporting-data";
-import { StatusBadge, ReviewBadge } from "@/components/StatusBadge";
+import { useWorkouts } from "@/services/workouts";
+import { useMovementFamilies, getBodyRegion, getMovementFamily } from "@/services/supporting-data";
+import { StatusBadge, ReviewStatusIndicator } from "@/components/StatusBadge";
 import { ExerciseTile } from "@/components/ExerciseTile";
-import { useNavigate } from "react-router-dom";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import type { Exercise, Workout } from "@/types";
 
 export default function ExercisesList() {
   const exercises = useExercises();
+  const workouts = useWorkouts();
   const families = useMovementFamilies();
-  const bodyRegions = useBodyRegions();
   const [params] = useSearchParams();
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<string>("all");
@@ -35,17 +37,14 @@ export default function ExercisesList() {
     });
   }, [exercises, q, status, family, review]);
 
+  const usageCounts = useMemo(() => getExerciseUsageCounts(workouts), [workouts]);
+
   return (
     <div>
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <div className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
-            Content Library
-          </div>
-          <h1 className="mt-1 text-3xl font-bold">Exercises</h1>
-          <div className="mt-1 text-sm text-muted-foreground">
-            {exercises.length} exercises in library
-          </div>
+          <h1 className="text-3xl font-bold">Exercises</h1>
+          <div className="mt-1 text-sm text-muted-foreground">{exercises.length} exercises</div>
         </div>
         <button
           onClick={() => {
@@ -66,22 +65,22 @@ export default function ExercisesList() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search exercises..."
-            className="w-full rounded-md border border-border bg-card px-9 py-2 text-sm outline-none focus:border-ring"
+            className={controlCls + " w-full px-9"}
           />
         </div>
-        <Select value={status} onChange={setStatus}>
-          <option value="all">All Statuses</option>
-          <option value="active">Active</option>
-          <option value="draft">Draft</option>
-          <option value="retired">Retired</option>
-        </Select>
         <Select value={family} onChange={setFamily}>
-          <option value="all">All Families</option>
+          <option value="all">All Movement Families</option>
           {families.map((f) => (
             <option key={f.id} value={f.id}>
               {f.name}
             </option>
           ))}
+        </Select>
+        <Select value={status} onChange={setStatus}>
+          <option value="all">All Statuses</option>
+          <option value="active">Active</option>
+          <option value="draft">Draft</option>
+          <option value="retired">Retired</option>
         </Select>
         <Select value={review} onChange={setReview}>
           <option value="all">All Review Statuses</option>
@@ -93,6 +92,9 @@ export default function ExercisesList() {
       </div>
 
       <div className="divide-y divide-border rounded-lg border border-border bg-card">
+        <div className="px-4 py-2.5 text-xs text-muted-foreground">
+          {filtered.length} of {exercises.length} exercises
+        </div>
         {filtered.length === 0 && (
           <div className="p-6 text-center text-sm text-muted-foreground">
             No exercises match your filters.
@@ -101,34 +103,82 @@ export default function ExercisesList() {
         {filtered.map((e) => {
           const family = getMovementFamily(e.movement_family_id);
           const region = getBodyRegion(e.body_region_id);
+          const familyColor = family?.color ?? e.color;
+          const primaryImage = getPrimaryExerciseImage(e);
+          const usageCount = usageCounts.get(e.id) ?? 0;
           return (
-            <Link
+            <div
               key={e.id}
-              to={`/exercises/${e.id}`}
-              className="flex items-center gap-4 p-4 transition hover:bg-muted/50"
+              role="button"
+              tabIndex={0}
+              onClick={() => navigate(`/exercises/${e.id}`)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  navigate(`/exercises/${e.id}`);
+                }
+              }}
+              className="flex cursor-pointer items-center gap-4 p-4 transition hover:bg-muted/50 focus:bg-muted/50 focus:outline-none"
             >
-              <ExerciseTile name={e.name} color={e.color} />
-              <div className="flex-1">
-                <div className="font-semibold">{e.name}</div>
-                <div className="text-xs text-muted-foreground">
-                  {family?.name} · {region?.name}
+              <ExerciseTile name={e.name} color={familyColor} imageUrl={primaryImage} size="lg" />
+              <div className="min-w-0 flex-1">
+                <div className="truncate font-semibold">{e.name}</div>
+                <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+                  <span>{family?.name ?? "No family"}</span>
+                  <span aria-hidden="true">•</span>
+                  <span>{region?.name ?? "No region"}</span>
+                  <span aria-hidden="true">•</span>
+                  <span>
+                    {usageCount} workout{usageCount === 1 ? "" : "s"}
+                  </span>
                 </div>
               </div>
-              <StatusBadge status={e.status} />
-              <ReviewBadge status={e.review_status} />
-              <div className="font-mono text-xs text-muted-foreground w-24 text-right">
-                {new Date(e.updated_at).toISOString().slice(0, 10)}
+              <div className="flex w-24 justify-start">
+                <StatusBadge status={e.status} />
               </div>
-            </Link>
+              <div className="w-36">
+                <ReviewStatusIndicator status={e.review_status} />
+              </div>
+              <div className="w-28 text-right text-xs text-muted-foreground">
+                {formatUpdatedDate(e.updated_at)}
+              </div>
+              <div onClick={(event) => event.stopPropagation()}>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      aria-label={`Actions for ${e.name}`}
+                      className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+                    >
+                      <MoreHorizontal className="h-4 w-4" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem disabled>
+                      <Copy className="h-4 w-4" />
+                      Duplicate
+                    </DropdownMenuItem>
+                    <DropdownMenuItem disabled>
+                      <Archive className="h-4 w-4" />
+                      Archive
+                    </DropdownMenuItem>
+                    <DropdownMenuItem disabled className="text-destructive">
+                      <Trash2 className="h-4 w-4" />
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
           );
         })}
-      </div>
-      <div className="mt-3 text-xs text-muted-foreground">
-        {bodyRegions.length} body regions available
       </div>
     </div>
   );
 }
+
+const controlCls =
+  "h-10 rounded-md border border-border bg-card text-sm outline-none focus:border-ring";
 
 function Select({
   value,
@@ -143,9 +193,41 @@ function Select({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:border-ring"
+      className={controlCls + " px-3"}
     >
       {children}
     </select>
   );
 }
+
+const getExerciseUsageCounts = (workouts: Workout[]) => {
+  const counts = new Map<string, number>();
+
+  for (const workout of workouts) {
+    const exerciseIds = new Set<string>();
+    workout.groups.forEach((group) => {
+      group.slots.forEach((slot) => exerciseIds.add(slot.exercise_id));
+    });
+    exerciseIds.forEach((exerciseId) => {
+      counts.set(exerciseId, (counts.get(exerciseId) ?? 0) + 1);
+    });
+  }
+
+  return counts;
+};
+
+const getPrimaryExerciseImage = (exercise: Exercise) => {
+  const image =
+    exercise.media.find((item) => item.media_type === "image" && item.is_primary) ??
+    exercise.media.find((item) => item.media_type === "image");
+
+  return image?.url;
+};
+
+const formatUpdatedDate = (value: string) => {
+  return new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(value));
+};

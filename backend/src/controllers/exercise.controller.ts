@@ -7,7 +7,7 @@ import ExerciseEquipment from "../models/exerciseEquipment.model";
 import ExerciseConstraints from "../models/exerciseConstraints.model";
 import ExerciseMedia from "../models/exerciseMedia.model";
 import VariantLadderItems from "../models/variantLadderItems.model";
-import ExerciseVariants from "../models/exerciseVariants.model";
+import ExerciseRelationships from "../models/exerciseRelationships.model";
 import { logger } from "../utils/logger.utils";
 import { deleteCacheByPattern } from "../utils/cache.utils";
 
@@ -39,6 +39,7 @@ const toClientExercise = (
       .map((item) => (item as Record<string, any>).variant_ladder_id)
       .filter(Boolean),
     variants: relations.variants ?? [],
+    relationships: relations.variants ?? [],
     media: relations.media ?? [],
     createdAt: undefined,
     updatedAt: undefined,
@@ -78,17 +79,17 @@ const getExerciseRelations = async (exerciseId: string): Promise<ExerciseRelatio
       where: { exercise_id: exerciseId },
       attributes: ["variant_ladder_id"],
     }),
-    ExerciseVariants.findAll({
+    ExerciseRelationships.findAll({
       where: { from_exercise_id: exerciseId },
       attributes: [
         "id",
         "to_exercise_id",
-        "variant_type",
+        "relationship_type",
         "sort_order",
         "notes",
       ],
       order: [
-        ["variant_type", "ASC"],
+        ["relationship_type", "ASC"],
         ["sort_order", "ASC"],
       ],
     }),
@@ -100,7 +101,13 @@ const getExerciseRelations = async (exerciseId: string): Promise<ExerciseRelatio
     constraints: constraints.map((row) => row.get({ plain: true })),
     media: media.map((row) => row.get({ plain: true })),
     variantLadderItems: variantLadderItems.map((row) => row.get({ plain: true })),
-    variants: variants.map((row) => row.get({ plain: true })),
+    variants: variants.map((row) => {
+      const data = row.get({ plain: true }) as Record<string, any>;
+      return {
+        ...data,
+        variant_type: data.relationship_type,
+      };
+    }),
   };
 };
 
@@ -119,7 +126,7 @@ const buildVariantLadderRows = (
     }));
 };
 
-const buildExerciseVariantRows = (
+const buildExerciseRelationshipRows = (
   exerciseId: string,
   variants: Array<Record<string, any>> = [],
 ) => {
@@ -128,7 +135,8 @@ const buildExerciseVariantRows = (
     .map((variant, index) => ({
       from_exercise_id: exerciseId,
       to_exercise_id: variant.to_exercise_id,
-      variant_type: variant.variant_type ?? "related",
+      relationship_type:
+        variant.relationship_type ?? variant.variant_type ?? "related",
       sort_order: variant.sort_order ?? index + 1,
       notes: variant.notes ?? null,
     }));
@@ -193,6 +201,7 @@ const prepareExerciseUpdateData = (
   delete exerciseData.media;
   delete exerciseData.variant_ladder_ids;
   delete exerciseData.variants;
+  delete exerciseData.relationships;
   delete exerciseData.created_at;
   delete exerciseData.updated_at;
   delete exerciseData.createdAt;
@@ -224,6 +233,7 @@ const createRelationRows = async (
     media = [],
     variant_ladder_ids = [],
     variants = [],
+    relationships = variants,
   } = body;
 
   const muscleRows = muscles.map(
@@ -276,7 +286,10 @@ const createRelationRows = async (
     }),
   );
   const variantLadderRows = buildVariantLadderRows(exerciseId, variant_ladder_ids);
-  const exerciseVariantRows = buildExerciseVariantRows(exerciseId, variants);
+  const exerciseRelationshipRows = buildExerciseRelationshipRows(
+    exerciseId,
+    relationships,
+  );
 
   await Promise.all([
     muscleRows.length
@@ -294,8 +307,8 @@ const createRelationRows = async (
     variantLadderRows.length
       ? VariantLadderItems.bulkCreate(variantLadderRows, { transaction })
       : Promise.resolve(),
-    exerciseVariantRows.length
-      ? ExerciseVariants.bulkCreate(exerciseVariantRows, { transaction })
+    exerciseRelationshipRows.length
+      ? ExerciseRelationships.bulkCreate(exerciseRelationshipRows, { transaction })
       : Promise.resolve(),
   ]);
 
@@ -305,7 +318,10 @@ const createRelationRows = async (
     constraints: constraintRows,
     media: mediaRows,
     variantLadderItems: variantLadderRows,
-    variants: exerciseVariantRows,
+    variants: exerciseRelationshipRows.map((row) => ({
+      ...row,
+      variant_type: row.relationship_type,
+    })),
   };
 };
 
@@ -387,7 +403,15 @@ export const updateExercise: any = async (req: IdParamRequest, res: Response) =>
       return res.status(404).json({ message: "Exercise not found" });
     }
 
-    const { muscles, equipment, constraints, media, variant_ladder_ids, variants } = req.body;
+    const {
+      muscles,
+      equipment,
+      constraints,
+      media,
+      variant_ladder_ids,
+      variants,
+      relationships,
+    } = req.body;
     const exerciseData = prepareExerciseUpdateData(req.body, exercise);
 
     await exercise.update(exerciseData, { transaction });
@@ -457,15 +481,22 @@ export const updateExercise: any = async (req: IdParamRequest, res: Response) =>
       }
     }
 
-    if (Array.isArray(variants)) {
-      await ExerciseVariants.destroy({
+    const relationshipPayload = Array.isArray(relationships) ? relationships : variants;
+
+    if (Array.isArray(relationshipPayload)) {
+      await ExerciseRelationships.destroy({
         where: { from_exercise_id: exercise.id },
         transaction,
       });
-      const exerciseVariantRows = buildExerciseVariantRows(exercise.id, variants);
+      const exerciseRelationshipRows = buildExerciseRelationshipRows(
+        exercise.id,
+        relationshipPayload,
+      );
 
-      if (exerciseVariantRows.length) {
-        await ExerciseVariants.bulkCreate(exerciseVariantRows, { transaction });
+      if (exerciseRelationshipRows.length) {
+        await ExerciseRelationships.bulkCreate(exerciseRelationshipRows, {
+          transaction,
+        });
       }
     }
 
@@ -502,7 +533,7 @@ export const deleteExercise: any = async (req: IdParamRequest, res: Response) =>
       ExerciseConstraints.destroy({ where: { exercise_id: exercise.id }, transaction }),
       ExerciseMedia.destroy({ where: { exercise_id: exercise.id }, transaction }),
       VariantLadderItems.destroy({ where: { exercise_id: exercise.id }, transaction }),
-      ExerciseVariants.destroy({
+      ExerciseRelationships.destroy({
         where: {
           [Op.or]: [
             { from_exercise_id: exercise.id },

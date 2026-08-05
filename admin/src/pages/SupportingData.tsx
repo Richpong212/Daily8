@@ -48,7 +48,7 @@ import {
 const TABS = [
   { to: "/supporting-data/movement-families", label: "Movement Families" },
   { to: "/supporting-data/body-regions", label: "Body Regions" },
-  { to: "/supporting-data/exercise-benefits", label: "Exercise Benefits" },
+  { to: "/supporting-data/exercise-benefits", label: "Exercise Purposes" },
   { to: "/supporting-data/muscles", label: "Muscles" },
   { to: "/supporting-data/equipment", label: "Equipment" },
   { to: "/supporting-data/constraints", label: "Constraints" },
@@ -116,7 +116,7 @@ function EditableTable<T extends Row>({
 }: {
   columns: Column<T>[];
   rows: T[];
-  onCreate: () => unknown | Promise<unknown>;
+  onCreate: () => T | Promise<T>;
   onUpdate: (id: string, patch: Partial<T>) => void | Promise<void>;
   onDelete: (id: string) => void | Promise<void>;
   createLabel?: string;
@@ -137,7 +137,9 @@ function EditableTable<T extends Row>({
     setError(null);
     setPendingAction("create");
     try {
-      await onCreate();
+      const created = await onCreate();
+      setEditingId(created.id);
+      setDraft({});
     } catch (caught) {
       setError(getErrorMessage(caught));
     } finally {
@@ -293,6 +295,7 @@ function EditableTable<T extends Row>({
                       ? (column.edit?.(r, draft, updateDraft) ??
                         (column.key === "name" || column.key === "description" ? (
                           <input
+                            autoFocus={column.key === "name"}
                             value={String(draft[column.key] ?? value ?? "")}
                             onChange={(e) =>
                               updateDraft({ [column.key]: e.target.value } as Partial<T>)
@@ -324,15 +327,49 @@ export function MovementFamiliesPage() {
       columns={[
         { key: "name", label: "Name" },
         { key: "slug", label: "Slug" },
+        {
+          key: "color",
+          label: "Color",
+          render: (row) => (
+            <div className="flex items-center gap-2">
+              <span
+                className="h-5 w-5 rounded border border-border"
+                style={{ backgroundColor: row.color }}
+              />
+              <span>{row.color}</span>
+            </div>
+          ),
+          edit: (row, draft, setDraft) => (
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={(draft.color as string | undefined) ?? row.color}
+                onChange={(event) => setDraft({ color: event.target.value })}
+                className="h-8 w-10 rounded border border-border bg-card p-1"
+              />
+              <input
+                value={(draft.color as string | undefined) ?? row.color}
+                onChange={(event) => setDraft({ color: event.target.value })}
+                className="w-full rounded border border-border bg-card px-2 py-1 text-sm"
+              />
+            </div>
+          ),
+        },
         { key: "description", label: "Description" },
         { key: "actions", label: "Actions" },
       ]}
       rows={rows}
       onCreate={() =>
-        createMovementFamily({ name: "New Family", description: "", sort_order: rows.length + 1 })
+        createMovementFamily({
+          name: "New Family",
+          description: "",
+          color: "#6C63B8",
+          sort_order: rows.length + 1,
+        })
       }
       onUpdate={updateMovementFamily}
       onDelete={deleteMovementFamily}
+      gridTemplateColumns="1fr 1fr 140px 2fr 100px"
     />
   );
 }

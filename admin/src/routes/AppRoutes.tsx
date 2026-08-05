@@ -1,6 +1,5 @@
 import { Route, Routes, Navigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
-import Dashboard from "@/pages/Dashboard";
 import ExercisesList from "@/pages/ExercisesList";
 import ExerciseEditor from "@/pages/ExerciseEditor";
 import WorkoutsList from "@/pages/WorkoutsList";
@@ -21,7 +20,7 @@ export function AppRoutes() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
-        <Route index element={<Dashboard />} />
+        <Route index element={<Navigate to="workouts" replace />} />
         <Route path="exercises" element={<ExercisesList />} />
         <Route path="exercises/:id" element={<ExerciseEditor />} />
         <Route path="workouts" element={<WorkoutsList />} />

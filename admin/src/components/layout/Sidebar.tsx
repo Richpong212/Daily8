@@ -1,7 +1,6 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { useState } from "react";
 import {
-  LayoutGrid,
   Dumbbell,
   CalendarDays,
   Database,
@@ -11,16 +10,20 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const primaryNav = [
-  { to: "/", label: "Dashboard", icon: LayoutGrid, end: true },
-  { to: "/exercises", label: "Exercises", icon: Dumbbell },
+const primaryNav: Array<{
+  to: string;
+  label: string;
+  icon: typeof CalendarDays;
+  end?: boolean;
+}> = [
   { to: "/workouts", label: "Workouts", icon: CalendarDays },
+  { to: "/exercises", label: "Exercises", icon: Dumbbell },
 ];
 
 const supportingSub = [
   { to: "/supporting-data/movement-families", label: "Movement Families" },
   { to: "/supporting-data/body-regions", label: "Body Regions" },
-  { to: "/supporting-data/exercise-benefits", label: "Exercise Benefits" },
+  { to: "/supporting-data/exercise-benefits", label: "Exercise Purposes" },
   { to: "/supporting-data/muscles", label: "Muscles" },
   { to: "/supporting-data/equipment", label: "Equipment" },
   { to: "/supporting-data/constraints", label: "Constraints" },
@@ -80,7 +83,7 @@ export function Sidebar() {
                   cn(
                     "block rounded px-2 py-1.5 text-xs transition",
                     isActive
-                      ? "text-sidebar-primary-foreground"
+                      ? "bg-sidebar-accent text-sidebar-primary-foreground"
                       : "text-sidebar-foreground/60 hover:text-sidebar-foreground",
                   )
                 }

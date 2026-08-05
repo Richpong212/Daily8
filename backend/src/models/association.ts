@@ -15,7 +15,7 @@ import WorkoutGroups from "./workoutGroups.model";
 import WorkoutSlots from "./workoutSlots.model";
 import VariantLadders from "./variantLadders.model";
 import VariantLadderItems from "./variantLadderItems.model";
-import ExerciseVariants from "./exerciseVariants.model";
+import ExerciseRelationships from "./exerciseRelationships.model";
 
 export const applyModelAssociations = () => {
   MovementFamilies.hasMany(Exercises, {
@@ -154,22 +154,22 @@ export const applyModelAssociations = () => {
     as: "exercise",
   });
 
-  Exercises.hasMany(ExerciseVariants, {
+  Exercises.hasMany(ExerciseRelationships, {
     foreignKey: "from_exercise_id",
-    as: "outgoingVariants",
+    as: "outgoingRelationships",
   });
 
-  Exercises.hasMany(ExerciseVariants, {
+  Exercises.hasMany(ExerciseRelationships, {
     foreignKey: "to_exercise_id",
-    as: "incomingVariants",
+    as: "incomingRelationships",
   });
 
-  ExerciseVariants.belongsTo(Exercises, {
+  ExerciseRelationships.belongsTo(Exercises, {
     foreignKey: "from_exercise_id",
     as: "fromExercise",
   });
 
-  ExerciseVariants.belongsTo(Exercises, {
+  ExerciseRelationships.belongsTo(Exercises, {
     foreignKey: "to_exercise_id",
     as: "toExercise",
   });

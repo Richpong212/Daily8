@@ -1,5 +1,6 @@
 import { Model, DataTypes } from "sequelize";
 import { db } from "../config/connectDb";
+import type { ExerciseInstructionGroup } from "./exercises.model";
 
 class WorkoutSlots extends Model {
   public id!: string;
@@ -11,6 +12,7 @@ class WorkoutSlots extends Model {
   public required_benefit_id!: string | null;
   public requiredBenefit?: unknown;
   public duration_seconds!: number;
+  public instruction_groups!: ExerciseInstructionGroup[];
   public notes!: string | null;
   public createdAt!: Date;
   public updatedAt!: Date;
@@ -42,6 +44,11 @@ WorkoutSlots.init(
     duration_seconds: {
       type: DataTypes.INTEGER,
       allowNull: false,
+    },
+    instruction_groups: {
+      type: DataTypes.JSONB,
+      allowNull: false,
+      defaultValue: [],
     },
     notes: {
       type: DataTypes.TEXT,

@@ -6,6 +6,7 @@ class MovementFamilies extends Model {
   public slug!: string;
   public name!: string;
   public description!: string;
+  public color!: string;
   public sort_order!: number;
   public createdAt!: Date;
   public updatedAt!: Date;
@@ -30,6 +31,11 @@ MovementFamilies.init(
     description: {
       type: DataTypes.TEXT,
       allowNull: false,
+    },
+    color: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: "#6C63B8",
     },
     sort_order: {
       type: DataTypes.INTEGER,

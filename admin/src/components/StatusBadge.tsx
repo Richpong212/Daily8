@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { CheckCircle2, Eye, FileText, OctagonX, TriangleAlert } from "lucide-react";
 import type { ReviewStatus, Status } from "@/types";
 
 const STATUS_STYLES: Record<
@@ -54,6 +55,25 @@ export function ReviewBadge({ status }: { status: ReviewStatus }) {
         STATUS_STYLES[status],
       )}
     >
+      {REVIEW_LABEL[status]}
+    </span>
+  );
+}
+
+const REVIEW_ICON = {
+  draft: FileText,
+  needs_review: TriangleAlert,
+  reviewed: Eye,
+  approved: CheckCircle2,
+  not_recommended: OctagonX,
+};
+
+export function ReviewStatusIndicator({ status }: { status: ReviewStatus }) {
+  const Icon = REVIEW_ICON[status];
+
+  return (
+    <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+      <Icon className="h-3.5 w-3.5" />
       {REVIEW_LABEL[status]}
     </span>
   );

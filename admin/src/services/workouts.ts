@@ -1,7 +1,8 @@
 import { useEffect, useSyncExternalStore } from "react";
 import axios from "axios";
+import { toast } from "sonner";
 import { apiBaseUrl, isRecord } from "@/services/api";
-import type { Workout, WorkoutGroup, WorkoutSlot } from "@/types";
+import type { ExerciseInstructionGroup, Workout, WorkoutGroup, WorkoutSlot } from "@/types";
 
 type WorkoutResponse = {
   message: string;
@@ -176,6 +177,7 @@ const persistWorkout = async (workout: Workout): Promise<Workout> => {
 
     const saved = response.data.data as Workout;
     upsertWorkout(saved);
+    toast.success(response.data.message);
     return saved;
   } catch (error) {
     throw new Error(getApiErrorMessage(error));
@@ -222,8 +224,9 @@ export const deleteWorkout = async (id: string): Promise<void> => {
   }
 
   try {
-    await workoutApi.delete(`/workouts/${id}`);
+    const response = await workoutApi.delete<{ message: string }>(`/workouts/${id}`);
     removeWorkout(id);
+    toast.success(response.data.message);
   } catch (error) {
     throw new Error(getApiErrorMessage(error));
   }
@@ -306,6 +309,7 @@ export const addSlot = (
   groupId: string,
   exerciseId: string,
   requiredBenefitId: string | null = null,
+  instructionGroups: ExerciseInstructionGroup[] = [],
 ): void => {
   mutateWorkout(workoutId, (workout) => ({
     ...workout,
@@ -321,6 +325,7 @@ export const addSlot = (
                 exercise_id: exerciseId,
                 required_benefit_id: requiredBenefitId,
                 duration_seconds: 30,
+                instruction_groups: instructionGroups,
               },
             ],
           }
@@ -391,7 +396,10 @@ export const publishWorkout = async (id: string): Promise<Workout | undefined> =
     ? await persistWorkout({ ...workout, status: "active" })
     : await workoutApi
         .patch<WorkoutResponse>(`/workouts/${id}`, { status: "active" })
-        .then((response) => response.data.data)
+        .then((response) => {
+          toast.success(response.data.message);
+          return response.data.data;
+        })
         .catch((error) => {
           throw new Error(getApiErrorMessage(error));
         });

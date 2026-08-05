@@ -1,5 +1,6 @@
 import { useEffect, useSyncExternalStore } from "react";
 import axios from "axios";
+import { toast } from "sonner";
 import { apiBaseUrl, isRecord } from "@/services/api";
 import type {
   BodyRegion,
@@ -29,6 +30,11 @@ type SupportingDataResponse = {
 type ItemResponse<T> = {
   message: string;
   data: T;
+};
+
+type SavedItem<T> = {
+  item: T;
+  message: string;
 };
 
 type CreatePayload<T> = Omit<T, "id" | "slug">;
@@ -136,27 +142,31 @@ const removeItem = <K extends keyof SupportingData>(key: K, id: string) => {
   });
 };
 
-const createItem = async <T>(resource: string, data: CreatePayload<T>): Promise<T> => {
+const createItem = async <T>(resource: string, data: CreatePayload<T>): Promise<SavedItem<T>> => {
   try {
     const response = await supportingDataApi.post<ItemResponse<T>>(resource, data);
     if (!isRecord(response.data.data)) {
       throw new Error("API returned an invalid supporting data payload");
     }
 
-    return response.data.data;
+    return { item: response.data.data, message: response.data.message };
   } catch (error) {
     throw new Error(getApiErrorMessage(error));
   }
 };
 
-const updateItem = async <T>(resource: string, id: string, patch: Partial<T>): Promise<T> => {
+const updateItem = async <T>(
+  resource: string,
+  id: string,
+  patch: Partial<T>,
+): Promise<SavedItem<T>> => {
   try {
     const response = await supportingDataApi.patch<ItemResponse<T>>(`${resource}/${id}`, patch);
     if (!isRecord(response.data.data)) {
       throw new Error("API returned an invalid supporting data payload");
     }
 
-    return response.data.data;
+    return { item: response.data.data, message: response.data.message };
   } catch (error) {
     throw new Error(getApiErrorMessage(error));
   }
@@ -164,7 +174,8 @@ const updateItem = async <T>(resource: string, id: string, patch: Partial<T>): P
 
 const deleteItem = async (resource: string, id: string): Promise<void> => {
   try {
-    await supportingDataApi.delete(`${resource}/${id}`);
+    const response = await supportingDataApi.delete<{ message: string }>(`${resource}/${id}`);
+    toast.success(response.data.message);
   } catch (error) {
     throw new Error(getApiErrorMessage(error));
   }
@@ -207,14 +218,16 @@ export const getLadder = (id: string | null | undefined) => {
 };
 
 export const createMovementFamily = async (data: CreatePayload<MovementFamily>) => {
-  const item = await createItem<MovementFamily>("movement-families", data);
+  const { item, message } = await createItem<MovementFamily>("movement-families", data);
   upsertItem("movementFamilies", item);
+  toast.success(message);
   return item;
 };
 
 export const updateMovementFamily = async (id: string, patch: Partial<MovementFamily>) => {
-  const item = await updateItem<MovementFamily>("movement-families", id, patch);
+  const { item, message } = await updateItem<MovementFamily>("movement-families", id, patch);
   upsertItem("movementFamilies", item);
+  toast.success(message);
 };
 
 export const deleteMovementFamily = async (id: string) => {
@@ -223,14 +236,16 @@ export const deleteMovementFamily = async (id: string) => {
 };
 
 export const createBodyRegion = async (data: CreatePayload<BodyRegion>) => {
-  const item = await createItem<BodyRegion>("body-regions", data);
+  const { item, message } = await createItem<BodyRegion>("body-regions", data);
   upsertItem("bodyRegions", item);
+  toast.success(message);
   return item;
 };
 
 export const updateBodyRegion = async (id: string, patch: Partial<BodyRegion>) => {
-  const item = await updateItem<BodyRegion>("body-regions", id, patch);
+  const { item, message } = await updateItem<BodyRegion>("body-regions", id, patch);
   upsertItem("bodyRegions", item);
+  toast.success(message);
 };
 
 export const deleteBodyRegion = async (id: string) => {
@@ -239,14 +254,16 @@ export const deleteBodyRegion = async (id: string) => {
 };
 
 export const createBenefit = async (data: CreatePayload<ExerciseBenefit>) => {
-  const item = await createItem<ExerciseBenefit>("exercise-benefits", data);
+  const { item, message } = await createItem<ExerciseBenefit>("exercise-benefits", data);
   upsertItem("exerciseBenefits", item);
+  toast.success(message);
   return item;
 };
 
 export const updateBenefit = async (id: string, patch: Partial<ExerciseBenefit>) => {
-  const item = await updateItem<ExerciseBenefit>("exercise-benefits", id, patch);
+  const { item, message } = await updateItem<ExerciseBenefit>("exercise-benefits", id, patch);
   upsertItem("exerciseBenefits", item);
+  toast.success(message);
 };
 
 export const deleteBenefit = async (id: string) => {
@@ -255,14 +272,16 @@ export const deleteBenefit = async (id: string) => {
 };
 
 export const createMuscle = async (data: CreatePayload<Muscle>) => {
-  const item = await createItem<Muscle>("muscles", data);
+  const { item, message } = await createItem<Muscle>("muscles", data);
   upsertItem("muscles", item);
+  toast.success(message);
   return item;
 };
 
 export const updateMuscle = async (id: string, patch: Partial<Muscle>) => {
-  const item = await updateItem<Muscle>("muscles", id, patch);
+  const { item, message } = await updateItem<Muscle>("muscles", id, patch);
   upsertItem("muscles", item);
+  toast.success(message);
 };
 
 export const deleteMuscle = async (id: string) => {
@@ -271,14 +290,16 @@ export const deleteMuscle = async (id: string) => {
 };
 
 export const createEquipment = async (data: CreatePayload<Equipment>) => {
-  const item = await createItem<Equipment>("equipment", data);
+  const { item, message } = await createItem<Equipment>("equipment", data);
   upsertItem("equipment", item);
+  toast.success(message);
   return item;
 };
 
 export const updateEquipment = async (id: string, patch: Partial<Equipment>) => {
-  const item = await updateItem<Equipment>("equipment", id, patch);
+  const { item, message } = await updateItem<Equipment>("equipment", id, patch);
   upsertItem("equipment", item);
+  toast.success(message);
 };
 
 export const deleteEquipment = async (id: string) => {
@@ -287,14 +308,16 @@ export const deleteEquipment = async (id: string) => {
 };
 
 export const createConstraint = async (data: CreatePayload<Constraint>) => {
-  const item = await createItem<Constraint>("constraints", data);
+  const { item, message } = await createItem<Constraint>("constraints", data);
   upsertItem("constraints", item);
+  toast.success(message);
   return item;
 };
 
 export const updateConstraint = async (id: string, patch: Partial<Constraint>) => {
-  const item = await updateItem<Constraint>("constraints", id, patch);
+  const { item, message } = await updateItem<Constraint>("constraints", id, patch);
   upsertItem("constraints", item);
+  toast.success(message);
 };
 
 export const deleteConstraint = async (id: string) => {
@@ -303,14 +326,16 @@ export const deleteConstraint = async (id: string) => {
 };
 
 export const createVariantLadder = async (data: CreatePayload<VariantLadder>) => {
-  const item = await createItem<VariantLadder>("variant-ladders", data);
+  const { item, message } = await createItem<VariantLadder>("variant-ladders", data);
   upsertItem("variantLadders", item);
+  toast.success(message);
   return item;
 };
 
 export const updateVariantLadder = async (id: string, patch: Partial<VariantLadder>) => {
-  const item = await updateItem<VariantLadder>("variant-ladders", id, patch);
+  const { item, message } = await updateItem<VariantLadder>("variant-ladders", id, patch);
   upsertItem("variantLadders", item);
+  toast.success(message);
 };
 
 export const deleteVariantLadder = async (id: string) => {

@@ -49,6 +49,27 @@ const clearWorkoutCaches = async () => {
   await deleteCacheByPattern("workouts:*");
 };
 
+const normalizeInstructionGroups = (value: unknown) => {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map((group) => {
+      if (!group || typeof group !== "object") return null;
+
+      const data = group as Record<string, unknown>;
+      const steps = Array.isArray(data.steps)
+        ? data.steps
+            .filter((step): step is string => typeof step === "string")
+            .map((step) => step.trim())
+            .filter(Boolean)
+        : [];
+      const heading = typeof data.heading === "string" ? data.heading.trim() : "";
+
+      return heading || steps.length ? { heading, steps } : null;
+    })
+    .filter(Boolean);
+};
+
 const toClientWorkout = (
   workout: Workouts,
   groups: Array<Record<string, any>> = [],
@@ -165,6 +186,7 @@ const replaceWorkoutStructure = async (
       exercise_id: slot.exercise_id,
       required_benefit_id: slot.required_benefit_id ?? null,
       duration_seconds: slot.duration_seconds ?? 30,
+      instruction_groups: normalizeInstructionGroups(slot.instruction_groups),
       notes: slot.notes ?? null,
     }));
 

@@ -22,6 +22,7 @@ import {
   getBenefit,
   getEquipmentItem,
   getLadder,
+  getMovementFamily,
 } from "@/services/supporting-data";
 import { ExerciseTile } from "@/components/ExerciseTile";
 import { StatusBadge, ReviewBadge } from "@/components/StatusBadge";
@@ -409,19 +410,6 @@ export default function ExerciseEditor() {
           </Card>
 
           <Card>
-            <SectionLabel>Safety Information</SectionLabel>
-            <textarea
-              value={ex.safety_info ?? ""}
-              onChange={(e) => patch({ safety_info: e.target.value })}
-              rows={2}
-              className={inputCls}
-            />
-            <div className="mt-2 text-xs text-muted-foreground">
-              Do not include medical advice, diagnoses or safety guarantees.
-            </div>
-          </Card>
-
-          <Card>
             <div className="flex items-center justify-between">
               <SectionLabel>Coaching Cues</SectionLabel>
               <span className="text-xs text-muted-foreground">
@@ -485,6 +473,19 @@ export default function ExerciseEditor() {
           </Card>
 
           <Card>
+            <SectionLabel>Safety Information</SectionLabel>
+            <textarea
+              value={ex.safety_info ?? ""}
+              onChange={(e) => patch({ safety_info: e.target.value })}
+              rows={2}
+              className={inputCls}
+            />
+            <div className="mt-2 text-xs text-muted-foreground">
+              Do not include medical advice, diagnoses or safety guarantees.
+            </div>
+          </Card>
+
+          <Card>
             <SectionLabel>Review Notes</SectionLabel>
             <textarea
               value={ex.review_notes}
@@ -501,7 +502,11 @@ export default function ExerciseEditor() {
           <Card>
             <SectionLabel>Media</SectionLabel>
             <div className="flex gap-3">
-              <ExerciseTile name={ex.name} color={ex.color} size="lg" />
+              <ExerciseTile
+                name={ex.name}
+                color={getMovementFamily(ex.movement_family_id)?.color ?? ex.color}
+                size="lg"
+              />
               <div className="flex flex-1 items-center justify-center rounded-md bg-muted">
                 <Play className="h-6 w-6 text-muted-foreground" />
               </div>

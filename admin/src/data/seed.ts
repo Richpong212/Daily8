@@ -16,13 +16,15 @@ export const movementFamilies: MovementFamily[] = [
     slug: "squat",
     name: "Squat",
     description: "Knee- and hip-dominant movements in which the user lowers and raises the body.",
+    color: "#6C63B8",
     sort_order: 3,
   },
   {
     id: "mf_horizontal_push",
-    slug: "horizontal_push",
-    name: "Horizontal Push",
+    slug: "push",
+    name: "Push",
     description: "Pressing movements directed forward, such as push-ups and wall push-ups.",
+    color: "#D97745",
     sort_order: 4,
   },
   {
@@ -30,6 +32,7 @@ export const movementFamilies: MovementFamily[] = [
     slug: "hinge",
     name: "Hinge",
     description: "Hip-dominant movements where the trunk lowers toward horizontal.",
+    color: "#2E7D8A",
     sort_order: 5,
   },
   {
@@ -37,6 +40,7 @@ export const movementFamilies: MovementFamily[] = [
     slug: "gait",
     name: "Gait",
     description: "Walking-pattern movements including marching and stepping exercises.",
+    color: "#D4B347",
     sort_order: 6,
   },
   {
@@ -44,6 +48,7 @@ export const movementFamilies: MovementFamily[] = [
     slug: "balance",
     name: "Balance",
     description: "Exercises that primarily challenge stability and proprioception.",
+    color: "#8C6FB8",
     sort_order: 7,
   },
   {
@@ -51,6 +56,7 @@ export const movementFamilies: MovementFamily[] = [
     slug: "core",
     name: "Core",
     description: "Exercises emphasising trunk stability, control and anti-rotation.",
+    color: "#5F9D76",
     sort_order: 8,
   },
   {
@@ -58,6 +64,7 @@ export const movementFamilies: MovementFamily[] = [
     slug: "mobility",
     name: "Mobility",
     description: "Movements designed to improve range of motion and tissue extensibility.",
+    color: "#69AFCB",
     sort_order: 9,
   },
 ];
@@ -769,6 +776,7 @@ export const workouts: Workout[] = [
             exercise_id: "ex_march_in_place",
             required_benefit_id: "eb_conditioning",
             duration_seconds: 30,
+            instruction_groups: [],
           },
           {
             id: "ws_2",
@@ -776,6 +784,7 @@ export const workouts: Workout[] = [
             exercise_id: "ex_shoulder_rolls",
             required_benefit_id: "eb_mobility",
             duration_seconds: 30,
+            instruction_groups: [],
           },
         ],
       },
@@ -792,6 +801,7 @@ export const workouts: Workout[] = [
             exercise_id: "ex_squat",
             required_benefit_id: "eb_lower_body_strength",
             duration_seconds: 40,
+            instruction_groups: [],
           },
           {
             id: "ws_4",
@@ -799,6 +809,7 @@ export const workouts: Workout[] = [
             exercise_id: "ex_standing_knee_drive",
             required_benefit_id: "eb_core_control",
             duration_seconds: 40,
+            instruction_groups: [],
           },
         ],
       },
@@ -815,6 +826,7 @@ export const workouts: Workout[] = [
             exercise_id: "ex_supported_single_leg_balance",
             required_benefit_id: "eb_balance_coordination",
             duration_seconds: 30,
+            instruction_groups: [],
           },
         ],
       },
@@ -831,6 +843,7 @@ export const workouts: Workout[] = [
             exercise_id: "ex_standing_side_reach",
             required_benefit_id: "eb_mobility",
             duration_seconds: 30,
+            instruction_groups: [],
           },
           {
             id: "ws_7",
@@ -838,6 +851,7 @@ export const workouts: Workout[] = [
             exercise_id: "ex_hamstring_stretch",
             required_benefit_id: "eb_mobility",
             duration_seconds: 30,
+            instruction_groups: [],
           },
         ],
       },

@@ -51,42 +51,48 @@
       "slug": "squat",
       "name": "Squat",
       "description": "Knee and hip bending patterns used to sit, stand, and lower the body.",
-      "sort_order": 1
+      "sort_order": 1,
+      "color": "#6C63B8"
     },
     {
       "id": "20000000-0000-4000-8000-000000000002",
       "slug": "hinge",
       "name": "Hinge",
       "description": "Hip-dominant movements that train posterior-chain control.",
-      "sort_order": 2
+      "sort_order": 2,
+      "color": "#2E7D8A"
     },
     {
       "id": "20000000-0000-4000-8000-000000000003",
       "slug": "push",
       "name": "Push",
       "description": "Upper-body or full-body movements that press away from the body.",
-      "sort_order": 3
+      "sort_order": 3,
+      "color": "#D97745"
     },
     {
       "id": "20000000-0000-4000-8000-000000000004",
       "slug": "pull",
       "name": "Pull",
       "description": "Upper-body movements that draw resistance toward the body.",
-      "sort_order": 4
+      "sort_order": 4,
+      "color": "#C65B5B"
     },
     {
       "id": "20000000-0000-4000-8000-000000000005",
       "slug": "carry-locomotion",
       "name": "Carry and Locomotion",
       "description": "Walking, marching, carrying, and rhythmic conditioning patterns.",
-      "sort_order": 5
+      "sort_order": 5,
+      "color": "#D4B347"
     },
     {
       "id": "20000000-0000-4000-8000-000000000006",
       "slug": "mobility-control",
       "name": "Mobility and Control",
       "description": "Controlled range-of-motion and balance-focused movements.",
-      "sort_order": 6
+      "sort_order": 6,
+      "color": "#69AFCB"
     }
   ],
   "exercise_benefits": [
@@ -1197,32 +1203,6 @@
       "editor_notes": "Loaded option for users who tolerate floor work."
     }
   ],
-  "exercise_variants": [
-    {
-      "id": "82000000-0000-4000-8000-000000000001",
-      "from_exercise_id": "70000000-0000-4000-8000-000000000001",
-      "to_exercise_id": "70000000-0000-4000-8000-000000000009",
-      "variant_type": "progression",
-      "sort_order": 1,
-      "notes": "Step-up can be reviewed as a more demanding lower-body alternative."
-    },
-    {
-      "id": "82000000-0000-4000-8000-000000000002",
-      "from_exercise_id": "70000000-0000-4000-8000-000000000005",
-      "to_exercise_id": "70000000-0000-4000-8000-000000000011",
-      "variant_type": "progression",
-      "sort_order": 1,
-      "notes": "Loaded crunch is a higher-demand trunk option."
-    },
-    {
-      "id": "82000000-0000-4000-8000-000000000003",
-      "from_exercise_id": "70000000-0000-4000-8000-000000000004",
-      "to_exercise_id": "70000000-0000-4000-8000-000000000001",
-      "variant_type": "related",
-      "sort_order": 2,
-      "notes": "Both are beginner-friendly standing lower-body patterns."
-    }
-  ],
   "workouts": [
     {
       "id": "90000000-0000-4000-8000-000000000001",
@@ -1287,7 +1267,8 @@
       "exercise_id": "70000000-0000-4000-8000-000000000004",
       "required_benefit_id": "30000000-0000-4000-8000-000000000003",
       "duration_seconds": 45,
-      "notes": "Keep the pace conversational."
+      "notes": "Keep the pace conversational.",
+      "instruction_groups": []
     },
     {
       "id": "92000000-0000-4000-8000-000000000002",
@@ -1296,7 +1277,8 @@
       "exercise_id": "70000000-0000-4000-8000-000000000001",
       "required_benefit_id": "30000000-0000-4000-8000-000000000002",
       "duration_seconds": 40,
-      "notes": "Use chair height to control difficulty."
+      "notes": "Use chair height to control difficulty.",
+      "instruction_groups": []
     },
     {
       "id": "92000000-0000-4000-8000-000000000003",
@@ -1305,7 +1287,8 @@
       "exercise_id": "70000000-0000-4000-8000-000000000002",
       "required_benefit_id": "30000000-0000-4000-8000-000000000002",
       "duration_seconds": 40,
-      "notes": "Step closer to the wall if needed."
+      "notes": "Step closer to the wall if needed.",
+      "instruction_groups": []
     },
     {
       "id": "92000000-0000-4000-8000-000000000004",
@@ -1314,7 +1297,8 @@
       "exercise_id": "70000000-0000-4000-8000-000000000003",
       "required_benefit_id": "30000000-0000-4000-8000-000000000002",
       "duration_seconds": 45,
-      "notes": "Use light band tension."
+      "notes": "Use light band tension.",
+      "instruction_groups": []
     },
     {
       "id": "92000000-0000-4000-8000-000000000005",
@@ -1323,7 +1307,34 @@
       "exercise_id": "70000000-0000-4000-8000-000000000005",
       "required_benefit_id": "30000000-0000-4000-8000-000000000002",
       "duration_seconds": 45,
-      "notes": "Keep the range small at first."
+      "notes": "Keep the range small at first.",
+      "instruction_groups": []
+    }
+  ],
+  "exercise_relationships": [
+    {
+      "id": "82000000-0000-4000-8000-000000000001",
+      "from_exercise_id": "70000000-0000-4000-8000-000000000001",
+      "to_exercise_id": "70000000-0000-4000-8000-000000000009",
+      "sort_order": 1,
+      "notes": "Step-up can be reviewed as a more demanding lower-body alternative.",
+      "relationship_type": "progression"
+    },
+    {
+      "id": "82000000-0000-4000-8000-000000000002",
+      "from_exercise_id": "70000000-0000-4000-8000-000000000005",
+      "to_exercise_id": "70000000-0000-4000-8000-000000000011",
+      "sort_order": 1,
+      "notes": "Loaded crunch is a higher-demand trunk option.",
+      "relationship_type": "progression"
+    },
+    {
+      "id": "82000000-0000-4000-8000-000000000003",
+      "from_exercise_id": "70000000-0000-4000-8000-000000000004",
+      "to_exercise_id": "70000000-0000-4000-8000-000000000001",
+      "sort_order": 2,
+      "notes": "Both are beginner-friendly standing lower-body patterns.",
+      "relationship_type": "related"
     }
   ]
 }

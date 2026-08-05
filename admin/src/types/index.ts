@@ -13,6 +13,7 @@ export interface MovementFamily {
   slug: string;
   name: string;
   description: string;
+  color: string;
   sort_order: number;
 }
 
@@ -87,11 +88,20 @@ export interface ExerciseMedia {
 }
 
 export type ExerciseVariantType = "progression" | "regression" | "alternative" | "related";
+export type ExerciseRelationshipType = ExerciseVariantType;
 
 export interface ExerciseVariant {
   id?: string;
   to_exercise_id: string;
   variant_type: ExerciseVariantType;
+  sort_order: number;
+  notes?: string | null;
+}
+
+export interface ExerciseRelationship {
+  id?: string;
+  to_exercise_id: string;
+  relationship_type: ExerciseRelationshipType;
   sort_order: number;
   notes?: string | null;
 }
@@ -136,6 +146,7 @@ export interface Exercise {
   equipment: ExerciseEquipment[];
   variant_ladder_ids: string[];
   variants: ExerciseVariant[];
+  relationships?: ExerciseRelationship[];
   media: ExerciseMedia[];
   created_at: string;
   updated_at: string;
@@ -169,6 +180,7 @@ export interface WorkoutSlot {
   exercise_id: string;
   required_benefit_id: string | null;
   duration_seconds: number;
+  instruction_groups: ExerciseInstructionGroup[];
   notes?: string;
 }
 

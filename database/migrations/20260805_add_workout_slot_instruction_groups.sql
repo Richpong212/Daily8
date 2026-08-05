@@ -1,0 +1,6 @@
+BEGIN;
+
+ALTER TABLE IF EXISTS workout_slots
+  ADD COLUMN IF NOT EXISTS instruction_groups JSONB NOT NULL DEFAULT '[]'::jsonb;
+
+COMMIT;

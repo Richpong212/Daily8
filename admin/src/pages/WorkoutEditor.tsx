@@ -1,5 +1,15 @@
+import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ChevronLeft, ChevronDown, ChevronUp, GripVertical, Plus, Trash2, X } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronDown,
+  ChevronUp,
+  GripVertical,
+  ListOrdered,
+  Plus,
+  Trash2,
+  X,
+} from "lucide-react";
 import {
   addGroup,
   addSlot,
@@ -21,6 +31,7 @@ import { useExerciseBenefits, getBodyRegion, getMovementFamily } from "@/service
 import { StatusBadge } from "@/components/StatusBadge";
 import { ExerciseTile } from "@/components/ExerciseTile";
 import { getExercise } from "@/services/exercises";
+import type { Exercise, ExerciseInstructionGroup, WorkoutSlot } from "@/types";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,6 +50,7 @@ export default function WorkoutEditor() {
   const benefits = useExerciseBenefits();
   const exercises = useExercises();
   const nav = useNavigate();
+  const [openInstructionSlotId, setOpenInstructionSlotId] = useState<string | null>(null);
 
   if (!w) {
     return (
@@ -279,57 +291,212 @@ export default function WorkoutEditor() {
               <div className="border-t border-border">
                 {g.slots.map((s) => {
                   const ex = getExercise(s.exercise_id);
+                  const familyColor = getMovementFamily(ex?.movement_family_id)?.color;
+                  const instructionGroups = getSlotInstructionGroups(s);
+                  const hasInstructionGroups = instructionGroups.length > 0;
+                  const isInstructionOpen = openInstructionSlotId === s.id;
                   return (
-                    <div
-                      key={s.id}
-                      className="flex items-center gap-3 border-b border-border px-4 py-2.5 last:border-0"
-                    >
-                      <GripVertical className="h-4 w-4 text-muted-foreground/50" />
-                      <ExerciseTile name={ex?.name ?? "?"} color={ex?.color ?? "#666"} size="sm" />
-                      <div className="flex-1">
-                        <div className="text-sm font-medium">{ex?.name ?? "Missing exercise"}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {ex
-                            ? `${getMovementFamily(ex.movement_family_id)?.name} · ${getBodyRegion(ex.body_region_id)?.name}`
-                            : ""}
+                    <div key={s.id} className="border-b border-border px-4 py-2.5 last:border-0">
+                      <div className="flex items-center gap-3">
+                        <GripVertical className="h-4 w-4 text-muted-foreground/50" />
+                        <ExerciseTile
+                          name={ex?.name ?? "?"}
+                          color={familyColor ?? ex?.color ?? "#666"}
+                          size="sm"
+                        />
+                        <div className="flex-1">
+                          <div className="text-sm font-medium">
+                            {ex?.name ?? "Missing exercise"}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {ex
+                              ? `${getMovementFamily(ex.movement_family_id)?.name} · ${getBodyRegion(ex.body_region_id)?.name}`
+                              : ""}
+                          </div>
                         </div>
-                      </div>
-                      <select
-                        value={s.required_benefit_id ?? ""}
-                        onChange={(e) =>
-                          updateSlot(w.id, g.id, s.id, {
-                            required_benefit_id: e.target.value || null,
-                          })
-                        }
-                        className="rounded-md border border-border bg-card px-2 py-1 text-xs"
-                      >
-                        <option value="">— Benefit —</option>
-                        {benefits.map((p) => (
-                          <option key={p.id} value={p.id}>
-                            {p.name}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="flex items-center gap-1">
-                        <input
-                          type="number"
-                          min={1}
-                          value={s.duration_seconds}
+                        <select
+                          value={s.required_benefit_id ?? ""}
                           onChange={(e) =>
                             updateSlot(w.id, g.id, s.id, {
-                              duration_seconds: Math.max(1, Number(e.target.value) || 1),
+                              required_benefit_id: e.target.value || null,
                             })
                           }
-                          className="w-14 rounded border border-border bg-card px-2 py-1 text-xs"
-                        />
-                        <span className="text-xs text-muted-foreground">s</span>
+                          className="rounded-md border border-border bg-card px-2 py-1 text-xs"
+                        >
+                          <option value="">— Benefit —</option>
+                          {benefits.map((p) => (
+                            <option key={p.id} value={p.id}>
+                              {p.name}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="flex items-center gap-1">
+                          <input
+                            type="number"
+                            min={1}
+                            value={s.duration_seconds}
+                            onChange={(e) =>
+                              updateSlot(w.id, g.id, s.id, {
+                                duration_seconds: Math.max(1, Number(e.target.value) || 1),
+                              })
+                            }
+                            className="w-14 rounded border border-border bg-card px-2 py-1 text-xs"
+                          />
+                          <span className="text-xs text-muted-foreground">s</span>
+                        </div>
+                        <button
+                          type="button"
+                          title="Instruction groups"
+                          onClick={() => setOpenInstructionSlotId(isInstructionOpen ? null : s.id)}
+                          className={`rounded-md border border-border p-1.5 text-muted-foreground hover:text-foreground ${
+                            hasInstructionGroups ? "bg-muted" : "bg-card"
+                          }`}
+                        >
+                          <ListOrdered className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          onClick={() => deleteSlot(w.id, g.id, s.id)}
+                          className="text-muted-foreground hover:text-destructive"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
                       </div>
-                      <button
-                        onClick={() => deleteSlot(w.id, g.id, s.id)}
-                        className="text-muted-foreground hover:text-destructive"
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </button>
+                      {isInstructionOpen && (
+                        <div className="ml-14 mt-3 space-y-3 border-t border-dashed border-border pt-3">
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="text-xs font-medium text-muted-foreground">
+                              Instruction groups
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  updateSlot(w.id, g.id, s.id, {
+                                    instruction_groups: getExerciseInstructionGroups(ex),
+                                  })
+                                }
+                                className="rounded-md border border-border bg-card px-2 py-1 text-xs text-muted-foreground hover:text-foreground"
+                              >
+                                Use exercise
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  updateSlot(w.id, g.id, s.id, {
+                                    instruction_groups: [
+                                      ...instructionGroups,
+                                      {
+                                        heading: getNextInstructionHeading(instructionGroups),
+                                        steps: [""],
+                                      },
+                                    ],
+                                  })
+                                }
+                                className="rounded-md border border-border bg-card px-2 py-1 text-xs text-muted-foreground hover:text-foreground"
+                              >
+                                Add group
+                              </button>
+                            </div>
+                          </div>
+                          {instructionGroups.length === 0 ? (
+                            <div className="rounded-md border border-dashed border-border px-3 py-2 text-xs text-muted-foreground">
+                              No slot-specific instructions.
+                            </div>
+                          ) : (
+                            instructionGroups.map((group, groupIndex) => (
+                              <div key={`${s.id}-instructions-${groupIndex}`} className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <input
+                                    value={group.heading}
+                                    onChange={(event) =>
+                                      updateSlotInstructionGroup(w.id, g.id, s, groupIndex, {
+                                        ...group,
+                                        heading: event.target.value,
+                                      })
+                                    }
+                                    className="flex-1 rounded-md border border-border bg-card px-2 py-1 text-xs"
+                                    placeholder="Group heading"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      updateSlot(w.id, g.id, s.id, {
+                                        instruction_groups: instructionGroups.filter(
+                                          (_, index) => index !== groupIndex,
+                                        ),
+                                      })
+                                    }
+                                    className="text-muted-foreground hover:text-destructive"
+                                  >
+                                    <X className="h-3.5 w-3.5" />
+                                  </button>
+                                </div>
+                                <div className="space-y-2">
+                                  {group.steps.map((step, stepIndex) => (
+                                    <div
+                                      key={`${s.id}-instructions-${groupIndex}-${stepIndex}`}
+                                      className="flex items-start gap-2"
+                                    >
+                                      <span className="mt-2 w-5 text-right font-mono text-[10px] text-muted-foreground">
+                                        {stepIndex + 1}.
+                                      </span>
+                                      <textarea
+                                        value={step}
+                                        onChange={(event) => {
+                                          const steps = [...group.steps];
+                                          steps[stepIndex] = event.target.value;
+                                          updateSlotInstructionGroup(w.id, g.id, s, groupIndex, {
+                                            ...group,
+                                            steps,
+                                          });
+                                        }}
+                                        rows={2}
+                                        className="flex-1 rounded-md border border-border bg-card px-2 py-1 text-xs"
+                                        placeholder="Instruction step"
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const steps = group.steps.filter(
+                                            (_, index) => index !== stepIndex,
+                                          );
+                                          if (steps.length === 0) {
+                                            updateSlot(w.id, g.id, s.id, {
+                                              instruction_groups: instructionGroups.filter(
+                                                (_, index) => index !== groupIndex,
+                                              ),
+                                            });
+                                            return;
+                                          }
+                                          updateSlotInstructionGroup(w.id, g.id, s, groupIndex, {
+                                            ...group,
+                                            steps,
+                                          });
+                                        }}
+                                        className="mt-1 text-muted-foreground hover:text-destructive"
+                                      >
+                                        <X className="h-3.5 w-3.5" />
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    updateSlotInstructionGroup(w.id, g.id, s, groupIndex, {
+                                      ...group,
+                                      steps: [...group.steps, ""],
+                                    })
+                                  }
+                                  className="ml-7 rounded-md border border-dashed border-border px-2 py-1 text-xs text-muted-foreground hover:bg-muted"
+                                >
+                                  Add step
+                                </button>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -340,7 +507,13 @@ export default function WorkoutEditor() {
                     onChange={(e) => {
                       if (e.target.value) {
                         const ex = getExercise(e.target.value);
-                        addSlot(w.id, g.id, e.target.value, ex?.required_benefit_id ?? null);
+                        addSlot(
+                          w.id,
+                          g.id,
+                          e.target.value,
+                          ex?.required_benefit_id ?? null,
+                          getExerciseInstructionGroups(ex),
+                        );
                       }
                     }}
                     className="w-full rounded border border-dashed border-border bg-card px-3 py-1.5 text-xs text-muted-foreground"
@@ -373,3 +546,47 @@ export default function WorkoutEditor() {
 
 const inputCls =
   "w-full rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:border-ring";
+
+const instructionHeadingOptions = ["Setup", "Movement", "Breathing", "Safety", "Progression"];
+
+const getSlotInstructionGroups = (slot: WorkoutSlot): ExerciseInstructionGroup[] => {
+  return Array.isArray(slot.instruction_groups) ? slot.instruction_groups : [];
+};
+
+const getExerciseInstructionGroups = (
+  exercise: Exercise | undefined,
+): ExerciseInstructionGroup[] => {
+  if (!exercise) return [];
+
+  const groups = Array.isArray(exercise.instruction_groups) ? exercise.instruction_groups : [];
+
+  if (groups.length > 0) {
+    return groups.map((group) => ({ heading: group.heading, steps: [...group.steps] }));
+  }
+
+  return exercise.instructions.length > 0
+    ? [{ heading: "Instructions", steps: [...exercise.instructions] }]
+    : [];
+};
+
+const getNextInstructionHeading = (groups: ExerciseInstructionGroup[]) => {
+  return (
+    instructionHeadingOptions.find(
+      (heading) => !groups.some((group) => group.heading === heading),
+    ) ?? `Group ${groups.length + 1}`
+  );
+};
+
+const updateSlotInstructionGroup = (
+  workoutId: string,
+  groupId: string,
+  slot: WorkoutSlot,
+  groupIndex: number,
+  nextGroup: ExerciseInstructionGroup,
+) => {
+  updateSlot(workoutId, groupId, slot.id, {
+    instruction_groups: getSlotInstructionGroups(slot).map((group, index) =>
+      index === groupIndex ? nextGroup : group,
+    ),
+  });
+};

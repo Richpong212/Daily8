@@ -1,5 +1,6 @@
 import { useEffect, useSyncExternalStore } from "react";
 import axios from "axios";
+import { toast } from "sonner";
 import { apiBaseUrl, isRecord } from "@/services/api";
 import type { Exercise } from "@/types";
 
@@ -177,10 +178,21 @@ const postExercise = async (exercise: Partial<Exercise> = {}): Promise<Exercise>
     const saved = response.data.data as Exercise;
     removeExercise(draftExerciseId);
     upsertExercise(saved);
+    toast.success(response.data.message);
     return saved;
   } catch (error) {
     throw new Error(getApiErrorMessage(error));
   }
+};
+
+const patchExercise = async (id: string, patch: Partial<Exercise>): Promise<ExerciseResponse> => {
+  const response = await exerciseApi.patch<ExerciseResponse>(`/exercises/${id}`, patch);
+
+  if (!isRecord(response.data.data)) {
+    throw new Error("API returned an invalid exercise payload");
+  }
+
+  return response.data;
 };
 
 export const updateExercise = async (id: string, patch: Partial<Exercise>): Promise<void> => {
@@ -197,10 +209,8 @@ export const updateExercise = async (id: string, patch: Partial<Exercise>): Prom
   if (isDraftExerciseId(id)) return;
 
   try {
-    const response = await exerciseApi.patch<ExerciseResponse>(`/exercises/${id}`, patch);
-    if (isRecord(response.data.data)) {
-      upsertExercise(response.data.data as Exercise);
-    }
+    const data = await patchExercise(id, patch);
+    upsertExercise(data.data as Exercise);
   } catch (error) {
     throw new Error(getApiErrorMessage(error));
   }
@@ -218,6 +228,7 @@ export const saveExerciseDraft = async (exercise: Exercise): Promise<Exercise> =
 
           const saved = response.data.data as Exercise;
           upsertExercise(saved);
+          toast.success(response.data.message);
           return saved;
         })
         .catch((error) => {
@@ -232,20 +243,33 @@ export const deleteExercise = async (id: string): Promise<void> => {
   }
 
   try {
-    await exerciseApi.delete(`/exercises/${id}`);
+    const response = await exerciseApi.delete<{ message: string }>(`/exercises/${id}`);
     removeExercise(id);
+    toast.success(response.data.message);
   } catch (error) {
     throw new Error(getApiErrorMessage(error));
   }
 };
 
 export const publishExercise = async (id: string): Promise<void> => {
-  await updateExercise(id, {
-    status: "active",
-    review_status: "approved",
-  });
+  try {
+    const data = await patchExercise(id, {
+      status: "active",
+      review_status: "approved",
+    });
+    upsertExercise(data.data as Exercise);
+    toast.success(data.message);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error));
+  }
 };
 
 export const sendForReview = async (id: string): Promise<void> => {
-  await updateExercise(id, { review_status: "needs_review" });
+  try {
+    const data = await patchExercise(id, { review_status: "needs_review" });
+    upsertExercise(data.data as Exercise);
+    toast.success(data.message);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error));
+  }
 };

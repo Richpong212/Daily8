@@ -144,6 +144,26 @@ export const createExerciseValidation = [
     .optional({ nullable: true })
     .isString()
     .withMessage("Variant notes must be a string"),
+  body("relationships")
+    .optional()
+    .isArray()
+    .withMessage("Exercise relationships must be an array"),
+  body("relationships.*.to_exercise_id")
+    .optional()
+    .isUUID()
+    .withMessage("Relationship exercise id must be a valid UUID"),
+  body("relationships.*.relationship_type")
+    .optional()
+    .isIn(variantTypes)
+    .withMessage("Invalid relationship type"),
+  body("relationships.*.sort_order")
+    .optional()
+    .isInt({ min: 0 })
+    .withMessage("Relationship sort order must be a positive integer"),
+  body("relationships.*.notes")
+    .optional({ nullable: true })
+    .isString()
+    .withMessage("Relationship notes must be a string"),
 ];
 
 export const updateExerciseValidation = createExerciseValidation;

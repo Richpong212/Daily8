@@ -1,10 +1,12 @@
 import { Route, Routes, Navigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
+import Auth from "@/pages/Auth";
 import ExercisesList from "@/pages/ExercisesList";
 import ExerciseEditor from "@/pages/ExerciseEditor";
 import WorkoutsList from "@/pages/WorkoutsList";
 import WorkoutEditor from "@/pages/WorkoutEditor";
 import Media from "@/pages/Media";
+import ResetPassword from "@/pages/ResetPassword";
 import SupportingDataLayout, {
   MovementFamiliesPage,
   BodyRegionsPage,
@@ -15,11 +17,17 @@ import SupportingDataLayout, {
   VariantLaddersPage,
 } from "@/pages/SupportingData";
 import NotFound from "@/pages/NotFound";
+import { useAuth } from "@/services/auth-context";
 
 export function AppRoutes() {
   return (
     <Routes>
-      <Route element={<AppLayout />}>
+      <Route path="login" element={<PublicOnlyRoute element={<Auth />} />} />
+      <Route
+        path="reset-password/:token"
+        element={<PublicOnlyRoute element={<ResetPassword />} />}
+      />
+      <Route element={<ProtectedRoute />}>
         <Route index element={<Navigate to="workouts" replace />} />
         <Route path="exercises" element={<ExercisesList />} />
         <Route path="exercises/:id" element={<ExerciseEditor />} />
@@ -40,4 +48,32 @@ export function AppRoutes() {
       </Route>
     </Routes>
   );
+}
+
+function ProtectedRoute() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">
+        Loading session...
+      </div>
+    );
+  }
+
+  return user ? <AppLayout /> : <Navigate to="/login" replace />;
+}
+
+function PublicOnlyRoute({ element }: { element: React.ReactElement }) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">
+        Loading session...
+      </div>
+    );
+  }
+
+  return user ? <Navigate to="/workouts" replace /> : element;
 }

@@ -19,6 +19,7 @@ const draftWorkoutId = "new";
 
 const workoutApi = axios.create({
   baseURL: apiBaseUrl,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },

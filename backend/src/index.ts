@@ -14,9 +14,16 @@ import userRouter from "./routes/user.route";
 import workoutRouter from "./routes/workout.route";
 import exerciseRouter from "./routes/exercise.route";
 import supportingDataRouter from "./routes/supportingData.route";
+import { authenticateUser } from "./middlewares/auth.middleware";
 
 const app = express();
 const port = appConfig.app.port;
+
+const isLocalOrigin = (origin: string) => {
+  if (appConfig.app.mode === "production") return false;
+
+  return /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin);
+};
 
 //rate limiting
 const limiter = rateLimit({
@@ -31,6 +38,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
+    origin(origin, callback) {
+      if (!origin || appConfig.app.allowedOrigins.includes(origin) || isLocalOrigin(origin)) {
+        callback(null, origin || true);
+        return;
+      }
+
+      callback(new Error("Request origin is not allowed"));
+    },
     credentials: true,
   }),
 );
@@ -55,13 +70,13 @@ app.get("/health", (_req: Request, res: Response) => {
 app.use("/api/v1/users", userRouter);
 
 // workout routes
-app.use("/api/v1/workouts", workoutRouter);
+app.use("/api/v1/workouts", authenticateUser, workoutRouter);
 
 // exercise routes
-app.use("/api/v1/exercises", exerciseRouter);
+app.use("/api/v1/exercises", authenticateUser, exerciseRouter);
 
 // supporting data routes
-app.use("/api/v1/supporting-data", supportingDataRouter);
+app.use("/api/v1/supporting-data", authenticateUser, supportingDataRouter);
 
 app.listen(port, async () => {
   logger.info(

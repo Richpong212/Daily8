@@ -7,8 +7,10 @@ import {
   Image as ImageIcon,
   ChevronDown,
   Activity,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/services/auth-context";
 
 const primaryNav: Array<{
   to: string;
@@ -33,6 +35,14 @@ const supportingSub = [
 export function Sidebar() {
   const location = useLocation();
   const [open, setOpen] = useState(location.pathname.startsWith("/supporting-data"));
+  const { user, logout } = useAuth();
+  const initials =
+    user?.name
+      .split(" ")
+      .map((part) => part[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase() || "D8";
 
   return (
     <aside className="flex h-screen w-64 flex-col bg-sidebar text-sidebar-foreground">
@@ -100,12 +110,22 @@ export function Sidebar() {
       <div className="border-t border-sidebar-border p-4">
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sidebar-accent text-xs font-semibold">
-            JM
+            {initials}
           </div>
-          <div className="leading-tight">
-            <div className="text-sm">Jamie M.</div>
-            <div className="text-[10px] text-sidebar-foreground/60">Content Editor</div>
+          <div className="min-w-0 flex-1 leading-tight">
+            <div className="truncate text-sm">{user?.name ?? "Daily 8"}</div>
+            <div className="truncate text-[10px] text-sidebar-foreground/60">
+              {user?.email ?? "Content Editor"}
+            </div>
           </div>
+          <button
+            type="button"
+            aria-label="Log out"
+            onClick={() => void logout()}
+            className="rounded p-1 text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
         </div>
       </div>
     </aside>

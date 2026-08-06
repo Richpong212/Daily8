@@ -16,6 +16,7 @@ type ExercisesResponse = {
 
 const exerciseApi = axios.create({
   baseURL: apiBaseUrl,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },

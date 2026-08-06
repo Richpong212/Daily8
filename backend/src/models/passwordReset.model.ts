@@ -1,48 +1,46 @@
 import { Model, DataTypes } from "sequelize";
 import { db } from "../config/connectDb";
 
-class User extends Model {
+class PasswordReset extends Model {
   public id!: string;
-  public name!: string;
-  public email!: string;
-  public password!: string;
-  public isAdmin!: boolean;
+  public user_id!: string;
+  public token_hash!: string;
+  public expires_at!: Date;
   public createdAt!: Date;
   public updatedAt!: Date;
 }
 
-User.init(
+PasswordReset.init(
   {
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4,
     },
-    name: {
-      type: DataTypes.STRING,
+    user_id: {
+      type: DataTypes.UUID,
       allowNull: false,
+      references: {
+        model: "users",
+        key: "id",
+      },
     },
-    email: {
+    token_hash: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
     },
-    password: {
-      type: DataTypes.STRING,
+    expires_at: {
+      type: DataTypes.DATE,
       allowNull: false,
-    },
-    isAdmin: {
-      type: DataTypes.BOOLEAN,
-      allowNull: true,
-      defaultValue: false,
     },
   },
   {
     sequelize: db,
-    modelName: "User",
-    tableName: "users",
+    modelName: "PasswordReset",
+    tableName: "password_resets",
     timestamps: true,
-  }
+  },
 );
 
-export default User;
+export default PasswordReset;

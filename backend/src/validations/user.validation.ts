@@ -75,6 +75,32 @@ export const loginValidation = [
     .escape(),
 ];
 
+export const forgotPasswordValidation = [
+  check("email")
+    .isEmail()
+    .withMessage("Invalid email")
+    .notEmpty()
+    .withMessage("Email is required")
+    .trim()
+    .escape()
+    .normalizeEmail()
+    .customSanitizer((value) => value.replace(/[^\x20-\x7E]/g, "")),
+];
+
+export const resetPasswordValidation = [
+  check("password")
+    .notEmpty()
+    .withMessage("Password is required")
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 characters long")
+    .isStrongPassword()
+    .trim()
+    .escape()
+    .withMessage(
+      "Password must contain at least 1 lowercase, 1 uppercase, 1 number, 1 special character"
+    ),
+];
+
 export const updateUserValidation = [
   check("name").trim().escape(),
   check("email")

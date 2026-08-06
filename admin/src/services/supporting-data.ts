@@ -41,6 +41,7 @@ type CreatePayload<T> = Omit<T, "id" | "slug">;
 
 const supportingDataApi = axios.create({
   baseURL: `${apiBaseUrl}/supporting-data`,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },

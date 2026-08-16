@@ -1,5 +1,4 @@
 name: Daily8 Client-Sub CI/CD
-#
 
 on:
   push:
@@ -40,10 +39,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      # Checkout the main Daily8 repository into the workspace root.
+      - name: Checkout Daily8
         uses: actions/checkout@v6
         with:
-          submodules: recursive
+          fetch-depth: 0
+
+      # Checkout the private client repository inside Daily8/client-sub.
+      - name: Checkout client-sub
+        uses: actions/checkout@v6
+        with:
+          repository: Richpong212/fit-finder-app
+          path: client-sub
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+
+      - name: Verify repository structure
+        run: |
+          echo "Daily8 workspace:"
+          ls -la
+
+          echo ""
+          echo "client-sub:"
+          ls -la client-sub
 
       - name: Setup Node
         uses: actions/setup-node@v6
@@ -70,10 +88,18 @@ jobs:
       - check
 
     steps:
-      - name: Checkout code
+      - name: Checkout Daily8
         uses: actions/checkout@v6
         with:
-          submodules: recursive
+          fetch-depth: 0
+
+      - name: Checkout client-sub
+        uses: actions/checkout@v6
+        with:
+          repository: Richpong212/fit-finder-app
+          path: client-sub
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
 
       - name: Scan client filesystem
         uses: aquasecurity/trivy-action@v0.36.0
@@ -93,15 +119,22 @@ jobs:
       - dependency-scan
 
     steps:
-      - name: Checkout code
+      - name: Checkout Daily8
         uses: actions/checkout@v6
         with:
-          submodules: recursive
+          fetch-depth: 0
+
+      - name: Checkout client-sub
+        uses: actions/checkout@v6
+        with:
+          repository: Richpong212/fit-finder-app
+          path: client-sub
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Build a local AMD64 image for testing on the GitHub-hosted runner.
       - name: Build client-sub image for scanning
         uses: docker/build-push-action@v6
         with:
@@ -202,10 +235,18 @@ jobs:
       image-digest: ${{ steps.publish-image.outputs.digest }}
 
     steps:
-      - name: Checkout code
+      - name: Checkout Daily8
         uses: actions/checkout@v6
         with:
-          submodules: recursive
+          fetch-depth: 0
+
+      - name: Checkout client-sub
+        uses: actions/checkout@v6
+        with:
+          repository: Richpong212/fit-finder-app
+          path: client-sub
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -282,12 +323,13 @@ jobs:
     if: github.event_name == 'push'
 
     steps:
-      - name: Checkout dev branch
+      # We only need Daily8 here because this job modifies the
+      # Kustomize manifest in the Daily8 repository.
+      - name: Checkout Daily8 dev branch
         uses: actions/checkout@v6
         with:
           ref: dev
           fetch-depth: 0
-          submodules: recursive
 
       - name: Update client-sub Kustomize image tag
         env:

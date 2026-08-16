@@ -98,7 +98,7 @@ jobs:
         with:
           repository: Richpong212/fit-finder-app
           path: client-sub
-          token: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.PRIVATE_REPO_PAT }}
           fetch-depth: 0
 
       - name: Scan client filesystem
@@ -129,7 +129,7 @@ jobs:
         with:
           repository: Richpong212/fit-finder-app
           path: client-sub
-          token: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.PRIVATE_REPO_PAT }}
           fetch-depth: 0
 
       - name: Set up Docker Buildx
@@ -245,7 +245,7 @@ jobs:
         with:
           repository: Richpong212/fit-finder-app
           path: client-sub
-          token: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.PRIVATE_REPO_PAT }}
           fetch-depth: 0
 
       - name: Set up QEMU

@@ -1,5 +1,4 @@
 name: Daily8 Admin CI/CD
-#
 
 on:
   push:

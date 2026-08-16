@@ -1,5 +1,4 @@
 name: Daily8 Client-Sub CI/CD
-#
 on:
   push:
     branches:

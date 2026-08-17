@@ -23,4 +23,4 @@ images:
 
   - name: daily8-client-sub-image
     newName: ghcr.io/richpong212/daily8/client-sub
-    newTag: "08fb2ad6f2432042f04876eb67582c89fd92f632"
+    newTag: "766428215abbccb42f13c1e78ed8aac59d503157"

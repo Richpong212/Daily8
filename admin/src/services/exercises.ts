@@ -153,6 +153,7 @@ export const createExerciseDraft = (): Exercise => {
     equipment: [],
     variant_ladder_ids: [],
     variants: [],
+    relationships: [],
     media: [],
     created_at: nowIso,
     updated_at: nowIso,

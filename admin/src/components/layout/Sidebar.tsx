@@ -8,6 +8,7 @@ import {
   ChevronDown,
   Activity,
   LogOut,
+  Route,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/services/auth-context";
@@ -19,6 +20,7 @@ const primaryNav: Array<{
   end?: boolean;
 }> = [
   { to: "/workouts", label: "Workouts", icon: CalendarDays },
+  { to: "/programs", label: "Programs", icon: Route },
   { to: "/exercises", label: "Exercises", icon: Dumbbell },
 ];
 

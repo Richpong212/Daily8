@@ -38,7 +38,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
-import type { ExerciseInstructionGroup, ExerciseVariantType, Level, MuscleRole } from "@/types";
+import type {
+  ExerciseInstructionGroup,
+  ExerciseRelationshipType,
+  Level,
+  MuscleRole,
+  Status,
+} from "@/types";
 
 const INSTRUCTION_GROUP_HEADINGS = [
   "Start Position",
@@ -75,8 +81,10 @@ export default function ExerciseEditor() {
   const [openMuscle, setOpenMuscle] = useState(false);
   const [openConstraint, setOpenConstraint] = useState(false);
   const [openLadder, setOpenLadder] = useState(false);
-  const [openVariant, setOpenVariant] = useState(false);
-  const [newVariantType, setNewVariantType] = useState<ExerciseVariantType>("progression");
+  const [openRelationship, setOpenRelationship] = useState(false);
+  const [newRelationshipType, setNewRelationshipType] = useState<ExerciseRelationshipType>(
+    "same_purpose_alternative",
+  );
   const [saveError, setSaveError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -93,6 +101,7 @@ export default function ExerciseEditor() {
 
   const patch = (p: Parameters<typeof updateExercise>[1]) => updateExercise(ex.id, p);
   const isNewExercise = ex.id === "new";
+  const relationships = ex.relationships ?? [];
   const savedInstructionGroups = ex.instruction_groups ?? [];
   const instructionGroups =
     savedInstructionGroups.length > 0
@@ -888,39 +897,41 @@ export default function ExerciseEditor() {
             </div>
           </Card>
 
-          {/* Exercise Variants */}
+          {/* Exercise Relationships */}
           <Card>
             <SectionLabel>
-              Exercise Variants{" "}
-              <span className="ml-1 text-xs text-muted-foreground">{ex.variants.length}</span>
+              Exercise Relationships{" "}
+              <span className="ml-1 text-xs text-muted-foreground">{relationships.length}</span>
             </SectionLabel>
             <div className="mt-2 space-y-2">
-              {ex.variants
-                .slice()
-                .sort((a, b) => a.sort_order - b.sort_order)
-                .map((variant, index) => {
-                  const target = exercises.find((item) => item.id === variant.to_exercise_id);
+              {relationships
+                .map((relationship, originalIndex) => ({ relationship, originalIndex }))
+                .sort((a, b) => a.relationship.rank - b.relationship.rank)
+                .map(({ relationship, originalIndex }) => {
+                  const target = exercises.find((item) => item.id === relationship.to_exercise_id);
+                  const constraint = getConstraint(relationship.constraint_id);
 
                   return (
                     <div
-                      key={`${variant.to_exercise_id}-${index}`}
+                      key={`${relationship.to_exercise_id}-${originalIndex}`}
                       className="rounded-md border border-border p-2 text-sm"
                     >
                       <div className="flex items-center justify-between gap-2">
                         <div>
                           <div className="font-medium">{target?.name ?? "Unknown exercise"}</div>
                           <div className="text-xs text-muted-foreground">
-                            {variant.variant_type}
+                            {relationship.relationship_type.replace(/_/g, " ")}
+                            {constraint ? ` · ${constraint.name}` : ""}
                           </div>
                         </div>
                         <button
                           onClick={() =>
                             patch({
-                              variants: ex.variants
-                                .filter((_, itemIndex) => itemIndex !== index)
+                              relationships: relationships
+                                .filter((_, itemIndex) => itemIndex !== originalIndex)
                                 .map((item, itemIndex) => ({
                                   ...item,
-                                  sort_order: itemIndex + 1,
+                                  rank: itemIndex + 1,
                                 })),
                             })
                           }
@@ -929,16 +940,21 @@ export default function ExerciseEditor() {
                           <X className="h-3.5 w-3.5" />
                         </button>
                       </div>
-                      <div className="mt-2 grid grid-cols-[120px_1fr] gap-2">
+                      <div className="mt-2 grid grid-cols-[1fr_1fr_76px] gap-2">
                         <select
-                          value={variant.variant_type}
+                          value={relationship.relationship_type}
                           onChange={(event) =>
                             patch({
-                              variants: ex.variants.map((item, itemIndex) =>
-                                itemIndex === index
+                              relationships: relationships.map((item, itemIndex) =>
+                                itemIndex === originalIndex
                                   ? {
                                       ...item,
-                                      variant_type: event.target.value as ExerciseVariantType,
+                                      relationship_type: event.target
+                                        .value as ExerciseRelationshipType,
+                                      constraint_id:
+                                        event.target.value === "constraint_based_swap"
+                                          ? (item.constraint_id ?? constraintsList[0]?.id ?? null)
+                                          : null,
                                     }
                                   : item,
                               ),
@@ -946,17 +962,72 @@ export default function ExerciseEditor() {
                           }
                           className="rounded-md border border-border bg-card px-2 py-1 text-xs"
                         >
-                          <option value="progression">Progression</option>
-                          <option value="regression">Regression</option>
-                          <option value="alternative">Alternative</option>
-                          <option value="related">Related</option>
+                          <option value="same_purpose_alternative">Same Purpose</option>
+                          <option value="constraint_based_swap">Constraint Swap</option>
                         </select>
-                        <input
-                          value={variant.notes ?? ""}
+                        <select
+                          value={relationship.constraint_id ?? ""}
+                          disabled={relationship.relationship_type !== "constraint_based_swap"}
                           onChange={(event) =>
                             patch({
-                              variants: ex.variants.map((item, itemIndex) =>
-                                itemIndex === index ? { ...item, notes: event.target.value } : item,
+                              relationships: relationships.map((item, itemIndex) =>
+                                itemIndex === originalIndex
+                                  ? { ...item, constraint_id: event.target.value || null }
+                                  : item,
+                              ),
+                            })
+                          }
+                          className="rounded-md border border-border bg-card px-2 py-1 text-xs disabled:opacity-50"
+                        >
+                          <option value="">No constraint</option>
+                          {constraintsList.map((item) => (
+                            <option key={item.id} value={item.id}>
+                              {item.name}
+                            </option>
+                          ))}
+                        </select>
+                        <input
+                          type="number"
+                          min={1}
+                          value={relationship.rank}
+                          onChange={(event) =>
+                            patch({
+                              relationships: relationships.map((item, itemIndex) =>
+                                itemIndex === originalIndex
+                                  ? { ...item, rank: Math.max(1, Number(event.target.value) || 1) }
+                                  : item,
+                              ),
+                            })
+                          }
+                          className="rounded-md border border-border bg-card px-2 py-1 text-xs outline-none focus:border-ring"
+                        />
+                      </div>
+                      <div className="mt-2 grid grid-cols-[120px_1fr] gap-2">
+                        <select
+                          value={relationship.status}
+                          onChange={(event) =>
+                            patch({
+                              relationships: relationships.map((item, itemIndex) =>
+                                itemIndex === originalIndex
+                                  ? { ...item, status: event.target.value as Status }
+                                  : item,
+                              ),
+                            })
+                          }
+                          className="rounded-md border border-border bg-card px-2 py-1 text-xs"
+                        >
+                          <option value="draft">Draft</option>
+                          <option value="active">Active</option>
+                          <option value="retired">Retired</option>
+                        </select>
+                        <input
+                          value={relationship.notes ?? ""}
+                          onChange={(event) =>
+                            patch({
+                              relationships: relationships.map((item, itemIndex) =>
+                                itemIndex === originalIndex
+                                  ? { ...item, notes: event.target.value }
+                                  : item,
                               ),
                             })
                           }
@@ -967,19 +1038,17 @@ export default function ExerciseEditor() {
                     </div>
                   );
                 })}
-              {openVariant ? (
+              {openRelationship ? (
                 <div className="space-y-2 rounded-md border border-dashed border-border p-2">
                   <select
-                    value={newVariantType}
+                    value={newRelationshipType}
                     onChange={(event) =>
-                      setNewVariantType(event.target.value as ExerciseVariantType)
+                      setNewRelationshipType(event.target.value as ExerciseRelationshipType)
                     }
                     className={selectCls}
                   >
-                    <option value="progression">Progression</option>
-                    <option value="regression">Regression</option>
-                    <option value="alternative">Alternative</option>
-                    <option value="related">Related</option>
+                    <option value="same_purpose_alternative">Same Purpose Alternative</option>
+                    <option value="constraint_based_swap">Constraint Based Swap</option>
                   </select>
                   <select
                     autoFocus
@@ -988,27 +1057,34 @@ export default function ExerciseEditor() {
                     onChange={(event) => {
                       if (event.target.value) {
                         patch({
-                          variants: [
-                            ...ex.variants,
+                          relationships: [
+                            ...relationships,
                             {
                               to_exercise_id: event.target.value,
-                              variant_type: newVariantType,
-                              sort_order: ex.variants.length + 1,
+                              relationship_type: newRelationshipType,
+                              constraint_id:
+                                newRelationshipType === "constraint_based_swap"
+                                  ? (constraintsList[0]?.id ?? null)
+                                  : null,
+                              rank: relationships.length + 1,
+                              status: "draft",
                               notes: null,
                             },
                           ],
                         });
                       }
-                      setOpenVariant(false);
+                      setOpenRelationship(false);
                     }}
-                    onBlur={() => setOpenVariant(false)}
+                    onBlur={() => setOpenRelationship(false)}
                   >
                     <option value="">Select exercise…</option>
                     {exercises
                       .filter((item) => item.id !== ex.id)
                       .filter(
                         (item) =>
-                          !ex.variants.some((variant) => variant.to_exercise_id === item.id),
+                          !relationships.some(
+                            (relationship) => relationship.to_exercise_id === item.id,
+                          ),
                       )
                       .map((item) => (
                         <option key={item.id} value={item.id}>
@@ -1019,10 +1095,10 @@ export default function ExerciseEditor() {
                 </div>
               ) : (
                 <button
-                  onClick={() => setOpenVariant(true)}
+                  onClick={() => setOpenRelationship(true)}
                   className="flex items-center gap-1 text-xs text-primary hover:underline"
                 >
-                  <Plus className="h-3 w-3" /> Add Variant
+                  <Plus className="h-3 w-3" /> Add Relationship
                 </button>
               )}
             </div>

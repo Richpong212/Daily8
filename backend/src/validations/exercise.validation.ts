@@ -2,7 +2,14 @@ import { body } from "express-validator";
 
 const levels = ["none", "low", "moderate", "high"];
 const exerciseStatuses = ["draft", "active", "retired"];
-const variantTypes = ["progression", "regression", "alternative", "related"];
+const relationshipTypes = ["constraint_based_swap", "same_purpose_alternative"];
+const variantTypes = [
+  "progression",
+  "regression",
+  "alternative",
+  "related",
+  ...relationshipTypes,
+];
 const reviewStatuses = [
   "draft",
   "needs_review",
@@ -154,12 +161,20 @@ export const createExerciseValidation = [
     .withMessage("Relationship exercise id must be a valid UUID"),
   body("relationships.*.relationship_type")
     .optional()
-    .isIn(variantTypes)
+    .isIn(relationshipTypes)
     .withMessage("Invalid relationship type"),
-  body("relationships.*.sort_order")
+  body("relationships.*.constraint_id")
+    .optional({ nullable: true })
+    .isUUID()
+    .withMessage("Relationship constraint id must be a valid UUID"),
+  body("relationships.*.rank")
     .optional()
-    .isInt({ min: 0 })
-    .withMessage("Relationship sort order must be a positive integer"),
+    .isInt({ min: 1 })
+    .withMessage("Relationship rank must be a positive integer"),
+  body("relationships.*.status")
+    .optional()
+    .isIn(exerciseStatuses)
+    .withMessage("Invalid relationship status"),
   body("relationships.*.notes")
     .optional({ nullable: true })
     .isString()

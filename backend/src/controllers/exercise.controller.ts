@@ -85,12 +85,14 @@ const getExerciseRelations = async (exerciseId: string): Promise<ExerciseRelatio
         "id",
         "to_exercise_id",
         "relationship_type",
-        "sort_order",
+        "constraint_id",
+        "rank",
+        "status",
         "notes",
       ],
       order: [
         ["relationship_type", "ASC"],
-        ["sort_order", "ASC"],
+        ["rank", "ASC"],
       ],
     }),
   ]);
@@ -106,6 +108,7 @@ const getExerciseRelations = async (exerciseId: string): Promise<ExerciseRelatio
       return {
         ...data,
         variant_type: data.relationship_type,
+        sort_order: data.rank,
       };
     }),
   };
@@ -136,8 +139,16 @@ const buildExerciseRelationshipRows = (
       from_exercise_id: exerciseId,
       to_exercise_id: variant.to_exercise_id,
       relationship_type:
-        variant.relationship_type ?? variant.variant_type ?? "related",
-      sort_order: variant.sort_order ?? index + 1,
+        variant.relationship_type === "constraint_based_swap" ||
+        variant.relationship_type === "same_purpose_alternative"
+          ? variant.relationship_type
+          : "same_purpose_alternative",
+      constraint_id:
+        variant.relationship_type === "constraint_based_swap"
+          ? (variant.constraint_id ?? null)
+          : null,
+      rank: variant.rank ?? variant.sort_order ?? index + 1,
+      status: variant.status ?? "draft",
       notes: variant.notes ?? null,
     }));
 };
@@ -321,6 +332,7 @@ const createRelationRows = async (
     variants: exerciseRelationshipRows.map((row) => ({
       ...row,
       variant_type: row.relationship_type,
+      sort_order: row.rank,
     })),
   };
 };

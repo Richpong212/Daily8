@@ -2,17 +2,19 @@ import { Model, DataTypes } from "sequelize";
 import { db } from "../config/connectDb";
 
 export type ExerciseRelationshipType =
-  | "progression"
-  | "regression"
-  | "alternative"
-  | "related";
+  | "constraint_based_swap"
+  | "same_purpose_alternative";
+
+export type ExerciseRelationshipStatus = "draft" | "active" | "retired";
 
 class ExerciseRelationships extends Model {
   public id!: string;
   public from_exercise_id!: string;
   public to_exercise_id!: string;
   public relationship_type!: ExerciseRelationshipType;
-  public sort_order!: number;
+  public constraint_id!: string | null;
+  public rank!: number;
+  public status!: ExerciseRelationshipStatus;
   public notes!: string | null;
   public createdAt!: Date;
   public updatedAt!: Date;
@@ -42,13 +44,26 @@ ExerciseRelationships.init(
       },
     },
     relationship_type: {
-      type: DataTypes.ENUM("progression", "regression", "alternative", "related"),
+      type: DataTypes.ENUM("constraint_based_swap", "same_purpose_alternative"),
       allowNull: false,
     },
-    sort_order: {
+    constraint_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: "constraints",
+        key: "id",
+      },
+    },
+    rank: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 0,
+      defaultValue: 1,
+    },
+    status: {
+      type: DataTypes.ENUM("draft", "active", "retired"),
+      allowNull: false,
+      defaultValue: "draft",
     },
     notes: {
       type: DataTypes.TEXT,

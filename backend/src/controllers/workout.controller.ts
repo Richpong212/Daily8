@@ -46,7 +46,10 @@ const generateUniqueSlug = async (name: string, existingId?: string) => {
 };
 
 const clearWorkoutCaches = async () => {
-  await deleteCacheByPattern("workouts:*");
+  await Promise.all([
+    deleteCacheByPattern("workouts:*"),
+    deleteCacheByPattern("workout-programs:*"),
+  ]);
 };
 
 const normalizeInstructionGroups = (value: unknown) => {

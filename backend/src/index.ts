@@ -14,6 +14,8 @@ import userRouter from "./routes/user.route";
 import workoutRouter from "./routes/workout.route";
 import exerciseRouter from "./routes/exercise.route";
 import supportingDataRouter from "./routes/supportingData.route";
+import workoutProgramRouter from "./routes/workoutProgram.route";
+import userWorkoutProgramRouter from "./routes/userWorkoutProgram.route";
 import { authenticateUser } from "./middlewares/auth.middleware";
 
 const app = express();
@@ -71,6 +73,16 @@ app.use("/api/v1/users", userRouter);
 
 // workout routes
 app.use("/api/v1/workouts", authenticateUser, workoutRouter);
+
+// workout program routes
+app.use("/api/v1/workout-programs", authenticateUser, workoutProgramRouter);
+
+// current user's workout program enrollment routes
+app.use(
+  "/api/v1/user-workout-programs",
+  authenticateUser,
+  userWorkoutProgramRouter,
+);
 
 // exercise routes
 app.use("/api/v1/exercises", authenticateUser, exerciseRouter);

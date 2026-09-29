@@ -5,6 +5,8 @@ import ExercisesList from "@/pages/ExercisesList";
 import ExerciseEditor from "@/pages/ExerciseEditor";
 import WorkoutsList from "@/pages/WorkoutsList";
 import WorkoutEditor from "@/pages/WorkoutEditor";
+import ProgramsList from "@/pages/ProgramsList";
+import ProgramEditor from "@/pages/ProgramEditor";
 import Media from "@/pages/Media";
 import ResetPassword from "@/pages/ResetPassword";
 import SupportingDataLayout, {
@@ -33,6 +35,8 @@ export function AppRoutes() {
         <Route path="exercises/:id" element={<ExerciseEditor />} />
         <Route path="workouts" element={<WorkoutsList />} />
         <Route path="workouts/:id" element={<WorkoutEditor />} />
+        <Route path="programs" element={<ProgramsList />} />
+        <Route path="programs/:id" element={<ProgramEditor />} />
         <Route path="media" element={<Media />} />
         <Route path="supporting-data" element={<SupportingDataLayout />}>
           <Route index element={<Navigate to="movement-families" replace />} />

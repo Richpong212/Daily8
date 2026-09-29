@@ -1311,30 +1311,74 @@
       "instruction_groups": []
     }
   ],
+  "workout_programs": [
+    {
+      "id": "93000000-0000-4000-8000-000000000001",
+      "slug": "daily-8-foundations",
+      "name": "Daily 8 Foundations",
+      "version_number": 1,
+      "previous_version_id": null,
+      "status": "active",
+      "notes": "A short starter journey for building a consistent routine.",
+      "published_at": "2026-08-05T09:00:00.000Z"
+    }
+  ],
+  "workout_program_items": [
+    {
+      "id": "94000000-0000-4000-8000-000000000001",
+      "workout_program_id": "93000000-0000-4000-8000-000000000001",
+      "workout_id": "90000000-0000-4000-8000-000000000001",
+      "program_order": 1,
+      "notes": "Begin with the gentler foundation session."
+    },
+    {
+      "id": "94000000-0000-4000-8000-000000000002",
+      "workout_program_id": "93000000-0000-4000-8000-000000000001",
+      "workout_id": "90000000-0000-4000-8000-000000000002",
+      "program_order": 2,
+      "notes": "Introduce the strength circuit after the foundation session."
+    }
+  ],
+  "user_workout_programs": [
+    {
+      "id": "95000000-0000-4000-8000-000000000001",
+      "user_id": "00000000-0000-4000-8000-000000000002",
+      "workout_program_id": "93000000-0000-4000-8000-000000000001",
+      "status": "active",
+      "started_at": "2026-08-06T09:00:00.000Z",
+      "completed_at": null
+    }
+  ],
   "exercise_relationships": [
     {
       "id": "82000000-0000-4000-8000-000000000001",
       "from_exercise_id": "70000000-0000-4000-8000-000000000001",
       "to_exercise_id": "70000000-0000-4000-8000-000000000009",
-      "sort_order": 1,
+      "rank": 1,
+      "status": "draft",
+      "constraint_id": "60000000-0000-4000-8000-000000000004",
       "notes": "Step-up can be reviewed as a more demanding lower-body alternative.",
-      "relationship_type": "progression"
+      "relationship_type": "constraint_based_swap"
     },
     {
       "id": "82000000-0000-4000-8000-000000000002",
       "from_exercise_id": "70000000-0000-4000-8000-000000000005",
       "to_exercise_id": "70000000-0000-4000-8000-000000000011",
-      "sort_order": 1,
+      "rank": 1,
+      "status": "draft",
+      "constraint_id": null,
       "notes": "Loaded crunch is a higher-demand trunk option.",
-      "relationship_type": "progression"
+      "relationship_type": "same_purpose_alternative"
     },
     {
       "id": "82000000-0000-4000-8000-000000000003",
       "from_exercise_id": "70000000-0000-4000-8000-000000000004",
       "to_exercise_id": "70000000-0000-4000-8000-000000000001",
-      "sort_order": 2,
+      "rank": 2,
+      "status": "draft",
+      "constraint_id": null,
       "notes": "Both are beginner-friendly standing lower-body patterns.",
-      "relationship_type": "related"
+      "relationship_type": "same_purpose_alternative"
     }
   ]
 }

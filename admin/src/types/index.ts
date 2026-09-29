@@ -88,12 +88,12 @@ export interface ExerciseMedia {
 }
 
 export type ExerciseVariantType = "progression" | "regression" | "alternative" | "related";
-export type ExerciseRelationshipType = ExerciseVariantType;
+export type ExerciseRelationshipType = "constraint_based_swap" | "same_purpose_alternative";
 
 export interface ExerciseVariant {
   id?: string;
   to_exercise_id: string;
-  variant_type: ExerciseVariantType;
+  variant_type: ExerciseVariantType | ExerciseRelationshipType;
   sort_order: number;
   notes?: string | null;
 }
@@ -102,7 +102,9 @@ export interface ExerciseRelationship {
   id?: string;
   to_exercise_id: string;
   relationship_type: ExerciseRelationshipType;
-  sort_order: number;
+  constraint_id?: string | null;
+  rank: number;
+  status: Status;
   notes?: string | null;
 }
 
@@ -209,6 +211,32 @@ export interface Workout {
   review_notes: string;
   groups: WorkoutGroup[];
   published_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface WorkoutProgramItem {
+  id?: string;
+  workout_program_id?: string;
+  workout_id: string;
+  program_order: number;
+  notes: string | null;
+  workout?: Pick<Workout, "id" | "name" | "status" | "version_number">;
+}
+
+export interface WorkoutProgram {
+  id: string;
+  slug: string;
+  name: string;
+  version_number: number;
+  previous_version_id: string | null;
+  status: Status;
+  notes: string | null;
+  published_at: string | null;
+  items: WorkoutProgramItem[];
+  workout_count: number;
+  enrollment_count: number;
+  is_locked: boolean;
   created_at: string;
   updated_at: string;
 }

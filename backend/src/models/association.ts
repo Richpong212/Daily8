@@ -16,6 +16,9 @@ import WorkoutSlots from "./workoutSlots.model";
 import VariantLadders from "./variantLadders.model";
 import VariantLadderItems from "./variantLadderItems.model";
 import ExerciseRelationships from "./exerciseRelationships.model";
+import WorkoutPrograms from "./workoutPrograms.model";
+import WorkoutProgramItems from "./workoutProgramItems.model";
+import UserWorkoutPrograms from "./userWorkoutPrograms.model";
 
 export const applyModelAssociations = () => {
   MovementFamilies.hasMany(Exercises, {
@@ -174,6 +177,11 @@ export const applyModelAssociations = () => {
     as: "toExercise",
   });
 
+  ExerciseRelationships.belongsTo(Constraints, {
+    foreignKey: "constraint_id",
+    as: "constraint",
+  });
+
   Workouts.hasMany(Workouts, {
     foreignKey: "previous_version_id",
     as: "nextVersions",
@@ -222,6 +230,56 @@ export const applyModelAssociations = () => {
   WorkoutSlots.belongsTo(ExerciseBenefits, {
     foreignKey: "required_benefit_id",
     as: "requiredBenefit",
+  });
+
+  WorkoutPrograms.hasMany(WorkoutPrograms, {
+    foreignKey: "previous_version_id",
+    as: "nextVersions",
+  });
+
+  WorkoutPrograms.belongsTo(WorkoutPrograms, {
+    foreignKey: "previous_version_id",
+    as: "previousVersion",
+  });
+
+  WorkoutPrograms.hasMany(WorkoutProgramItems, {
+    foreignKey: "workout_program_id",
+    as: "items",
+  });
+
+  WorkoutProgramItems.belongsTo(WorkoutPrograms, {
+    foreignKey: "workout_program_id",
+    as: "program",
+  });
+
+  Workouts.hasMany(WorkoutProgramItems, {
+    foreignKey: "workout_id",
+    as: "programItems",
+  });
+
+  WorkoutProgramItems.belongsTo(Workouts, {
+    foreignKey: "workout_id",
+    as: "workout",
+  });
+
+  User.hasMany(UserWorkoutPrograms, {
+    foreignKey: "user_id",
+    as: "workoutProgramEnrollments",
+  });
+
+  UserWorkoutPrograms.belongsTo(User, {
+    foreignKey: "user_id",
+    as: "user",
+  });
+
+  WorkoutPrograms.hasMany(UserWorkoutPrograms, {
+    foreignKey: "workout_program_id",
+    as: "enrollments",
+  });
+
+  UserWorkoutPrograms.belongsTo(WorkoutPrograms, {
+    foreignKey: "workout_program_id",
+    as: "workoutProgram",
   });
 
   void User;

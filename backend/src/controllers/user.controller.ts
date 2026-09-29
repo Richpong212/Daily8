@@ -10,6 +10,7 @@ import { passwordResetEmail } from "../services/PasswordResetEmail.template";
 import { sendEmail } from "../utils/sendEmail";
 import { appConfig } from "../config/index.config";
 import { apiMessages } from "../utils/apiMessages";
+import { enrollUserInActiveWorkoutProgram } from "../services/userWorkoutPrograms.service";
 
 const toClientUser = (user: User) => ({
   id: user.id,
@@ -68,6 +69,12 @@ export const registerUser: any = async (req: Request, res: Response) => {
       password: await hashPassword(password),
       isAdmin: false,
     });
+
+    try {
+      await enrollUserInActiveWorkoutProgram(user.id);
+    } catch (error) {
+      logger.error("User registered, but program enrollment failed:", error);
+    }
 
     setAuthCookie(res, user);
 

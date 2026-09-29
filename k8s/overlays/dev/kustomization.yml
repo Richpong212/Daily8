@@ -19,7 +19,7 @@ images:
 
   - name: daily8-admin-image
     newName: ghcr.io/richpong212/daily8/admin
-    newTag: "b19e2d87d0f8a979fc3b4e1e2ac8014e5f998a66"
+    newTag: "2bd0733b4a4f1840ee6ac4a23d5fa46a3fd19354"
 
   - name: daily8-client-sub-image
     newName: ghcr.io/richpong212/daily8/client-sub
